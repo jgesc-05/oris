@@ -12,13 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->id('id_usuario');
+            $table->unsignedBigInteger('id_tipo_usuario');
+            $table->unsignedBigInteger('id_tipo_documento');
+            $table->string('numero_documento', 30)->unique();
+            $table->string('correo_electronico', 100)->unique();
+            $table->string('telefono', 20)->nullable();
+            $table->string('estado', 20)->default('activo');
+            $table->string('nombres', 50);
+            $table->string('apellidos', 50);
+            $table->date('fecha_nacimiento')->nullable();
+            $table->date('fecha_ingreso_ips')->nullable();
+            $table->date('fecha_creacion_sistema')->nullable();
+            $table->text('observaciones')->nullable();
             $table->timestamps();
+        
+            $table->foreign('id_tipo_usuario')->references('id_tipo_usuario')->on('user_types');
+            $table->foreign('id_tipo_documento')->references('id_tipo_documento')->on('document_type');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
