@@ -10,3 +10,5 @@ Route::get('/', function () {
 
 //Creación de usuarios por parte del administrador
 Route::middleware(['auth'])->post('/admin/users', [UserController::class, 'store']);
+
+

@@ -11,12 +11,12 @@ class UserController extends Controller
 {
     public function store(Request $request)
     {
-        $admin = Auth::user();
+       // $admin = Auth::user();
 
         // Verificar rol del usuario autenticado
-        if ($admin->userType->nombre_tipo !== 'Administrador') {
-            return response()->json(['error' => 'No autorizado'], 403);
-        }
+        //if ($admin->userType->nombre_tipo !== 'Administrador') {
+            //return response()->json(['error' => 'No autorizado'], 403);
+        //}
 
         // Validación
         $validated = $request->validate([
