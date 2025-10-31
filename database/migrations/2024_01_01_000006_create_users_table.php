@@ -25,6 +25,7 @@ return new class extends Migration
             $table->date('fecha_ingreso_ips')->nullable();
             $table->date('fecha_creacion_sistema')->nullable();
             $table->text('observaciones')->nullable();
+            $table->string('password')->nullable();
             $table->timestamps();
         
             $table->foreign('id_tipo_usuario')->references('id_tipo_usuario')->on('user_types');
