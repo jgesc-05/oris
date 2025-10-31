@@ -37,7 +37,7 @@
   /* UI */
   --card-bg:#FFFFFF;
   --muted:#6B7280;
-  --radius:.75rem;           /* una sola vez */
+  --radius:.75rem;
   --font-sans:ui-sans-serif,system-ui,sans-serif;
 
   /* Escalas texto */
@@ -55,17 +55,108 @@
   --container:1200px;
 }
 
-/* Dark mode por preferencia */
-@media (prefers-color-scheme: dark) {
-  @theme { --card-bg:#0F172A; --muted:#94A3B8; }
-}
-
 /* Base y utilidades */
 @layer base {
-  html, body { font-family: var(--font-sans); background:#F7F7F7; color:#1F1F1F; }
+  html, body {
+    font-family: var(--font-sans);
+    background:#F7F7F7;
+    color:#1F1F1F;
+  }
 }
+
 @layer utilities {
-  .focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1; }
-  .transition-base { @apply transition-colors duration-150; }
-  .container-pro { max-width: var(--container); margin-inline: auto; padding-inline: 1rem; }
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
+  }
+  .container-pro {
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+}
+
+/* 🎨 Componentes de formulario centralizados */
+@layer components {
+  /* Contenedor de campo */
+  .form-group {
+    @apply mb-4;
+  }
+
+  /* Asterisco de requerido */
+  .form-required {
+    @apply text-primary-500 ml-0.5 font-bold;
+  }
+
+  /* Input base */
+  .form-control {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400;
+  }
+
+  .form-control:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-control:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Textarea */
+  .form-textarea {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400
+           resize-y min-h-[100px];
+  }
+
+  .form-textarea:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-textarea:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Select */
+  .form-select {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400
+           cursor-pointer pr-10 appearance-none
+           bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236B7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')]
+           bg-[position:right_0.75rem_center] bg-[size:1.5rem] bg-no-repeat;
+  }
+
+  .form-select:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-select:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Label */
+  .form-label {
+    @apply block text-sm font-medium text-neutral-800 mb-2;
+  }
+
+  /* Texto de ayuda */
+  .form-hint {
+    @apply text-xs text-neutral-500 mt-1.5;
+  }
+
+  /* Mensaje de error */
+  .form-error {
+    @apply text-xs text-primary-600 mt-1.5 font-medium;
+  }
+
+  /* Checkbox */
+  .form-checkbox {
+    @apply w-4 h-4 text-primary-600 border-neutral-300 rounded
+           focus:ring-2 focus:ring-primary-500 cursor-pointer;
+  }
+
+  /* Radio */
+  .form-radio {
+    @apply w-4 h-4 text-primary-600 border-neutral-300 rounded-full
+           focus:ring-2 focus:ring-primary-500 cursor-pointer;
+  }
 }

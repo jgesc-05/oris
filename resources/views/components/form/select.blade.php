@@ -1,9 +1,37 @@
-@props(['label'=>null,'name','error'=>null,'required'=>false])
-<label class="block text-sm mb-1" for="{{ $name }}">
-  {{ $label ?? ucfirst($name) }} @if($required)<span class="text-danger">*</span>@endif
-</label>
-<select id="{{ $name }}" name="{{ $name }}"
-  {{ $attributes->merge(['class'=>'w-full rounded-[var(--radius)] border border-neutral-300 bg-white text-neutral-900 focus:ring-primary-500 focus:border-primary-500']) }}>
-  {{ $slot }}
-</select>
-@isset($error) <p class="text-xs text-danger mt-1">{{ $error }}</p> @endisset
+@props([
+  'label' => null,
+  'name',
+  'error' => null,
+  'hint' => null,
+  'required' => false,
+  'placeholder' => '-- Seleccionar --',
+])
+
+<div class="form-group">
+  @if($label)
+    <label class="form-label" for="{{ $name }}">
+      {{ $label }}
+      @if($required)<span class="form-required">*</span>@endif
+    </label>
+  @endif
+
+  <select
+    id="{{ $name }}"
+    name="{{ $name }}"
+    {{ $required ? 'required' : '' }}
+    {{ $attributes->merge(['class' => 'form-select']) }}
+  >
+    @if($placeholder)
+      <option value="">{{ $placeholder }}</option>
+    @endif
+    {{ $slot }}
+  </select>
+
+  @if($hint)
+    <p class="form-hint">{{ $hint }}</p>
+  @endif
+
+  @if($error)
+    <p class="form-error">{{ $error }}</p>
+  @endif
+</div>

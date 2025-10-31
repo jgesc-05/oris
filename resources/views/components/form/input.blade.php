@@ -1,8 +1,37 @@
-@props(['label'=>null,'name','type'=>'text','error'=>null,'hint'=>null,'required'=>false])
-<label class="block text-sm mb-1" for="{{ $name }}">
-  {{ $label ?? ucfirst($name) }} @if($required)<span class="text-danger">*</span>@endif
-</label>
-<input id="{{ $name }}" name="{{ $name }}" type="{{ $type }}"
-  {{ $attributes->merge(['class'=>'w-full rounded-[var(--radius)] border border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 focus:ring-primary-500 focus:border-primary-500']) }}/>
-@if($hint) <p class="text-xs text-neutral-500 mt-1">{{ $hint }}</p> @endif
-@isset($error) <p class="text-xs text-danger mt-1">{{ $error }}</p> @endisset
+@props([
+  'label' => null,
+  'name',
+  'type' => 'text',
+  'error' => null,
+  'hint' => null,
+  'required' => false,
+  'placeholder' => null,
+  'value' => null,
+])
+
+<div class="form-group">
+  @if($label)
+    <label class="form-label" for="{{ $name }}">
+      {{ $label }}
+      @if($required)<span class="form-required">*</span>@endif
+    </label>
+  @endif
+
+  <input
+    type="{{ $type }}"
+    id="{{ $name }}"
+    name="{{ $name }}"
+    value="{{ old($name, $value) }}"
+    placeholder="{{ $placeholder }}"
+    {{ $required ? 'required' : '' }}
+    {{ $attributes->merge(['class' => 'form-control']) }}
+  />
+
+  @if($hint)
+    <p class="form-hint">{{ $hint }}</p>
+  @endif
+
+  @if($error)
+    <p class="form-error">{{ $error }}</p>
+  @endif
+</div>

@@ -1,7 +1,35 @@
-@props(['label'=>null,'name','rows'=>4,'error'=>null,'required'=>false])
-<label class="block text-sm mb-1" for="{{ $name }}">
-  {{ $label ?? ucfirst($name) }} @if($required)<span class="text-danger">*</span>@endif
-</label>
-<textarea id="{{ $name }}" name="{{ $name }}" rows="{{ $rows }}"
-  {{ $attributes->merge(['class'=>'w-full rounded-[var(--radius)] border border-neutral-300 bg-white text-neutral-900 placeholder-neutral-400 focus:ring-primary-500 focus:border-primary-500']) }}>{{ $slot }}</textarea>
-@isset($error) <p class="text-xs text-danger mt-1">{{ $error }}</p> @endisset
+@props([
+  'label' => null,
+  'name',
+  'rows' => 4,
+  'error' => null,
+  'hint' => null,
+  'required' => false,
+  'placeholder' => null,
+])
+
+<div class="form-group">
+  @if($label)
+    <label class="form-label" for="{{ $name }}">
+      {{ $label }}
+      @if($required)<span class="form-required">*</span>@endif
+    </label>
+  @endif
+
+  <textarea
+    id="{{ $name }}"
+    name="{{ $name }}"
+    rows="{{ $rows }}"
+    placeholder="{{ $placeholder }}"
+    {{ $required ? 'required' : '' }}
+    {{ $attributes->merge(['class' => 'form-textarea']) }}
+  >{{ old($name, $slot) }}</textarea>
+
+  @if($hint)
+    <p class="form-hint">{{ $hint }}</p>
+  @endif
+
+  @if($error)
+    <p class="form-error">{{ $error }}</p>
+  @endif
+</div>
