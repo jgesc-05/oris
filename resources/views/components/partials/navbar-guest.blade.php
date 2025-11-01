@@ -10,7 +10,7 @@
       <a href="{{ $logoHref }}" class="flex items-center gap-3">
         {{-- Logo imagen --}}
         <img
-          src="{{ asset('images/12.png') }}"
+          src="{{ asset('images/logo.png') }}"
           alt="Logo Oris"
           class="w-10 h-10 object-contain"
         />

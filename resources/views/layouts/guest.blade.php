@@ -1,4 +1,3 @@
-{{-- resources/views/layouts/guest.blade.php --}}
 <!doctype html>
 <html lang="es">
 <head>
@@ -8,17 +7,23 @@
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   @stack('head')
 </head>
-<body class="bg-neutral-50 text-neutral-900">
-  {{-- Navbar público minimal (el que ya hiciste) --}}
+<body class="min-h-screen flex flex-col bg-neutral-50 text-neutral-900">
+  {{-- Navbar público minimal --}}
   @if (View::exists('components.partials.navbar-guest'))
     <x-partials.navbar-guest />
   @endif
 
-  <main class="py-8">
+  {{-- Contenido: ocupa el espacio disponible --}}
+  <main class="flex-1 py-8">
     <div class="container-pro">
       @yield('content')
     </div>
   </main>
+
+  {{-- Footer común al final --}}
+  @if (View::exists('components.partials.footer'))
+    <x-partials.footer />
+  @endif
 
   @stack('scripts')
 </body>
