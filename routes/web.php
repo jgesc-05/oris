@@ -30,3 +30,14 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::get('registro', [PacienteAuthController::class, 'showRegister'])->name('register');
     Route::post('registro', [PacienteAuthController::class, 'register']);
 });
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
+
+    // Stubs para navegación (se pueden crear como vistas vacías por ahora)
+    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
+    Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
+    Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
+    Route::view('/config', 'admin.config')->name('config');
+});
