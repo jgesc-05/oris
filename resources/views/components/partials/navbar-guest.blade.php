@@ -8,10 +8,12 @@
   <div class="max-w-[100%]">
     <div class="container-pro h-18 flex items-center">
       <a href="{{ $logoHref }}" class="flex items-center gap-3">
-        {{-- Logo con fondo rojo y texto blanco --}}
-        <span class="inline-block bg-[var(--color-primary-500)] text-white font-semibold text-xl leading-none px-2 py-0.5 rounded-md">
-          Oris
-        </span>
+        {{-- Logo imagen --}}
+        <img
+          src="{{ asset('images/12.png') }}"
+          alt="Logo Oris"
+          class="w-10 h-10 object-contain"
+        />
 
         {{-- Nombre de la clínica --}}
         <span class="text-sm md:text-2xl font-semibold text-neutral-900">
