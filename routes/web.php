@@ -39,6 +39,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Usuarios
     Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
     Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    // Detalle de usuario (mock)
+    Route::get('/usuarios/{usuario}', function ($usuario) {
+        return view('admin.usuarios.show', ['id' => $usuario]);
+    })->whereNumber('usuario')->name('usuarios.show');
+
 
     // Pacientes
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');

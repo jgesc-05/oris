@@ -78,8 +78,7 @@
               <td class="px-4 py-3 text-sm text-neutral-700">{{ $p['ultima'] }}</td>
               <td class="px-4 py-3 text-sm">
                 <div class="flex items-center gap-2">
-                  <x-ui.button variant="secondary" size="sm" :href="route('admin.pacientes.show', 1)">Ver</x-ui.button>
-                  <x-ui.button variant="ghost" size="sm" :href="route('admin.pacientes.show', 1).'#historial'">Historial</x-ui.button>
+                  <x-ui.button variant="secondary" size="sm" :href="route('admin.pacientes.show', 1)">Ver detalles</x-ui.button>
                 </div>
               </td>
             </tr>
