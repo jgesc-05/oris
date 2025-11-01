@@ -4,28 +4,44 @@ use App\Http\Controllers\UserController;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\PacienteAuthController;
 
 //Provisional
 Route::get('/', function () {
     return view('welcome');
 });
 
+// Ruta de prueba (mantener)
+Route::view('/test', 'test'); // Esto es una prueba
 
+// Página de acceso general
+Route::view('/acceder', 'access.index')->name('acceder');
 
-// Ruta para ver formulario de creación de usuario
+// Staff: login (mock si aún no lo tienes)
+Route::view('/login', 'auth.login')->name('login');
 
-Route::get('/admin/users/create', [UserController::class, 'create'])
-    ->middleware('auth')
-    ->name('admin.users.create');
- //Acá sería la ruta a la vista blade de creación de usuarios
+// ============================================
+// AUTH - Pacientes
+// ============================================
+Route::prefix('paciente')->name('paciente.')->group(function () {
+    // Mostrar formulario de login
+    Route::get('login', [PacienteAuthController::class, 'showLogin'])->name('login');
 
-// Ruta para guardar el usuario
-Route::post('/admin/users', [UserController::class, 'store'])
-    ->middleware('auth')
-    ->name('admin.users.store');
+    // Procesar login (cuando se agregue backend)
+    Route::post('login', [PacienteAuthController::class, 'login']);
 
+    // Registro
+    Route::get('registro', [PacienteAuthController::class, 'showRegister'])->name('register');
+    Route::post('registro', [PacienteAuthController::class, 'register']);
+});
 
- //provisional
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-
-
+    // Stubs para navegación (se pueden crear como vistas vacías por ahora)
+    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
+    Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
+    Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
+    Route::view('/config', 'admin.config')->name('config');
+});

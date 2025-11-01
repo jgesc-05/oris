@@ -4,8 +4,159 @@
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../**/*.ts';
+@source '../**/*.vue';
 
+/* Paleta y tokens */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  /* Neutral / Base */
+  --color-neutral-50:#F7F7F7; --color-neutral-100:#F5F5F5; --color-neutral-200:#EDEDED;
+  --color-neutral-300:#D9D9D9; --color-neutral-400:#BFBFBF; --color-neutral-500:#9A9A9A;
+  --color-neutral-600:#6F6F6F; --color-neutral-700:#4A4A4A; --color-neutral-800:#2C2C2C; --color-neutral-900:#1F1F1F;
+
+  /* Primary vino */
+  --color-primary-50:#F9EAEA; --color-primary-100:#F2D4D4; --color-primary-200:#E6A9A9; --color-primary-300:#D97F7F;
+  --color-primary-400:#BF4C4C; --color-primary-500:#780606; --color-primary-600:#630505; --color-primary-700:#4E0404;
+  --color-primary-800:#3A0303; --color-primary-900:#270202;
+
+  /* Success verde */
+  --color-success-50:#ECFDF5; --color-success-100:#D1FAE5; --color-success-200:#A7F3D0; --color-success-300:#6EE7B7;
+  --color-success-400:#34D399; --color-success-500:#2ECC71; --color-success-600:#22BB63; --color-success-700:#1A9E54;
+  --color-success-800:#147C42; --color-success-900:#0F5E33;
+
+  /* Warning amarillo */
+  --color-warning-50:#FFFBEB; --color-warning-100:#FEF3C7; --color-warning-200:#FDE68A; --color-warning-300:#FACC15;
+  --color-warning-400:#F5BF0D; --color-warning-500:#F1C40F; --color-warning-600:#D6AB0D; --color-warning-700:#B48F0B;
+  --color-warning-800:#8F7209; --color-warning-900:#6B5607;
+
+  /* Info azul grisáceo */
+  --color-info-50:#F2F6FA; --color-info-100:#E6EDF5; --color-info-200:#C9D6E5; --color-info-300:#A8BBD2;
+  --color-info-400:#7B96B3; --color-info-500:#34495E; --color-info-600:#2B3D4F; --color-info-700:#233241;
+  --color-info-800:#1B2733; --color-info-900:#141D26;
+
+  /* UI */
+  --card-bg:#FFFFFF;
+  --muted:#6B7280;
+  --radius:.75rem;
+  --font-sans:ui-sans-serif,system-ui,sans-serif;
+
+  /* Escalas texto */
+  --text-xs:.75rem; --text-sm:.875rem; --text-base:1rem; --text-lg:1.125rem;
+  --text-xl:1.25rem; --text-2xl:1.5rem; --text-3xl:1.875rem;
+
+  /* Spacing */
+  --spacing-1:.25rem; --spacing-2:.5rem; --spacing-3:.75rem; --spacing-4:1rem;
+  --spacing-6:1.5rem; --spacing-8:2rem; --spacing-10:2.5rem; --spacing-12:3rem;
+
+  /* Sombras y container */
+  --shadow-sm:0 1px 2px 0 rgb(0 0 0 / .06);
+  --shadow:0 1px 3px 0 rgb(0 0 0 / .1), 0 1px 2px -1px rgb(0 0 0 / .1);
+  --shadow-lg:0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+  --container:1200px;
+}
+
+/* Base y utilidades */
+@layer base {
+  html, body {
+    font-family: var(--font-sans);
+    background:#F7F7F7;
+    color:#1F1F1F;
+  }
+}
+
+@layer utilities {
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
+  }
+  .container-pro {
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+}
+
+/* 🎨 Componentes de formulario centralizados */
+@layer components {
+  /* Contenedor de campo */
+  .form-group {
+    @apply mb-4;
+  }
+
+  /* Asterisco de requerido */
+  .form-required {
+    @apply text-primary-500 ml-0.5 font-bold;
+  }
+
+  /* Input base */
+  .form-control {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400;
+  }
+
+  .form-control:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-control:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Textarea */
+  .form-textarea {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400
+           resize-y min-h-[100px];
+  }
+
+  .form-textarea:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-textarea:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Select */
+  .form-select {
+    @apply w-full rounded-lg border-2 border-neutral-300 bg-white text-neutral-900
+           px-4 py-3 text-base transition-colors duration-150 placeholder-neutral-400
+           cursor-pointer pr-10 appearance-none
+           bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2020%2020%22%3E%3Cpath%20stroke%3D%22%236B7280%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%20d%3D%22M6%208l4%204%204-4%22%2F%3E%3C%2Fsvg%3E')]
+           bg-[position:right_0.75rem_center] bg-[size:1.5rem] bg-no-repeat;
+  }
+
+  .form-select:focus {
+    @apply outline-none ring-0 border-primary-500;
+  }
+
+  .form-select:disabled {
+    @apply bg-neutral-100 cursor-not-allowed opacity-60;
+  }
+
+  /* Label */
+  .form-label {
+    @apply block text-sm font-medium text-neutral-800 mb-2;
+  }
+
+  /* Texto de ayuda */
+  .form-hint {
+    @apply text-xs text-neutral-500 mt-1.5;
+  }
+
+  /* Mensaje de error */
+  .form-error {
+    @apply text-xs text-primary-600 mt-1.5 font-medium;
+  }
+
+  /* Checkbox */
+  .form-checkbox {
+    @apply w-4 h-4 text-primary-600 border-neutral-300 rounded
+           focus:ring-2 focus:ring-primary-500 cursor-pointer;
+  }
+
+  /* Radio */
+  .form-radio {
+    @apply w-4 h-4 text-primary-600 border-neutral-300 rounded-full
+           focus:ring-2 focus:ring-primary-500 cursor-pointer;
+  }
 }
