@@ -22,6 +22,19 @@
 
 @section('admin-content')
   {{-- Encabezado como en show de usuarios --}}
+
+  {{-- Breadcrumb + volver --}}
+  <div class="mb-4 flex items-center justify-between">
+    <div class="text-sm text-neutral-600">
+      <a href="{{ route('admin.dashboard') }}" class="hover:underline">Inicio</a>
+      <span class="mx-2">/</span>
+      <a href="{{ route('admin.pacientes.index') }}" class="hover:underline">Pacientes</a>
+      <span class="mx-2">/</span>
+      <span class="text-neutral-900 font-medium">Paciente #{{ 1 }}</span>
+    </div>
+    <a href="{{ route('admin.pacientes.index') }}" class="text-sm text-info-600 hover:underline">← Volver a la lista</a>
+  </div>
+
   <div class="mb-4">
     <div class="flex items-center justify-between gap-4">
       <div class="flex items-center gap-3">

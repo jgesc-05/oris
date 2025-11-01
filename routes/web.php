@@ -43,6 +43,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);
     })->whereNumber('usuario')->name('usuarios.show');
+    Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
 
     // Pacientes

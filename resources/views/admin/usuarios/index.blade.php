@@ -97,7 +97,7 @@
                 <div class="flex items-center gap-2">
 
                   <x-ui.button variant="secondary" size="sm" :href="route('admin.usuarios.show', 1)">Ver</x-ui.button>
-                  <x-ui.button variant="ghost" size="sm">Editar</x-ui.button>
+                  <x-ui.button variant="ghost" size="sm" :href="route('admin.usuarios.edit', 1)">Editar</x-ui.button>
                   <x-ui.button variant="warning" size="sm">Suspender</x-ui.button>
                   <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
                 </div>
