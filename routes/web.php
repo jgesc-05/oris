@@ -40,7 +40,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Stubs para navegación (se pueden crear como vistas vacías por ahora)
     Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
-    Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
+    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
     Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
     Route::view('/config', 'admin.config')->name('config');

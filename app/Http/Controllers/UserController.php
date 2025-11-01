@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\UserType;
+use App\Models\DocumentType;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,10 +15,11 @@ class UserController extends Controller
     
     public function create()
     {
-        // Cargar vista Blade con formulario
-        /*return view('admin.users.create');*/
-    } //Acá iría el return view de la vista blade
-
+        $tiposDocumento = DocumentType::all();
+        $tiposUsuario = UserType::all();
+    
+        return view('admin.usuarios.create', compact('tiposDocumento', 'tiposUsuario'));
+    }
     public function store(Request $request)
     {
        $admin = Auth::user();
