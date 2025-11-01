@@ -3,9 +3,12 @@
 
 @section('content')
   <div class="container-pro py-8">
-
+   <x-partials.navbar-guest  />
+   
     {{-- Grid de cards con botones y formulario --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+
 
       <x-ui.card title="Acciones" subtitle="Diferentes variantes de botones">
         <div class="flex flex-col sm:flex-row gap-2">
