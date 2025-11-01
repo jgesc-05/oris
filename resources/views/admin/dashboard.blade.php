@@ -1,23 +1,14 @@
 {{-- resources/views/admin/dashboard.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Inicio — Admin')
 
 @php
-  // Menú superior (centrado)
-  $navItems = [
-    ['label' => 'Inicio',        'href' => route('admin.dashboard'),         'active' => true],
-    ['label' => 'Usuarios',      'href' => route('admin.usuarios.index')],
-    ['label' => 'Pacientes',     'href' => route('admin.pacientes.index')],
-    ['label' => 'Reportes',      'href' => route('admin.reportes.index')],
-    ['label' => 'Configuración', 'href' => route('admin.config')],
-  ];
-
   // Perfil (mock por ahora)
   $profile = ['name' => 'Pablo'];
 @endphp
 
-@section('content')
+@section('admin-content')
 
   {{-- Encabezado --}}
   <div class="mb-4">

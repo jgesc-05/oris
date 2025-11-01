@@ -1,23 +1,11 @@
 {{-- resources/views/admin/pacientes/index.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Pacientes — Admin')
 
-@php
-  // Menú superior (centrado)
-  $navItems = [
-    ['label' => 'Inicio',        'href' => route('admin.dashboard')],
-    ['label' => 'Usuarios',      'href' => route('admin.usuarios.index')],
-    ['label' => 'Pacientes',     'href' => route('admin.pacientes.index'), 'active' => true],
-    ['label' => 'Reportes',      'href' => route('admin.reportes.index')],
-    ['label' => 'Configuración', 'href' => route('admin.config')],
-  ];
-  $profile = ['name' => 'Pablo'];
-@endphp
-
-@section('content')
-
+@section('admin-content')
   <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Pacientes</h1>
+
 
   {{-- Filtros + búsqueda --}}
   <x-ui.card class="mb-4">
