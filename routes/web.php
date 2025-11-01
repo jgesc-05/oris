@@ -35,14 +35,30 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::post('registro', [PacienteAuthController::class, 'register']);
 });
 
+// routes/web.php
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // Stubs para navegación (se pueden crear como vistas vacías por ahora)
+    // Usuarios
     Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
-    Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
-    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
+    Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    // Detalle de usuario (mock)
+    Route::get('/usuarios/{usuario}', function ($usuario) {
+        return view('admin.usuarios.show', ['id' => $usuario]);
+    })->whereNumber('usuario')->name('usuarios.show');
+    Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+
+
+    // Pacientes
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
+
+    // 👇 NUEVO: detalle de paciente (mock)
+    Route::get('/pacientes/{paciente}', function ($paciente) {
+        return view('admin.pacientes.show', ['id' => $paciente]);
+    })->whereNumber('paciente')->name('pacientes.show');
+
+    // Reportes / Config
     Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
     Route::view('/config', 'admin.config')->name('config');
 });
