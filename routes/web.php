@@ -31,13 +31,24 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::post('registro', [PacienteAuthController::class, 'register']);
 });
 
+// routes/web.php
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // Stubs para navegación (se pueden crear como vistas vacías por ahora)
+    // Usuarios
     Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
     Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+
+    // Pacientes
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
+
+    // 👇 NUEVO: detalle de paciente (mock)
+    Route::get('/pacientes/{paciente}', function ($paciente) {
+        return view('admin.pacientes.show', ['id' => $paciente]);
+    })->whereNumber('paciente')->name('pacientes.show');
+
+    // Reportes / Config
     Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
     Route::view('/config', 'admin.config')->name('config');
 });
