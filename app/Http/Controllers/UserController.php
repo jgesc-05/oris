@@ -52,6 +52,9 @@ class UserController extends Controller
         ]);
 
         
-        /*return redirect()->back()->with('success', 'Usuario creado con éxito');*/ //Acá se redirige al componente de css de usuario creado
-    }   
+        return redirect()
+        ->route('admin.usuarios.create')
+        ->with('success', 'El usuario fue registrado correctamente.');
 }
+    }   
+
