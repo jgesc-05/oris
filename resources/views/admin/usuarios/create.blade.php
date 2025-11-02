@@ -7,6 +7,23 @@
 
   <x-ui.card class="max-w-3xl mx-auto">
 
+  @if (session('success'))
+  <x-ui.alert variant="success" title="¡Registro exitoso!">
+    {{ session('success') }}
+  </x-ui.alert>
+@endif
+
+@if ($errors->any())
+  <x-ui.alert variant="warning" title="Ocurrieron algunos errores:">
+    <ul class="list-disc list-inside space-y-1">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </x-ui.alert>
+@endif
+
+
 
     <form method="POST" action="{{ route('admin.usuarios.store') }}" class="space-y-6">
       @csrf
@@ -28,6 +45,7 @@
           label="Número de documento"
           required
           value="{{ old('numero_documento') }}"
+          :error="$errors->first('numero_documento')"
         />
 
         {{-- Nombres --}}
@@ -36,6 +54,7 @@
           label="Nombres"
           required
           value="{{ old('nombres') }}"
+          :error="$errors->first('nombres')"
         />
 
         {{-- Apellidos --}}
@@ -44,6 +63,7 @@
           label="Apellidos"
           required
           value="{{ old('apellidos') }}"
+          :error="$errors->first('apellidos')"
         />
 
         {{-- Rol (tipo de usuario) --}}
@@ -66,6 +86,7 @@
           type="date"
           max="{{ now()->format('Y-m-d') }}"
           value="{{ old('fecha_nacimiento') }}"
+          :error="$errors->first('fecha_nacimiento')"
         />
 
         {{-- Fecha de ingreso a la IPS --}}
@@ -74,6 +95,7 @@
           label="Fecha de ingreso a la IPS"
           type="date"
           value="{{ old('fecha_ingreso_ips') }}"
+          :error="$errors->first('fecha_ingreso_ips')"
         />
 
         {{-- Teléfono --}}
@@ -81,6 +103,7 @@
           name="telefono"
           label="Teléfono"
           value="{{ old('telefono') }}"
+          :error="$errors->first('telefono')"
         />
 
         {{-- Correo electrónico --}}
@@ -90,6 +113,7 @@
           label="Correo electrónico"
           required
           value="{{ old('correo_electronico') }}"
+          :error="$errors->first('correo_electronico')"
         />
 
         {{-- Contraseña --}}
@@ -98,6 +122,7 @@
           type="password"
           label="Contraseña"
           required
+          :error="$errors->first('password')"
         />
 
         {{-- Confirmación de contraseña --}}
@@ -106,6 +131,7 @@
           type="password"
           label="Confirmar contraseña"
           required
+          :error="$errors->first('password_confirmation')"
         />
 
         {{-- Observaciones --}}
@@ -114,12 +140,13 @@
             name="observaciones"
             label="Observaciones"
             value="{{ old('observaciones') }}"
+            :error="$errors->first('observaciones')"
           />
         </div>
       </div>
 
       <div class="pt-4 text-center">
-        {{-- Toca ver cómo modificar este botón --}}
+        {{-- Ya modificado --}}
         <x-ui.button type="submit" variant="primary" class="px-8 py-3">
           Crear usuario
         </x-ui.button>
