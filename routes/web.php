@@ -42,7 +42,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Usuarios
     Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
-    Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    //Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    //Crear usuarios por admin
+    Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
+    Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
     // Detalle de usuario (mock)
     Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);

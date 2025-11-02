@@ -13,7 +13,7 @@ class UserType extends Model
     protected $primaryKey = 'id_tipo_usuario';
     public $timestamps = false;
 
-    protected $fillable = ['nombre_tipo'];
+    protected $fillable = ['nombre'];
 
     public function users()
     {

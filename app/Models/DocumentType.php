@@ -13,7 +13,7 @@ class DocumentType extends Model
     protected $primaryKey = 'id_tipo_documento';
     public $timestamps = false;
 
-    protected $fillable = ['nombre_tipo_documento'];
+    protected $fillable = ['name'];
 
     public function users()
     {
