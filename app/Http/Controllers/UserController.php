@@ -56,5 +56,45 @@ class UserController extends Controller
         ->route('admin.usuarios.create')
         ->with('success', 'El usuario fue registrado correctamente.');
 }
-    }   
+
+    //Inicio de sesión
+    public function staffLogin(Request $request){
+        $credentials = $request->validate([
+            'correo_electronico' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        $loginAttempt = Auth::attempt($credentials);
+
+        if($loginAttempt){
+            $request->session()->regenerate();
+
+            $user = Auth::user();
+            return $this->redirectToRole($user->id_tipo_usuario);
+        }
+    }
+
+    //Redireccionamiento a vista según el rol
+    public function redirectToRole(int $roleId){
+        switch ($roleId) {
+            case 1:
+                //Administrador
+                return redirect()->intended('/admin/dashboard');
+            case 2:
+                //Médico
+                /*return redirect()->intended('/supervisor/dashboard');*/
+            case 3:
+                //Secretaria
+                /*return redirect()->intended('/staff/dashboard');*/
+            default:
+                Auth::logout(); 
+                return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
+        }
+    }
+
+    //Vista de login
+    public function viewStaffLogin(){
+        return view('auth.login');
+    }
+}   
 

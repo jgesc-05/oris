@@ -18,7 +18,12 @@ Route::view('/test', 'test'); // Esto es una prueba
 Route::view('/acceder', 'access.index')->name('acceder');
 
 // Staff: login (mock si aún no lo tienes)
-Route::view('/login', 'auth.login')->name('login');
+Route::view('/login', 'auth.login')->name('login'); //Quitarlo luego
+
+
+//Rutas de login empresarial
+Route::get('/login', [UserController::class, 'viewStaffLogin']);
+Route::post('/login', [UserController::class, 'staffLogin']);
 
 // ============================================
 // AUTH - Pacientes

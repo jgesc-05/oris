@@ -26,6 +26,7 @@
         required
         autocomplete="username"
         value="{{ old('correo_electronico') }}"
+        :error="$errors->first('correo_electronico')"
       />
 
       {{-- Contraseña --}}
@@ -36,6 +37,7 @@
         placeholder=""
         required
         autocomplete="current-password"
+        :error="$errors->first('password')"
       />
 
       <p class="text-sm text-neutral-600">
