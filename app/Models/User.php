@@ -2,47 +2,75 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    protected $table = 'users';
+    protected $primaryKey = 'id_usuario';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
     protected $fillable = [
-        'name',
-        'email',
+        'id_tipo_usuario',
+        'id_tipo_documento',
+        'numero_documento',
+        'correo_electronico',
+        'telefono',
+        'estado',
+        'nombres',
+        'apellidos',
+        'fecha_nacimiento',
+        'fecha_ingreso_ips',
+        'fecha_creacion_sistema',
+        'observaciones',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
+    public $timestamps = true;
+
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Relaciones
+    public function userType()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(UserType::class, 'id_tipo_usuario', 'id_tipo_usuario');
+    }
+
+    public function documentType()
+    {
+        return $this->belongsTo(DocumentType::class, 'id_tipo_documento', 'id_tipo_documento');
+    }
+
+    public function doctor()
+    {
+        return $this->hasOne(Doctor::class, 'id_usuario', 'id_usuario');
+    }
+
+    public function tokens()
+    {
+        return $this->hasMany(AccessToken::class, 'id_usuario', 'id_usuario');
+    }
+
+    public function getAuthIdentifierName()
+{
+    return 'correo_electronico';
+}
+
+    // Hash automático al guardar contraseña
+    public function setPasswordAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['password'] = bcrypt($value);
+        }
     }
 }
+

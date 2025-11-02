@@ -17,23 +17,15 @@
     <form action="{{ $staffLoginPostUrl }}" method="POST" class="space-y-4">
       @csrf
 
-      {{-- Tipo de documento --}}
-      <x-form.select name="tipo_documento" label="Tipo de documento" required>
-        <option value="CC" @selected(old('tipo_documento')==='CC')>Cédula de ciudadanía</option>
-        <option value="TI" @selected(old('tipo_documento')==='TI')>Tarjeta de identidad</option>
-        <option value="CE" @selected(old('tipo_documento')==='CE')>Cédula de extranjería</option>
-        <option value="PA" @selected(old('tipo_documento')==='PA')>Pasaporte</option>
-      </x-form.select>
-
-      {{-- Número de documento --}}
+      {{-- Correo electrónico --}}
       <x-form.input
-        name="numero_documento"
-        label="Número de documento"
+        name="correo_electronico"
+        type="email"
+        label="Correo electrónico"
         placeholder=""
         required
-        inputmode="numeric"
         autocomplete="username"
-        value="{{ old('numero_documento') }}"
+        value="{{ old('correo_electronico') }}"
       />
 
       {{-- Contraseña --}}
