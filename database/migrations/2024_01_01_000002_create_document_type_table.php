@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('document_type', function (Blueprint $table) {
             $table->id('id_tipo_documento');
-            $table->string('name', 20);
+            $table->string('name', 100);
         });
     }
 
