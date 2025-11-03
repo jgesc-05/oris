@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Ejecuta los seeders
         $this->call([
             DocumentTypeSeeder::class,
+            UserTypeSeeder::class,
         ]);
 
         // Puedes dejar el ejemplo del usuario si quieres
@@ -25,4 +26,9 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
     }
+
+
+
+
+
 }

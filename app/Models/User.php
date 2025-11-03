@@ -32,6 +32,24 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function getAuthIdentifierName()
+    {
+        return 'id_usuario';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->id_usuario;
+    }
+
+    // Hash automático de contraseñas
+    public function setPasswordAttribute($value)
+    {
+        if (!empty($value)) {
+            $this->attributes['password'] = bcrypt($value);
+        }
+    }
+
     public $timestamps = true;
 
     protected $hidden = [
@@ -60,17 +78,4 @@ class User extends Authenticatable
         return $this->hasMany(AccessToken::class, 'id_usuario', 'id_usuario');
     }
 
-    public function getAuthIdentifierName()
-{
-    return 'correo_electronico';
 }
-
-    // Hash automático al guardar contraseña
-    public function setPasswordAttribute($value)
-    {
-        if (!empty($value)) {
-            $this->attributes['password'] = bcrypt($value);
-        }
-    }
-}
-

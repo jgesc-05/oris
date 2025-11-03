@@ -23,12 +23,13 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de documento --}}
-        <x-form.select name="tipo_documento" label="Tipo de documento" required>
-          <option value="CC" @selected(old('tipo_documento')==='CC')>Cédula de ciudadanía</option>
-          <option value="TI" @selected(old('tipo_documento')==='TI')>Tarjeta de identidad</option>
-          <option value="CE" @selected(old('tipo_documento')==='CE')>Cédula de extranjería</option>
-          <option value="PA" @selected(old('tipo_documento')==='PA')>Pasaporte</option>
+        <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
+        <option value="1" @selected(old('id_tipo_documento')==='1')>Cédula de ciudadanía</option>
+        <option value="2" @selected(old('id_tipo_documento')==='2')>Tarjeta de identidad</option>
+        <option value="3" @selected(old('id_tipo_documento')==='3')>Cédula de extranjería</option>
+        <option value="4" @selected(old('id_tipo_documento')==='4')>Pasaporte</option>
         </x-form.select>
+
 
         {{-- Número de documento --}}
         <x-form.input
@@ -75,12 +76,13 @@
 
         {{-- Correo electrónico --}}
         <x-form.input
-          name="email"
-          type="email"
-          label="Correo electrónico"
-          placeholder=""
-          autocomplete="email"
-          value="{{ old('email') }}"
+        name="correo_electronico"
+        type="email"
+        label="Correo electrónico"
+        placeholder=""
+        autocomplete="email"
+        value="{{ old('correo_electronico') }}"
+        required
         />
 
         {{-- Teléfono --}}
@@ -101,6 +103,20 @@
           value="{{ old('observaciones') }}"
         />
       </div>
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+@error('title')
+    <div class="alert alert-danger">{{ $message }}</div>
+@enderror
 
       {{-- Copy legal breve --}}
       <p class="text-sm text-neutral-600">

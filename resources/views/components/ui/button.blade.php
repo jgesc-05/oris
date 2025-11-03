@@ -38,7 +38,7 @@
     {{ $slot }}
   </a>
 @else
-<button {{ $attributes->merge(['type' => $attributes->get('type', 'button'), 'class' => $classes]) }}>
+<button {{ $attributes->merge(['type' => $attributes->get('type', 'submit'), 'class' => $classes]) }}>
     {{ $slot }}
   </button>
 @endif

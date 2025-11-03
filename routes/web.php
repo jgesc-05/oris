@@ -1,14 +1,11 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use GuzzleHttp\Psr7\Request;
-use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\PacienteAuthController;
+use App\Http\Controllers\Auth\PatientAuthController;
 
-//Provisional
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('acceder');
 });
 
 // Ruta de prueba (mantener)
@@ -25,14 +22,22 @@ Route::view('/login', 'auth.login')->name('login');
 // ============================================
 Route::prefix('paciente')->name('paciente.')->group(function () {
     // Mostrar formulario de login
-    Route::get('login', [PacienteAuthController::class, 'showLogin'])->name('login');
+    Route::get('login', [PatientAuthController::class, 'showLoginForm'])->name('login');
 
-    // Procesar login (cuando se agregue backend)
-    Route::post('login', [PacienteAuthController::class, 'login']);
+    // Procesar login: envía el enlace al correo
+    Route::post('login', [PatientAuthController::class, 'sendLoginLink'])->name('login.submit');
 
-    // Registro
-    Route::get('registro', [PacienteAuthController::class, 'showRegister'])->name('register');
-    Route::post('registro', [PacienteAuthController::class, 'register']);
+    // Registro (si lo mantendrás en el futuro)
+    Route::get('registro', [PatientAuthController::class, 'showRegister'])->name('register');
+    Route::post('registro', [PatientAuthController::class, 'register']);
+
+    // Verificación del enlace
+    Route::get('verificar-login/{token}', [PatientAuthController::class, 'verifyLogin'])->name('login.verify');
+
+    // Dashboard del paciente (después de autenticarse)
+    Route::middleware('auth:paciente')->get('dashboard', function () {
+        return view('paciente.dashboard');
+    })->name('dashboard');
 });
 
 // routes/web.php
