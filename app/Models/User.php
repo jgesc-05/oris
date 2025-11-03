@@ -61,9 +61,15 @@ class User extends Authenticatable
     }
 
     public function getAuthIdentifierName()
-{
-    return 'correo_electronico';
-}
+    {
+        return 'id_usuario';
+    }
+    
+    public function getAuthIdentifier()
+    {
+        return $this->getAttribute($this->getAuthIdentifierName());
+    }
+    
 
     // Hash automático al guardar contraseña
     public function setPasswordAttribute($value)

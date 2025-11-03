@@ -72,7 +72,7 @@ $user = User::where('correo_electronico', $credentials['correo_electronico'])->f
 if ($user && Hash::check($credentials['password'], $user->password)) {
     
     // 4. Inicio de sesión y seguridad de sesión
-    Auth::login($user);
+    Auth::guard('web')->login($user);
     $request->session()->regenerate();
 
     // 5. Redirección por rol (usando id_tipo_usuario)
@@ -93,10 +93,10 @@ return back()->withErrors([
                 return redirect()->intended(route('admin.dashboard'));
             case 2:
                 //Médico
-                /*return redirect()->intended('/supervisor/dashboard');*/
+                /*return redirect()->intended(route(''));*/
             case 3:
                 //Secretaria
-                /*return redirect()->intended('/staff/dashboard');*/
+                /*return redirect()->intended(route(''));*/
             default:
                 Auth::logout(); 
                 return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
