@@ -47,7 +47,7 @@ class UserController extends Controller
         // Creación
         $user = User::create([
             ...$validated,
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'fecha_creacion_sistema' => now(),
         ]);
 
@@ -59,19 +59,30 @@ class UserController extends Controller
 
     //Inicio de sesión
     public function staffLogin(Request $request){
-        $credentials = $request->validate([
-            'correo_electronico' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+// 1. Validación
+$credentials = $request->validate([
+    'correo_electronico' => ['required', 'email'],
+    'password' => ['required'],
+]);
 
-        $loginAttempt = Auth::attempt($credentials);
+// 2. Búsqueda manual por la columna de tu BD
+$user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
 
-        if($loginAttempt){
-            $request->session()->regenerate();
+// 3. Verificación de existencia y contraseña
+if ($user && Hash::check($credentials['password'], $user->password)) {
+    
+    // 4. Inicio de sesión y seguridad de sesión
+    Auth::login($user);
+    $request->session()->regenerate();
 
-            $user = Auth::user();
-            return $this->redirectToRole($user->id_tipo_usuario);
-        }
+    // 5. Redirección por rol (usando id_tipo_usuario)
+    return $this->redirectToRole($user->id_tipo_usuario);
+}
+
+// 6. Retorno de Fallo 
+return back()->withErrors([
+    'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
+])->onlyInput('correo_electronico');
     }
 
     //Redireccionamiento a vista según el rol
@@ -79,7 +90,7 @@ class UserController extends Controller
         switch ($roleId) {
             case 1:
                 //Administrador
-                return redirect()->intended('/admin/dashboard');
+                return redirect()->intended(route('admin.dashboard'));
             case 2:
                 //Médico
                 /*return redirect()->intended('/supervisor/dashboard');*/

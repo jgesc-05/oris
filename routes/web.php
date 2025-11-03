@@ -23,7 +23,7 @@ Route::view('/login', 'auth.login')->name('login'); //Quitarlo luego
 
 //Rutas de login empresarial
 Route::get('/login', [UserController::class, 'viewStaffLogin']);
-Route::post('/login', [UserController::class, 'staffLogin']);
+Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login');
 
 // ============================================
 // AUTH - Pacientes
