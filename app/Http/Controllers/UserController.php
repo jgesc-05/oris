@@ -25,7 +25,7 @@ class UserController extends Controller
        $admin = Auth::user();
 
         //Verificar rol del usuario autenticado
-        if ($admin->userType->nombre_tipo !== 'Administrador') {
+        if ($admin->userType->id_tipo_usuario != 1) {
             return redirect()->back()->withErrors('No tienes permisos para crear usuarios.');
         }
 
