@@ -41,20 +41,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // ===== Usuarios =====
-    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');           // listado
+    // Usuarios
+    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
+    //Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
+    //Crear usuarios por admin
     Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
-
-    // OJO: primero rutas estáticas, luego dinámicas
-    Route::get('/usuarios/{usuario}/editar', [UserController::class, 'edit'])
-        ->whereNumber('usuario')->name('usuarios.edit');
-    Route::get('/usuarios/{usuario}', [UserController::class, 'show'])
-        ->whereNumber('usuario')->name('usuarios.show');
-    Route::put('/usuarios/{usuario}', [UserController::class, 'update'])
-        ->whereNumber('usuario')->name('usuarios.update');
-    Route::delete('/usuarios/{usuario}', [UserController::class, 'destroy'])
-        ->whereNumber('usuario')->name('usuarios.destroy');
+    // Detalle de usuario (mock)
+    Route::get('/usuarios/{usuario}', function ($usuario) {
+        return view('admin.usuarios.show', ['id' => $usuario]);
+    })->whereNumber('usuario')->name('usuarios.show');
+    Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
