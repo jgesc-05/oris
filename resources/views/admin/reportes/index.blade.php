@@ -7,58 +7,66 @@
   <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Reportes</h1>
 
   {{-- Filtros (barra horizontal) --}}
-    <x-ui.card class="mb-6">
-    <form class="grid grid-cols-12 gap-4 items-end">
-        {{-- Desde --}}
-        <div class="col-span-12 sm:col-span-3">
-        <label for="desde" class="form-label mb-1">Desde</label>
-        <input id="desde" name="desde" type="date" class="form-control h-10 w-full" />
-        </div>
+  <x-ui.card class="mb-6">
+    <form class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
+      {{-- Desde --}}
+      <div class="lg:col-span-3">
+        <x-form.input
+          name="desde"
+          type="date"
+          label="Desde"
+        />
+      </div>
 
-        {{-- Hasta --}}
-        <div class="col-span-12 sm:col-span-3">
-        <label for="hasta" class="form-label mb-1">Hasta</label>
-        <input id="hasta" name="hasta" type="date" class="form-control h-10 w-full" />
-        </div>
+      {{-- Hasta --}}
+      <div class="lg:col-span-3">
+        <x-form.input
+          name="hasta"
+          type="date"
+          label="Hasta"
+        />
+      </div>
 
-        {{-- Odontólogo --}}
-        <div class="col-span-12 sm:col-span-3">
-        <x-form.select name="odontologo" label="Odontólogo" class="w-full">
-            <option value="">-- Seleccionar --</option>
-            <option>Juan Pérez</option>
-            <option>Andrés Martínez</option>
-            <option>Ana Morales</option>
-            <option>Camila Ortega</option>
+      {{-- Odontólogo --}}
+      <div class="lg:col-span-3">
+        <x-form.select name="odontologo" label="Odontólogo">
+          <option value="">-- Todos --</option>
+          <option>Juan Pérez</option>
+          <option>Andrés Martínez</option>
+          <option>Ana Morales</option>
+          <option>Camila Ortega</option>
         </x-form.select>
-        </div>
+      </div>
 
-        {{-- Servicio --}}
-        <div class="col-span-12 sm:col-span-3">
-        <x-form.select name="servicio" label="Servicio" class="w-full">
-            <option value="">-- Seleccionar --</option>
-            <option>Cirugía Oral</option>
-            <option>Endodoncia</option>
-            <option>Ortodoncia</option>
-            <option>Odontología General</option>
+      {{-- Servicio --}}
+      <div class="lg:col-span-3">
+        <x-form.select name="servicio" label="Servicio">
+          <option value="">-- Todos --</option>
+          <option>Cirugía Oral</option>
+          <option>Endodoncia</option>
+          <option>Ortodoncia</option>
+          <option>Odontología General</option>
         </x-form.select>
-        </div>
+      </div>
 
-        {{-- Tipo de servicio --}}
-        <div class="col-span-12 sm:col-span-3">
-        <x-form.select name="tipo_servicio" label="Tipo de servicio" class="w-full">
-            <option value="">-- Seleccionar --</option>
-            <option value="presencial">Presencial</option>
-            <option value="teleconsulta">Teleconsulta</option>
-            <option value="domicilio">Domicilio</option>
+      {{-- Tipo de servicio --}}
+      <div class="lg:col-span-6">
+        <x-form.select name="tipo_servicio" label="Tipo de servicio">
+          <option value="">-- Todos --</option>
+          <option value="presencial">Presencial</option>
+          <option value="teleconsulta">Teleconsulta</option>
+          <option value="domicilio">Domicilio</option>
         </x-form.select>
-        </div>
+      </div>
 
-        {{-- Botón Filtrar --}}
-        <div class="col-span-12 sm:col-span-3 justify-self-end">
-        <x-ui.button type="submit" variant="primary" class="h-10 px-5">Filtrar</x-ui.button>
-        </div>
+    {{-- Botón Filtrar --}}
+    <div class="lg:col-span-6 flex items-end pb-4">
+    <x-ui.button type="submit" variant="primary" class="w-full lg:w-auto">
+        Filtrar
+    </x-ui.button>
+    </div>
     </form>
-    </x-ui.card>
+  </x-ui.card>
 
   {{-- Título de métricas --}}
   <h2 class="text-lg font-semibold text-neutral-900 mb-3">Métricas generales por mes</h2>
