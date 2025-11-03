@@ -38,30 +38,42 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 // routes/web.php
 
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // Usuarios
-    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
-    //Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
-    //Crear usuarios por admin
+    // ===== Usuarios =====
+    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');           // listado
     Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
-    // Detalle de usuario (mock)
-    Route::get('/usuarios/{usuario}', function ($usuario) {
-        return view('admin.usuarios.show', ['id' => $usuario]);
-    })->whereNumber('usuario')->name('usuarios.show');
-    Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
+    // OJO: primero rutas estáticas, luego dinámicas
+    Route::get('/usuarios/{usuario}/editar', [UserController::class, 'edit'])
+        ->whereNumber('usuario')->name('usuarios.edit');
+    Route::get('/usuarios/{usuario}', [UserController::class, 'show'])
+        ->whereNumber('usuario')->name('usuarios.show');
+    Route::put('/usuarios/{usuario}', [UserController::class, 'update'])
+        ->whereNumber('usuario')->name('usuarios.update');
+    Route::delete('/usuarios/{usuario}', [UserController::class, 'destroy'])
+        ->whereNumber('usuario')->name('usuarios.destroy');
 
-    // Pacientes
+    // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
-
-    // 👇 NUEVO: detalle de paciente (mock)
     Route::get('/pacientes/{paciente}', function ($paciente) {
         return view('admin.pacientes.show', ['id' => $paciente]);
     })->whereNumber('paciente')->name('pacientes.show');
 
-    // Reportes / Config
+    // ===== Reportes =====
     Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
-    Route::view('/config', 'admin.config')->name('config');
+
+    // ===== Configuración =====
+    // Apunta a resources/views/admin/config/index.blade.php
+    Route::view('/config', 'admin.config.index')->name('config');
+
+    // Subsecciones de configuración
+    Route::view('/config/especialidad/crear', 'admin.config.especialidad.create')
+        ->name('config.especialidad.create');
+    Route::view('/config/servicio/crear', 'admin.config.servicio.create')
+        ->name('config.servicio.create');
+    Route::view('/config/publicar-odontologo', 'admin.config.publicar-odontologo')
+        ->name('config.publicar-odontologo');
 });
