@@ -1,4 +1,3 @@
-{{-- resources/views/admin/config/publicar-odontologo.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Publicar odontólogo — Configuración')
 

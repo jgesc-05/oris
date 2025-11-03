@@ -69,11 +69,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Apunta a resources/views/admin/config/index.blade.php
     Route::view('/config', 'admin.config.index')->name('config');
 
-    // Subsecciones de configuración
-    Route::view('/config/especialidad/crear', 'admin.config.especialidad.create')
-        ->name('config.especialidad.create');
-    Route::view('/config/servicio/crear', 'admin.config.servicio.create')
-        ->name('config.servicio.create');
-    Route::view('/config/publicar-odontologo', 'admin.config.publicar-odontologo')
-        ->name('config.publicar-odontologo');
+    // Especialidades (antes "tipo-servicio")
+    Route::view('/config/especialidades',            'admin.config.especialidad.index')->name('config.especialidad.index');
+    Route::view('/config/especialidades/crear',      'admin.config.especialidad.create')->name('config.especialidad.create');
+    Route::view('/config/especialidades/{id}/editar','admin.config.especialidad.edit')->name('config.especialidad.edit');
+
+    // Servicios
+    Route::view('/config/servicios',            'admin.config.servicio.index')->name('config.servicio.index');
+    Route::view('/config/servicios/crear',      'admin.config.servicio.create')->name('config.servicio.create');
+    Route::view('/config/servicios/{id}/editar','admin.config.servicio.edit')->name('config.servicio.edit');
+
+    // Médicos (reemplaza “publicar odontólogo”)
+    Route::view('/config/medicos',            'admin.config.medico.index')->name('config.medico.index');
+    Route::view('/config/medicos/crear',      'admin.config.medico.create')->name('config.medico.create');
+    Route::view('/config/medicos/{id}/editar','admin.config.medico.edit')->name('config.medico.edit');
 });
