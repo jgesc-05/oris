@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
 
-    
+
     public function create()
     {
         $tiposDocumento = DocumentType::all();
         $tiposUsuario = UserType::all();
-    
+
         return view('admin.usuarios.create', compact('tiposDocumento', 'tiposUsuario'));
     }
     public function store(Request $request)
@@ -51,7 +51,7 @@ class UserController extends Controller
             'fecha_creacion_sistema' => now(),
         ]);
 
-        
+
         return redirect()
         ->route('admin.usuarios.create')
         ->with('success', 'El usuario fue registrado correctamente.');
@@ -108,4 +108,5 @@ return back()->withErrors([
         return view('auth.login');
     }
 }   
+    
 

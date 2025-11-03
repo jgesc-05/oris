@@ -43,6 +43,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 // routes/web.php
 
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
     // Usuarios
@@ -57,16 +58,37 @@ Route::prefix('admin')->name('admin.')->group(function () {
     })->whereNumber('usuario')->name('usuarios.show');
     Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
-
-    // Pacientes
+    // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
-
-    // 👇 NUEVO: detalle de paciente (mock)
     Route::get('/pacientes/{paciente}', function ($paciente) {
         return view('admin.pacientes.show', ['id' => $paciente]);
     })->whereNumber('paciente')->name('pacientes.show');
 
-    // Reportes / Config
+    // ===== Reportes =====
     Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
-    Route::view('/config', 'admin.config')->name('config');
-});
+
+    // ===== Configuración =====
+    // Apunta a resources/views/admin/config/index.blade.php
+    Route::view('/config', 'admin.config.index')->name('config');
+
+    /** Configuración - Especialidades */
+    Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
+    Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
+    Route::get('/config/especialidades/{id}/editar', function ($id) {
+        return view('admin.config.especialidad.edit', ['id' => $id]);
+    })->whereNumber('id')->name('config.especialidad.edit');
+
+    /** Configuración - Servicios */
+    Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
+    Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
+    Route::get('/config/servicios/{id}/editar', function ($id) {
+        return view('admin.config.servicio.edit', ['id' => $id]);
+    })->whereNumber('id')->name('config.servicio.edit');
+
+    /** Configuración - Médicos */
+    Route::view('/config/medicos', 'admin.config.medico.index')->name('config.medico.index');
+    Route::view('/config/medicos/crear', 'admin.config.medico.create')->name('config.medico.create');
+    Route::get('/config/medicos/{id}/editar', function ($id) {
+        return view('admin.config.medico.edit', ['id' => $id]);
+    })->whereNumber('id')->name('config.medico.edit');
+    });
