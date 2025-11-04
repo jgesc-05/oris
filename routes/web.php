@@ -15,7 +15,12 @@ Route::view('/test', 'test'); // Esto es una prueba
 Route::view('/acceder', 'access.index')->name('acceder');
 
 // Staff: login (mock si aún no lo tienes)
-Route::view('/login', 'auth.login')->name('login');
+//Route::view('/login', 'auth.login')->name('login'); //Quitarlo luego
+
+
+//Rutas de login empresarial
+Route::get('/login', [UserController::class, 'viewStaffLogin'])->name('login');
+Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login');
 
 // ============================================
 // AUTH - Pacientes
@@ -42,7 +47,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 
 // routes/web.php
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
     // Dashboard
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 

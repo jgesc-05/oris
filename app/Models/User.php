@@ -77,5 +77,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(AccessToken::class, 'id_usuario', 'id_usuario');
     }
-
 }

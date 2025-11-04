@@ -25,7 +25,7 @@ class UserController extends Controller
        $admin = Auth::user();
 
         //Verificar rol del usuario autenticado
-        if ($admin->userType->nombre_tipo !== 'Administrador') {
+        if ($admin->userType->id_tipo_usuario != 1) {
             return redirect()->back()->withErrors('No tienes permisos para crear usuarios.');
         }
 
@@ -47,7 +47,7 @@ class UserController extends Controller
         // Creación
         $user = User::create([
             ...$validated,
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'fecha_creacion_sistema' => now(),
         ]);
 
@@ -56,5 +56,57 @@ class UserController extends Controller
         ->route('admin.usuarios.create')
         ->with('success', 'El usuario fue registrado correctamente.');
 }
+
+    //Inicio de sesión
+    public function staffLogin(Request $request){
+// 1. Validación
+$credentials = $request->validate([
+    'correo_electronico' => ['required', 'email'],
+    'password' => ['required'],
+]);
+
+// 2. Búsqueda manual por la columna de tu BD
+$user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
+
+// 3. Verificación de existencia y contraseña
+if ($user && Hash::check($credentials['password'], $user->password)) {
+    
+    // 4. Inicio de sesión y seguridad de sesión
+    Auth::guard('web')->login($user);
+    $request->session()->regenerate();
+
+    // 5. Redirección por rol (usando id_tipo_usuario)
+    return $this->redirectToRole($user->id_tipo_usuario);
+}
+
+// 6. Retorno de Fallo 
+return back()->withErrors([
+    'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
+])->onlyInput('correo_electronico');
     }
+
+    //Redireccionamiento a vista según el rol
+    public function redirectToRole(int $roleId){
+        switch ($roleId) {
+            case 1:
+                //Administrador
+                return redirect()->intended(route('admin.dashboard'));
+            case 2:
+                //Médico
+                /*return redirect()->intended(route(''));*/
+            case 3:
+                //Secretaria
+                /*return redirect()->intended(route(''));*/
+            default:
+                Auth::logout(); 
+                return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
+        }
+    }
+
+    //Vista de login
+    public function viewStaffLogin(){
+        return view('auth.login');
+    }
+}   
+    
 
