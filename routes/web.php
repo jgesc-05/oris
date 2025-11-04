@@ -25,6 +25,9 @@ Route::view('/acceder', 'access.index')->name('acceder');
 Route::get('/login', [UserController::class, 'viewStaffLogin'])->name('login');
 Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login');
 
+//Logout empresarial
+Route::post('/logout', [UserController::class, 'staffLogout'])->name('logout');
+
 // ============================================
 // AUTH - Pacientes
 // ============================================

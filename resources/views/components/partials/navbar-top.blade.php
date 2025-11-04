@@ -50,7 +50,7 @@
 
         {{-- Botón Salir: POST si existe la ruta, si no, GET al fallback --}}
         @if(\Illuminate\Support\Facades\Route::has('logout'))
-          <form action="{{ $logoutUrl }}" method="POST">
+          <form action="{{ route('logout') }}" method="POST">
             @csrf
             <x-ui.button type="submit" variant="info" size="md">Salir</x-ui.button>
           </form>

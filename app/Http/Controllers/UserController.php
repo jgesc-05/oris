@@ -107,6 +107,15 @@ return back()->withErrors([
     public function viewStaffLogin(){
         return view('auth.login');
     }
+
+    //Logout
+    public function staffLogout(){
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        
+        return redirect('/login');
+    }
 }   
     
 

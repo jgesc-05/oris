@@ -4,16 +4,18 @@
 @section('title', 'Inicio — Admin')
 
 @php
-  // Perfil (mock por ahora)
-  $profile = ['name' => 'Pablo'];
+use Illuminate\Support\Facades\Auth;
+$profile = Auth::user();
+\Carbon\Carbon::setLocale('es');
+$currentDate = \Carbon\Carbon::now()->translatedFormat('l, j \d\e F');
 @endphp
 
 @section('admin-content')
 
   {{-- Encabezado --}}
   <div class="mb-4">
-    <h1 class="text-xl md:text-2xl font-bold text-neutral-900">Hola, {{ $profile['name'] }}</h1>
-    <p class="text-sm text-neutral-600">Jueves, 25 de septiembre</p>
+    <h1 class="text-xl md:text-2xl font-bold text-neutral-900">Hola, {{ $profile->nombres }}</h1>
+    <p class="text-sm text-neutral-600">{{ $currentDate }}</p>
   </div>
 
   {{-- Grid principal --}}
