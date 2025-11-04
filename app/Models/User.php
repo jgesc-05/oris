@@ -39,7 +39,7 @@ class User extends Authenticatable
 
     public function getAuthIdentifier()
     {
-        return $this->id_usuario;
+        return $this->getAttribute($this->getAuthIdentifierName());
     }
 
     // Hash automático de contraseñas
