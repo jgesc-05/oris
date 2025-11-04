@@ -1,7 +1,7 @@
 {{-- resources/views/components/partials/navbar-top.blade.php --}}
 @props([
   'items'   => [], // Menú superior
-  'profile' => ['name' => 'Usuario', 'avatar' => null],
+  'profile' => ['name' => Auth::user()->nombres, 'avatar' => null],
   'brand'   => 'VitalCare IPS',
   'logoHref'=> url('/'),
   'logoSrc' => asset('images/logo.png'),
@@ -50,7 +50,7 @@
 
         {{-- Botón Salir: POST si existe la ruta, si no, GET al fallback --}}
         @if(\Illuminate\Support\Facades\Route::has('logout'))
-          <form action="{{ $logoutUrl }}" method="POST">
+          <form action="{{ route('logout') }}" method="POST">
             @csrf
             <x-ui.button type="submit" variant="info" size="md">Salir</x-ui.button>
           </form>

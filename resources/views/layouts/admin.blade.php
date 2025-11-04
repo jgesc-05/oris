@@ -7,7 +7,7 @@
 @section('topbar')
   <x-partials.navbar-top
     :items="$adminNavItems"
-    :profile="['name' => $profile['name'] ?? 'Usuario']"
+    :profile="['name' => Auth::user()->nombres]"
     brand="VitalCare IPS"
   />
 @endsection

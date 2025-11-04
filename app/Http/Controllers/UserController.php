@@ -65,7 +65,7 @@ $credentials = $request->validate([
     'password' => ['required'],
 ]);
 
-// 2. Búsqueda manual por la columna de tu BD
+// 2. Búsqueda manual por la columna de la BD
 $user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
 
 // 3. Verificación de existencia y contraseña
@@ -75,6 +75,10 @@ if ($user && Hash::check($credentials['password'], $user->password)) {
     Auth::guard('web')->login($user);
     $request->session()->regenerate();
 
+    $user->update([
+        'ultimo_acceso' => now(),
+    ]);
+
     // 5. Redirección por rol (usando id_tipo_usuario)
     return $this->redirectToRole($user->id_tipo_usuario);
 }
@@ -83,6 +87,7 @@ if ($user && Hash::check($credentials['password'], $user->password)) {
 return back()->withErrors([
     'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
 ])->onlyInput('correo_electronico');
+
     }
 
     //Redireccionamiento a vista según el rol
@@ -107,6 +112,73 @@ return back()->withErrors([
     public function viewStaffLogin(){
         return view('auth.login');
     }
+
+    //Logout
+    public function staffLogout(){
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        
+        return redirect('/login');
+    }
+
+    //Obtención de usuarios empresariales dinámica, para mostrar en la tabla de usuarios (sección de admin)
+    public function index(Request $request)
+    {
+        // Empezamos la consulta base
+        $query = User::with('userType');
+    
+        // Filtro de búsqueda (nombre, apellidos, correo o documento)
+        if ($request->filled('q')) {
+            $q = $request->input('q');
+            $query->where(function ($subquery) use ($q) {
+                $subquery->where('nombres', 'like', "%{$q}%")
+                         ->orWhere('apellidos', 'like', "%{$q}%")
+                         ->orWhere('correo_electronico', 'like', "%{$q}%")
+                         ->orWhere('numero_documento', 'like', "%{$q}%");
+            });
+        }
+    
+        //  Filtro por rol
+        if ($request->filled('rol')) {
+            $query->whereHas('userType', function ($subquery) use ($request) {
+                $subquery->where('nombre', $request->rol);
+            });
+        }
+    
+        // Filtro por estado
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+    
+        // Filtro por fecha de registro
+        if ($request->filled('fecha')) {
+            $today = now();
+            switch ($request->fecha) {
+                case 'hoy':
+                    $query->whereDate('fecha_creacion_sistema', $today->toDateString());
+                    break;
+                case '7d':
+                    $query->whereBetween('fecha_creacion_sistema', [$today->copy()->subDays(7), $today]);
+                    break;
+                case '30d':
+                    $query->whereBetween('fecha_creacion_sistema', [$today->copy()->subDays(30), $today]);
+                    break;
+            }
+        }
+    
+        // Ejecutar la consulta final
+        $users = $query->orderBy('id_usuario', 'desc')
+                       ->paginate(10)
+                       ->withQueryString(); // mantiene los filtros al paginar
+    
+        // Devolvemos también los valores de los filtros al view
+        return view('admin.usuarios.index', [
+            'users' => $users,
+            'filters' => $request->only(['q', 'rol', 'estado', 'fecha']),
+        ]);
+    }
+    
 }   
     
 
