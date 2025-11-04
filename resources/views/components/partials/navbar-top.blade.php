@@ -1,7 +1,7 @@
 {{-- resources/views/components/partials/navbar-top.blade.php --}}
 @props([
   'items'   => [], // Menú superior
-  'profile' => ['name' => 'Usuario', 'avatar' => null],
+  'profile' => ['name' => Auth::user()->nombres, 'avatar' => null],
   'brand'   => 'VitalCare IPS',
   'logoHref'=> url('/'),
   'logoSrc' => asset('images/logo.png'),
