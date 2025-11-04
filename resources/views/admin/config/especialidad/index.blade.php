@@ -19,30 +19,27 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-neutral-200">
-          @foreach([
-            ['id'=>1,'nombre'=>'Medicina general','estado'=>'activo'],
-            ['id'=>2,'nombre'=>'Pediatría','estado'=>'activo'],
-            ['id'=>3,'nombre'=>'Cardiología','estado'=>'inactivo'],
-          ] as $e)
-            <tr>
-              <td class="px-4 py-3 text-sm">{{ $e['nombre'] }}</td>
-              <td class="px-4 py-3">
-                @if($e['estado']==='activo')
-                  <x-ui.badge variant="success">Activo</x-ui.badge>
-                @else
-                  <x-ui.badge variant="neutral">Inactivo</x-ui.badge>
-                @endif
-              </td>
-              <td class="px-4 py-3">
-                <div class="flex gap-2">
-                  <x-ui.button variant="ghost" size="sm" :href="route('admin.config.especialidad.edit',$e['id'])">Editar</x-ui.button>
-                  <x-ui.button variant="warning" size="sm">Desactivar</x-ui.button>
-                  <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
-                </div>
-              </td>
-            </tr>
-          @endforeach
-        </tbody>
+  @foreach($specialties as $e)
+    <tr>
+      <td class="px-4 py-3 text-sm">{{ $e->nombre }}</td>
+      <td class="px-4 py-3">
+        @if($e->estado === 'activo')
+          <x-ui.badge variant="success">Activo</x-ui.badge>
+        @else
+          <x-ui.badge variant="neutral">Inactivo</x-ui.badge>
+        @endif
+      </td>
+      <td class="px-4 py-3">
+        <div class="flex gap-2">
+          <x-ui.button variant="ghost" size="sm" :href="route('admin.config.especialidad.edit', $e->id_tipos_especialidad)">Editar</x-ui.button>
+          <x-ui.button variant="warning" size="sm">Desactivar</x-ui.button>
+          <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
+        </div>
+      </td>
+    </tr>
+  @endforeach
+</tbody>
+
       </table>
     </div>
   </x-ui.card>

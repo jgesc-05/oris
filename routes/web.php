@@ -3,6 +3,8 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\SpecialtyController;
+use App\Models\Specialty;
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -81,8 +83,10 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::view('/config', 'admin.config.index')->name('config');
 
     /** Configuración - Especialidades */
-    Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
+    Route::get('/config/especialidades', [SpecialtyController::class, 'index'])->name('config.especialidad.index');
+    //Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
     Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
+    Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
     Route::get('/config/especialidades/{id}/editar', function ($id) {
         return view('admin.config.especialidad.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.especialidad.edit');

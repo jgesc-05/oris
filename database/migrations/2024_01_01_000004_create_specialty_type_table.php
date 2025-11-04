@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('id_tipos_especialidad');
             $table->string('nombre', 100);
             $table->string('descripcion', 255);
+            $table->string('estado', 20)->default('activo');
         });
     }
 
