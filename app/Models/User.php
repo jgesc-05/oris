@@ -30,6 +30,7 @@ class User extends Authenticatable
         'fecha_creacion_sistema',
         'observaciones',
         'password',
+        'ultimo_acceso',
     ];
 
     public $timestamps = true;
@@ -38,6 +39,12 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    //Para lo del último acceso
+    protected $casts = [
+        'ultimo_acceso' => 'datetime',
+    ];
+    
 
     // Relaciones
     public function userType()

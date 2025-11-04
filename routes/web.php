@@ -50,7 +50,8 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
     // Usuarios
-    Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
+    Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
+    //Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
     //Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
     //Crear usuarios por admin
     Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');

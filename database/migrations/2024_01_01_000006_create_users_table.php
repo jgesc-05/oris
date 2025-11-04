@@ -27,6 +27,7 @@ return new class extends Migration
             $table->text('observaciones')->nullable();
             $table->string('password')->nullable();
             $table->timestamps();
+            $table->timestamps('ultimo_acceso')->nullable();
         
             $table->foreign('id_tipo_usuario')->references('id_tipo_usuario')->on('user_types');
             $table->foreign('id_tipo_documento')->references('id_tipo_documento')->on('document_type');
