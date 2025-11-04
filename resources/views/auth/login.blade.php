@@ -14,7 +14,7 @@
   <div class="max-w-xl mx-auto">
     <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Iniciar sesión</h1>
 
-    <form action="{{ $staffLoginPostUrl }}" method="POST" class="space-y-4">
+    <form action="{{ route('staff.login') }}" method="POST" class="space-y-4">
       @csrf
 
       {{-- Correo electrónico --}}
@@ -26,6 +26,7 @@
         required
         autocomplete="username"
         value="{{ old('correo_electronico') }}"
+        :error="$errors->first('correo_electronico')"
       />
 
       {{-- Contraseña --}}
@@ -36,6 +37,7 @@
         placeholder=""
         required
         autocomplete="current-password"
+        :error="$errors->first('password')"
       />
 
       <p class="text-sm text-neutral-600">
@@ -43,9 +45,11 @@
         <a href="#" class="underline">Política de privacidad</a>.
       </p>
 
-      <x-ui.button variant="primary" size="lg" block="true" class="rounded-full">
+      <x-ui.button variant="primary" size="lg" block="true" class="rounded-full" type="submit">
         Iniciar sesión
       </x-ui.button>
+
+      
     </form>
 
     {{-- (Opcional) Enlace a recuperación de contraseña --}}
