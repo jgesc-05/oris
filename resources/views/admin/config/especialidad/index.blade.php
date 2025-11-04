@@ -32,7 +32,16 @@
       <td class="px-4 py-3">
         <div class="flex gap-2">
           <x-ui.button variant="ghost" size="sm" :href="route('admin.config.especialidad.edit', $e->id_tipos_especialidad)">Editar</x-ui.button>
-          <x-ui.button variant="warning" size="sm">Desactivar</x-ui.button>
+          <form action="{{ route('admin.config.especialidad.toggle', $e->id_tipos_especialidad) }}" method="POST" style="display:inline;">
+    @csrf
+    <x-ui.button 
+        variant="{{ $e->estado === 'activo' ? 'warning' : 'success' }}" 
+        size="sm"
+        type="submit">
+        {{ $e->estado === 'activo' ? 'Desactivar' : 'Activar' }}
+    </x-ui.button>
+</form>
+
           <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
         </div>
       </td>

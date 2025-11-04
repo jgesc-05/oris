@@ -45,4 +45,16 @@ class SpecialtyController extends Controller
 
         return view('admin.config.especialidad.index', compact('specialties'));
     }
+
+    public function toggleState(int $id)
+    {
+        $specialty = Specialty::findOrFail($id);
+
+        // Cambiar entre activo/inactivo
+        $specialty->estado = ($specialty->estado === 'activo') ? 'inactivo' : 'activo';
+        $specialty->save();
+
+        return redirect()->route('admin.config.especialidad.index')
+                        ->with('success', 'Estado de la especialidad actualizado correctamente.');
+    }
 }
