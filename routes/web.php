@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\Paciente\PatientPortalController;
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -42,10 +43,12 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     // Verificación del enlace
     Route::get('verificar-login/{token}', [PatientAuthController::class, 'verifyLogin'])->name('login.verify');
 
-    // Dashboard del paciente (después de autenticarse)
-    Route::middleware('auth:paciente')->get('dashboard', function () {
-        return view('paciente.dashboard');
-    })->name('dashboard');
+    // Sección privada del paciente
+    Route::middleware('auth:paciente')->group(function () {
+        Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
+        Route::get('servicios', [PatientPortalController::class, 'servicios'])->name('servicios');
+        Route::get('medicos', [PatientPortalController::class, 'medicos'])->name('medicos');
+    });
 });
 
 // routes/web.php

@@ -127,7 +127,7 @@ class PatientAuthController extends Controller
         // Iniciar sesión en el guard de pacientes
         auth()->guard('paciente')->loginUsingId($patientId, false);
 
-        return redirect()->route('paciente.dashboard');
+        return redirect()->route('paciente.inicio');
     }
 
     private function getPatientUserTypeId(): ?int
