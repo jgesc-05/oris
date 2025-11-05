@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
 
@@ -107,11 +108,31 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
 
     /** Configuración - Servicios */
-    Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
-    Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
-    Route::get('/config/servicios/{id}/editar', function ($id) {
+
+    //Crear servicio
+    Route::get('/config/servicios/crear', [ServiceController::class, 'create'])->name('config.servicio.create');
+    Route::post('/config/servicios/crear', [ServiceController::class, 'store'])->name('config.servicio.store');
+
+    //Listar los servicios disponibles (tabla principal)
+    Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
+    
+    //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
+    //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
+
+    //Editar los servicios
+    Route::get('/config/servicios/{id}/editar', [ServiceController::class, 'edit'])->name('config.servicio.edit');
+    //Actualizar servicio
+    Route::put('/config/servicios/{id}/editar', [ServiceController::class, 'update'])->name('config.servicio.update');
+    
+    //Cambiar estado del servicio
+    Route::post('/config/servicios/{id}/toggle', [ServiceController::class, 'toggleState'])->name('config.servicio.toggle');
+    
+    //Eliminar los servicios
+    Route::delete('/config/servicios/{id}/eliminar', [ServiceController::class, 'destroy'])->name('config.servicio.destroy');
+
+    /*Route::get('/config/servicios/{id}/editar', function ($id) {
         return view('admin.config.servicio.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.servicio.edit');
+    })->whereNumber('id')->name('config.servicio.edit');*/
 
     /** Configuración - Médicos */
     Route::view('/config/medicos', 'admin.config.medico.index')->name('config.medico.index');

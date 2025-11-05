@@ -1,4 +1,3 @@
-{{-- resources/views/admin/config/servicio/create.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Crear servicio — Configuración')
 
@@ -8,25 +7,20 @@
     subtitle="Registra un nuevo servicio dentro de una especialidad existente. Define su duración y precio base."
     class="max-w-4xl"
   >
-    @php
-      $storeUrl = \Illuminate\Support\Facades\Route::has('admin.config.servicio.store')
-        ? route('admin.config.servicio.store')
-        : url('/admin/config/servicio');
-    @endphp
-
-    <form method="POST" action="{{ $storeUrl }}" class="mt-2">
+    <form method="POST" action="{{ route('admin.config.servicio.store') }}" class="mt-2">
       @csrf
 
       {{-- Layout: 2 columnas --}}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de especialidad --}}
         <div>
-          <x-form.select name="especialidad" label="Tipo de especialidad *">
+          <x-form.select name="id_tipos_especialidad" label="Tipo de especialidad" required>
             <option value="">-- Seleccionar --</option>
-            <option value="odontologia-general">Odontología general</option>
-            <option value="ortodoncia">Ortodoncia</option>
-            <option value="endodoncia">Endodoncia</option>
-            <option value="cirugia-oral">Cirugía oral</option>
+            @foreach ($specialties as $esp)
+              <option value="{{ $esp->id_tipos_especialidad }}">
+                {{ $esp->nombre }}
+              </option>
+            @endforeach
           </x-form.select>
           <p class="text-xs text-neutral-500 mt-1">
             Relaciona el servicio con una especialidad existente.
@@ -37,8 +31,8 @@
         <div>
           <x-form.input
             name="nombre"
-            label="Nombre *"
-            placeholder="Limpieza dental"
+            label="Nombre"
+            placeholder=""
             required
           />
           <p class="text-xs text-neutral-500 mt-1">
@@ -61,17 +55,18 @@
             name="precio"
             label="Precio base"
             placeholder="$120.000"
-            type="text"
+            type="number"
+            step="0.01"
           />
         </div>
 
-        {{-- Descripción (ocupa ancho completo) --}}
+        {{-- Descripción --}}
         <div class="md:col-span-2">
           <x-form.textarea
             name="descripcion"
             label="Descripción"
             rows="4"
-            placeholder="Procedimiento que elimina la placa y el sarro acumulados, ayudando a prevenir caries y enfermedades de las encías."
+            placeholder=""
           />
         </div>
       </div>

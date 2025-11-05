@@ -1,49 +1,38 @@
 @extends('layouts.admin')
 @section('title', 'Editar servicio — Configuración')
 
-@php
-  $servicio = $servicio ?? [
-    'id' => $id ?? 1,
-    'especialidad_id' => 1,
-    'especialidad_nombre' => 'Odontología general',
-    'nombre' => 'Limpieza dental',
-    'duracion' => '40 minutos',
-    'precio' => '120000',
-    'estado' => 'activo',
-    'descripcion' => 'Limpieza para remover placa y sarro.',
-  ];
-
-  $updateUrl = \Illuminate\Support\Facades\Route::has('admin.config.servicio.update')
-    ? route('admin.config.servicio.update', $servicio['id'])
-    : url("/admin/config/servicios/{$servicio['id']}");
-@endphp
-
 @section('admin-content')
   <x-ui.card title="Editar servicio" subtitle="Modifica los datos del servicio." class="max-w-5xl">
-    <form method="POST" action="{{ $updateUrl }}" class="mt-2 space-y-4">
+    <form method="POST" action="{{ route('admin.config.servicio.update', $service->id_servicio) }}" class="mt-2 space-y-4">
       @csrf
       @method('PUT')
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <x-form.select name="especialidad_id" label="Especialidad">
-          {{-- Opciones mock: reemplazar por loop real cuando haya backend --}}
-          <option value="1" {{ $servicio['especialidad_id']==1?'selected':'' }}>Odontología general</option>
-          <option value="2" {{ $servicio['especialidad_id']==2?'selected':'' }}>Ortodoncia</option>
+        {{-- Especialidad --}}
+        <x-form.select name="id_tipos_especialidad" label="Especialidad" required>
+          @foreach($specialties as $specialty)
+            <option value="{{ $specialty->id_tipos_especialidad }}" 
+                    {{ $service->id_tipos_especialidad == $specialty->id_tipos_especialidad ? 'selected' : '' }}>
+              {{ $specialty->nombre }}
+            </option>
+          @endforeach
         </x-form.select>
 
-        <x-form.input name="nombre" label="Nombre del servicio" :value="$servicio['nombre']" required />
+        <x-form.input name="nombre" label="Nombre del servicio" :value="$service->nombre" required />
 
-        <x-form.input name="duracion" label="Duración aproximada" :value="$servicio['duracion']" />
-        <x-form.input name="precio"   label="Precio base (COP)"    :value="$servicio['precio']" />
+        {{-- Duración y precio --}}
+        <x-form.input name="duracion" label="Duración aproximada" :value="$service->duracion" />
+        <x-form.input name="precio_base" label="Precio base (COP)" :value="$service->precio_base" />
 
+        {{-- Estado --}}
         <x-form.select name="estado" label="Estado">
-          <option value="activo"   {{ $servicio['estado']==='activo'?'selected':'' }}>Activo</option>
-          <option value="inactivo" {{ $servicio['estado']==='inactivo'?'selected':'' }}>Inactivo</option>
+          <option value="activo" {{ $service->estado === 'activo' ? 'selected' : '' }}>Activo</option>
+          <option value="inactivo" {{ $service->estado === 'inactivo' ? 'selected' : '' }}>Inactivo</option>
         </x-form.select>
 
         <div class="md:col-span-2">
           <x-form.textarea name="descripcion" label="Descripción" rows="5">
-            {{ $servicio['descripcion'] }}
+            {{ $service->descripcion }}
           </x-form.textarea>
         </div>
       </div>
