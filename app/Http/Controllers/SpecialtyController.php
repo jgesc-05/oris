@@ -61,4 +61,20 @@ class SpecialtyController extends Controller
     public function showCreate(){
         return view('admin.config.especialidad.create');
     }
+
+    public function destroy(int $id)
+    {
+
+        $specialty = Specialty::findOrFail($id);
+        // 1. Ejecutar la eliminación
+        $specialty->delete();
+
+        // 2. Redireccionar con un mensaje de éxito
+        return redirect()
+               ->route('admin.config.especialidad.index') // Redirige al listado
+               ->with([
+                'title' => 'Especialidad Eliminada con Éxito', // <-- Nuevo Título
+                'success' => "La especialidad '{$specialty->nombre}' ha sido eliminada correctamente." // <-- Mensaje
+            ]);
+    }
 }

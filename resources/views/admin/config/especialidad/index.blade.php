@@ -4,7 +4,7 @@
 
 
 @if (session('success'))
-    <x-ui.alert variant="success" title="Especialidad creada con éxito" class="mb-4">
+    <x-ui.alert variant="success" title="{{ session('title') ?? 'Operación exitosa' }}" class="mb-4">
       {{ session('success') }}
     </x-ui.alert>
   @endif
@@ -49,7 +49,18 @@
     </x-ui.button>
 </form>
 
-          <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
+<form action="{{ route('admin.config.especialidad.destroy', $e->id_tipos_especialidad) }}" method="POST"
+      onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta especialidad? Esta acción es irreversible.');"
+      style="display: inline;"> {{-- Para que el botón no ocupe toda la línea --}}
+
+    @csrf
+    @method('DELETE')
+
+    {{-- Tu botón de eliminar --}}
+    <x-ui.button type="submit" variant="ghost" size="sm">
+        Eliminar
+    </x-ui.button>
+</form>
         </div>
       </td>
     </tr>

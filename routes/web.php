@@ -92,7 +92,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
     //Desactivar o activar la especialidad (inactiva o activa)
     Route::post('/config/especialidades/{id}/toggle', [SpecialtyController::class, 'toggleState'])->name('config.especialidad.toggle');
-    
+
+    //Eliminar especialidad
+    Route::delete('/config/especialidades/{id}', [SpecialtyController::class, 'destroy'])->name('config.especialidad.destroy');   
 
 
     Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
