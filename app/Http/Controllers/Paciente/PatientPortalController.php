@@ -101,7 +101,7 @@ class PatientPortalController extends Controller
         return back()->with('status', 'Tu solicitud de cita fue recibida. Pronto te contactaremos para confirmar.');
     }
 
-    public function citasReprogramarIndex()
+    public function reprogramarIndex()
     {
         $patient = Auth::guard('paciente')->user();
 
@@ -128,14 +128,88 @@ class PatientPortalController extends Controller
         return view('paciente.citas.reprogramar.index', compact('patient', 'appointments'));
     }
 
-    public function citasReprogramarSubmit(Request $request)
+    public function reprogramarSelect(Request $request)
     {
         $data = $request->validate([
-            'cita_id' => ['required'],
+            'cita_id' => ['required', 'integer'],
         ]);
 
-        // Aquí puedes redirigir a la pantalla de reprogramación (selección nueva fecha/hora)
-        // Por ahora, solo confirmamos la selección.
-        return back()->with('status', 'Seleccionaste la cita #'.$data['cita_id'].' para reprogramar.');
+        return redirect()->route('paciente.citas.reprogramar.edit', $data['cita_id']);
     }
+
+    public function reprogramarEdit(int $id)
+    {
+        $patient = Auth::guard('paciente')->user();
+
+        // Mock temporal de la cita (reemplaza luego con consulta a DB)
+        $cita = [
+            'id'          => $id,
+            'especialidad'=> 'Endodoncia',
+            'servicio'    => 'Tratamiento de conducto',
+            'medico'      => 'Luisa Mantilla',
+            'fecha'       => '2025-10-08', // formato ISO (para input date)
+            'hora'        => '10:00',
+        ];
+
+        // Catálogos de selección (mock)
+        $especialidades = ['Endodoncia', 'Ortodoncia', 'Odontología general'];
+        $servicios      = ['Tratamiento de conducto', 'Control de ortodoncia', 'Limpieza dental'];
+        $medicos        = ['Luisa Mantilla', 'Antonio Londoño', 'Sandra Rodríguez'];
+        $horas          = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00'];
+
+        return view('paciente.citas.reprogramar.edit', compact(
+            'patient', 'cita', 'especialidades', 'servicios', 'medicos', 'horas'
+        ));
+    }
+
+    public function reprogramarUpdate(Request $request, int $id)
+    {
+        $data = $request->validate([
+            'especialidad' => ['required', 'string', 'max:100'],
+            'servicio'     => ['required', 'string', 'max:150'],
+            'medico'       => ['required', 'string', 'max:150'],
+            'fecha'        => ['required', 'date'],
+            'hora'         => ['required', 'date_format:H:i'],
+        ]);
+
+        // TODO: Guardar cambios de la cita en la BD.
+        return redirect()
+            ->route('paciente.citas.index')
+            ->with('status', 'Tu cita fue reprogramada correctamente.');
+    }
+
+    public function citasCancelarIndex()
+    {
+        $patient = \Auth::guard('paciente')->user();
+
+        // Mock: puedes reutilizar el mismo arreglo que usas en reprogramar
+        $appointments = [
+            ['id'=>1, 'fecha'=>'2025-11-10', 'hora'=>'09:00', 'doctor'=>'Dra. Laura Hernández', 'servicio'=>'Control', 'estado'=>'Confirmada'],
+            ['id'=>2, 'fecha'=>'2025-11-15', 'hora'=>'11:30', 'doctor'=>'Dr. Andrés Salazar',   'servicio'=>'Ortodoncia', 'estado'=>'Confirmada'],
+        ];
+
+        return view('paciente.citas.cancelar.index', compact('patient','appointments'));
+    }
+
+    public function citasCancelarSubmit(\Illuminate\Http\Request $request)
+    {
+        $request->validate(['cita_id' => 'required']);
+        // TODO: cancelar la cita seleccionada
+        return back()->with('status', 'Tu cita ha sido cancelada.');
+    }
+
+    public function citasIndex()
+    {
+        $patient = \Auth::guard('paciente')->user();
+
+        // Mock de citas (reemplaza por query real cuando tengas DB)
+        $appointments = [
+            ['fecha' => '20 de octubre', 'hora' => '10:00 AM', 'doctor' => 'Antonio Londoño',  'servicio' => 'Limpieza dental',        'estado' => 'Programada'],
+            ['fecha' => '30 de octubre', 'hora' => '2:00 PM',  'doctor' => 'Sandra Rodríguez', 'servicio' => 'Control de ortodoncia', 'estado' => 'Programada'],
+        ];
+
+        return view('paciente.citas.index', compact('patient','appointments'));
+    }
+
+
 }

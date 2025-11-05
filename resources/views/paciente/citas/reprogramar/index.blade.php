@@ -41,11 +41,14 @@
         </table>
       </div>
 
-      <div class="p-4">
+        <form method="POST" action="{{ route('paciente.citas.reprogramar.submit') }}">
+        @csrf
+        <!-- radios ... -->
         <x-ui.button variant="primary" size="lg" block class="rounded-full">
-          Reprogramar cita
+            Reprogramar cita
         </x-ui.button>
-      </div>
+        </form>
+
     </form>
   </x-ui.card>
 @endsection

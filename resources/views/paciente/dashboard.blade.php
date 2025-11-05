@@ -43,7 +43,9 @@
 
       <x-slot name="footer">
         <div class="flex flex-wrap gap-2">
-          <x-ui.button variant="secondary" size="sm" href="#">Reprogramar</x-ui.button>
+            <x-ui.button variant="secondary" size="sm" href="{{ route('paciente.citas.reprogramar.index') }}">
+            Reprogramar
+            </x-ui.button>
           <x-ui.button variant="warning" size="sm" href="#">Cancelar</x-ui.button>
         </div>
       </x-slot>
@@ -68,12 +70,16 @@
     </x-ui.card>
     </a>
 
+    <a href="{{ route('paciente.citas.cancelar.index') }}"
+    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
     <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-      <div class="py-4">
+        <div class="py-4">
         <div class="text-2xl">⛔</div>
         <div class="mt-2 text-sm font-medium">Cancelar cita</div>
-      </div>
+        </div>
     </x-ui.card>
+    </a>
+
 
     <a href="{{ route('paciente.citas.reprogramar.index') }}"
     class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
@@ -86,12 +92,16 @@
     </a>
 
 
+    <a href="{{ route('paciente.citas.index') }}"
+    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
     <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-      <div class="py-4">
+        <div class="py-4">
         <div class="text-2xl">👤</div>
         <div class="mt-2 text-sm font-medium">Mis citas</div>
-      </div>
+        </div>
     </x-ui.card>
+    </a>
+
   </div>
 
   {{-- Historial de citas --}}

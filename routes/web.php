@@ -51,8 +51,13 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
         Route::prefix('citas')->name('citas.')->group(function () {
             Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
             Route::post('/', [PatientPortalController::class, 'citasStore'])->name('store');
-            Route::get('reprogramar',  [PatientPortalController::class, 'citasReprogramarIndex'])->name('reprogramar.index');
-            Route::post('reprogramar', [PatientPortalController::class, 'citasReprogramarSubmit'])->name('reprogramar.submit');
+            Route::get('reprogramar', [PatientPortalController::class, 'reprogramarIndex'])->name('reprogramar.index');
+            Route::post('reprogramar/seleccionar', [PatientPortalController::class, 'reprogramarSelect'])->name('reprogramar.submit');
+            Route::get('reprogramar/{id}/editar', [PatientPortalController::class, 'reprogramarEdit'])->whereNumber('id')->name('reprogramar.edit');
+            Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
+            Route::get('cancelar',         [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
+            Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');
+            Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
         });
     });
 });
