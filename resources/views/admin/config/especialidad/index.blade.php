@@ -2,6 +2,13 @@
 @extends('layouts.admin')
 @section('title','Especialidades — Configuración')
 
+
+@if (session('success'))
+    <x-ui.alert variant="success" title="Especialidad creada con éxito" class="mb-4">
+      {{ session('success') }}
+    </x-ui.alert>
+  @endif
+
 @section('admin-content')
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-xl md:text-2xl font-bold">Especialidades</h1>

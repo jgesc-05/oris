@@ -57,4 +57,8 @@ class SpecialtyController extends Controller
         return redirect()->route('admin.config.especialidad.index')
                         ->with('success', 'Estado de la especialidad actualizado correctamente.');
     }
+
+    public function showCreate(){
+        return view('admin.config.especialidad.create');
+    }
 }

@@ -5,7 +5,7 @@
 @section('admin-content')
   <x-ui.card
     title="Crear especialidad"
-    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Odontología general, Ortodoncia…)."
+    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Pediatría, Cardiología…)."
     class="max-w-4xl"
   >
     @php
@@ -13,6 +13,7 @@
         ? route('admin.config.especialidad.store')
         : url('/admin/config/especialidad'); // fallback temporal
     @endphp
+
 
     @if ($errors->any())
   <x-ui.alert variant="warning" title="Ocurrieron algunos errores:">

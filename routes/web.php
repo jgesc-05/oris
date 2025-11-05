@@ -85,7 +85,10 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     /** Configuración - Especialidades */
     Route::get('/config/especialidades', [SpecialtyController::class, 'index'])->name('config.especialidad.index');
     //Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
-    Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
+    //Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
+
+    //Crear especialidad (con alertas)
+    Route::get('/config/especialidades/crear', [SpecialtyController::class, 'showCreate'])->name('config.especialidad.create');
 
     //Desactivar o activar la especialidad (inactiva o activa)
     Route::post('/config/especialidades/{id}/toggle', [SpecialtyController::class, 'toggleState'])->name('config.especialidad.toggle');
