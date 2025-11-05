@@ -56,7 +56,7 @@
     @csrf
     @method('DELETE')
 
-    {{-- Tu botón de eliminar --}}
+    {{-- botón de eliminar --}}
     <x-ui.button type="submit" variant="ghost" size="sm">
         Eliminar
     </x-ui.button>
