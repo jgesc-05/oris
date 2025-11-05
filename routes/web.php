@@ -47,6 +47,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::middleware('auth:paciente')->group(function () {
         Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
         Route::get('servicios', [PatientPortalController::class, 'servicios'])->name('servicios');
+        Route::get('servicios/{slug}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
         Route::get('medicos', [PatientPortalController::class, 'medicos'])->name('medicos');
         Route::prefix('citas')->name('citas.')->group(function () {
             Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
@@ -117,4 +118,3 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
         return view('admin.config.medico.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.medico.edit');
     });
-

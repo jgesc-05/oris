@@ -5,7 +5,7 @@
   $servicio = $servicio ?? [
     'id' => $id ?? 1,
     'especialidad_id' => 1,
-    'especialidad_nombre' => 'Odontología general',
+    'especialidad_nombre' => 'Medicina general',
     'nombre' => 'Limpieza dental',
     'duracion' => '40 minutos',
     'precio' => '120000',
@@ -27,7 +27,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <x-form.select name="especialidad_id" label="Especialidad">
           {{-- Opciones mock: reemplazar por loop real cuando haya backend --}}
-          <option value="1" {{ $servicio['especialidad_id']==1?'selected':'' }}>Odontología general</option>
+          <option value="1" {{ $servicio['especialidad_id']==1?'selected':'' }}>Medicina general</option>
           <option value="2" {{ $servicio['especialidad_id']==2?'selected':'' }}>Ortodoncia</option>
         </x-form.select>
 

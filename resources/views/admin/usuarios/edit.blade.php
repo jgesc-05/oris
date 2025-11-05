@@ -30,7 +30,7 @@
         {{-- Rol --}}
         <x-form.select name="rol" label="Rol">
           <option value="secretaria" selected>Secretaria</option>
-          <option value="odontologo">Odontólogo</option>
+          <option value="medico">Médico</option>
           <option value="paciente">Paciente</option>
           <option value="administrador">Administrador</option>
         </x-form.select>

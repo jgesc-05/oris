@@ -42,7 +42,7 @@
         </x-form.select>
 
         {{-- Médico --}}
-        <x-form.select name="medico" label="Odontólogo" class="md:col-span-2" required>
+        <x-form.select name="medico" label="Médico" class="md:col-span-2" required>
           @foreach($medicos as $m)
             <option value="{{ $m }}" @selected(old('medico',$cita['medico']) === $m)>{{ $m }}</option>
           @endforeach

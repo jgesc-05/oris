@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PatientPortalController extends Controller
 {
@@ -30,26 +31,50 @@ class PatientPortalController extends Controller
     {
         $patient = Auth::guard('paciente')->user();
 
-        $services = [
-            [
-                'title' => 'Odontología general',
-                'description' => 'Controles preventivos, limpiezas y diagnóstico integral.',
-            ],
-            [
-                'title' => 'Ortodoncia',
-                'description' => 'Tratamientos para mejorar tu mordida y estética dental.',
-            ],
-            [
-                'title' => 'Rehabilitación oral',
-                'description' => 'Soluciones integrales para recuperar la salud de tu sonrisa.',
-            ],
+        $especialidades = [
+            ['nombre' => 'Medicina general',       'descripcion' => 'Atención primaria y chequeos preventivos.',     'icono' => '🩺'],
+            ['nombre' => 'Pediatría',              'descripcion' => 'Salud y desarrollo infantil.',                 'icono' => '👶'],
+            ['nombre' => 'Cardiología',            'descripcion' => 'Enfermedades del corazón y circulación.',      'icono' => '❤️'],
+            ['nombre' => 'Dermatología',           'descripcion' => 'Cuidado de la piel, cabello y uñas.',           'icono' => '🧴'],
+            ['nombre' => 'Ginecología',            'descripcion' => 'Salud reproductiva y atención femenina.',       'icono' => '🌸'],
+            ['nombre' => 'Neurología',             'descripcion' => 'Trastornos del sistema nervioso.',              'icono' => '🧠'],
+            ['nombre' => 'Oftalmología',           'descripcion' => 'Cuidado de los ojos y la visión.',              'icono' => '👁️'],
+            ['nombre' => 'Traumatología',          'descripcion' => 'Lesiones musculares y óseas.',                  'icono' => '🦵'],
+            ['nombre' => 'Psiquiatría',            'descripcion' => 'Salud mental y emocional.',                     'icono' => '🧘'],
+            ['nombre' => 'Endocrinología',         'descripcion' => 'Trastornos hormonales y metabólicos.',          'icono' => '🧬'],
+            ['nombre' => 'Rehabilitación física',  'descripcion' => 'Recuperación funcional y motora.',              'icono' => '🏃‍♂️'],
         ];
+
+        $especialidades = collect($especialidades)->map(function (array $especialidad) {
+            $especialidad['slug'] = Str::slug($especialidad['nombre']);
+            return $especialidad;
+        })->toArray();
 
         return view('paciente.servicios.index', [
             'patient' => $patient,
-            'services' => $services,
+            'especialidades' => $especialidades,
         ]);
     }
+
+    public function serviciosEspecialidad(string $slug)
+    {
+        $nombre = Str::title(str_replace('-', ' ', $slug));
+
+        $especialidad = [
+            'nombre' => $nombre,
+            'slug'   => $slug,
+        ];
+
+        $servicios = [
+            ['nombre' => 'Consulta general', 'descripcion' => 'Evaluación médica completa y diagnóstico inicial.', 'icono' => '🩺'],
+            ['nombre' => 'Chequeo preventivo', 'descripcion' => 'Revisión periódica para detectar factores de riesgo.', 'icono' => '📋'],
+            ['nombre' => 'Atención de urgencias leves', 'descripcion' => 'Atención rápida a emergencias menores.', 'icono' => '🚑'],
+            ['nombre' => 'Exámenes especializados', 'descripcion' => 'Pruebas médicas según indicaciones clínicas.', 'icono' => '🧪'],
+        ];
+
+        return view('paciente.servicios.especialidad', compact('especialidad', 'servicios'));
+    }
+
 
     public function medicos()
     {
@@ -58,7 +83,7 @@ class PatientPortalController extends Controller
         $doctors = [
             [
                 'name' => 'Dra. Laura Hernández',
-                'specialty' => 'Odontología general',
+                'specialty' => 'Medicina general',
                 'availability' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
             ],
             [
@@ -161,7 +186,7 @@ class PatientPortalController extends Controller
         ];
 
         // Catálogos de selección (mock)
-        $especialidades = ['Endodoncia', 'Ortodoncia', 'Odontología general'];
+        $especialidades = ['Endodoncia', 'Ortodoncia', 'Medicina general'];
         $servicios      = ['Tratamiento de conducto', 'Control de ortodoncia', 'Limpieza dental'];
         $medicos        = ['Luisa Mantilla', 'Antonio Londoño', 'Sandra Rodríguez'];
         $horas          = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00'];
@@ -293,6 +318,8 @@ class PatientPortalController extends Controller
 
         return view('paciente.citas.index', compact('patient','appointments'));
     }
+
+
 
 
 }

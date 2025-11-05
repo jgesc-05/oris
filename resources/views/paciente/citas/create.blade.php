@@ -29,7 +29,7 @@
       <option value="">-- Seleccionar --</option>
       <option>Endodoncia</option>
       <option>Ortodoncia</option>
-      <option>Odontología general</option>
+      <option>Medicina general</option>
       <option>Periodoncia</option>
     </x-form.select>
 
@@ -49,7 +49,7 @@
     <x-form.input name="hora" label="Hora" type="time" required />
 
     {{-- Profesional --}}
-    <x-form.select name="medico" label="Odontólogo" required class="md:col-span-2">
+    <x-form.select name="medico" label="Médico" required class="md:col-span-2">
       <option value="">-- Seleccionar --</option>
       <option>Luisa Mantilla</option>
       <option>Antonio Londoño</option>

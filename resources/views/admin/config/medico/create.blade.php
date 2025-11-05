@@ -1,15 +1,15 @@
 @extends('layouts.admin')
-@section('title', 'Publicar odontólogo — Configuración')
+@section('title', 'Publicar médico — Configuración')
 
 @section('admin-content')
-  <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Publicar odontólogo</h1>
+  <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Publicar médico</h1>
 
   <x-ui.card>
     @php
-      // Cuando tengas backend, crea la ruta admin.config.publicar-odontologo.store
-      $storeUrl = \Illuminate\Support\Facades\Route::has('admin.config.publicar-odontologo.store')
-        ? route('admin.config.publicar-odontologo.store')
-        : url('/admin/config/publicar-odontologo'); // fallback temporal
+      // Cuando tengas backend, crea la ruta admin.config.publicar-medico.store
+      $storeUrl = \Illuminate\Support\Facades\Route::has('admin.config.publicar-medico.store')
+        ? route('admin.config.publicar-medico.store')
+        : url('/admin/config/publicar-medico'); // fallback temporal
     @endphp
 
     <form method="POST" action="{{ $storeUrl }}" class="space-y-5">
@@ -29,7 +29,7 @@
         {{-- Tipo de especialidad --}}
         <x-form.select name="tipo_especialidad" label="Tipo de especialidad" required>
           <option value="" disabled selected>-- Seleccionar --</option>
-          <option>Odontología general</option>
+          <option>Medicina general</option>
           <option>Endodoncia</option>
           <option>Ortodoncia</option>
           <option>Periodoncia</option>
@@ -41,7 +41,7 @@
         <x-form.input
           name="formacion"
           label="Formación universitaria"
-          placeholder="Odontología general egresada de la UNAB"
+          placeholder="Medicina general egresada de la UNAB"
           required
         />
 

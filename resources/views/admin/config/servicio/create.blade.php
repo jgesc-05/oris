@@ -23,7 +23,7 @@
         <div>
           <x-form.select name="especialidad" label="Tipo de especialidad *">
             <option value="">-- Seleccionar --</option>
-            <option value="odontologia-general">Odontología general</option>
+            <option value="medicina-general">Medicina general</option>
             <option value="ortodoncia">Ortodoncia</option>
             <option value="endodoncia">Endodoncia</option>
             <option value="cirugia-oral">Cirugía oral</option>

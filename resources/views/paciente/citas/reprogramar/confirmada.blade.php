@@ -13,7 +13,7 @@
   <div class="border rounded-md bg-neutral-100 p-4 mb-3">
     <h2 class="font-semibold mb-2">Resumen de la cita</h2>
     <p>Nueva fecha y hora: {{ $appointment['fecha_hora'] ?? '—' }}</p>
-    <p>Odontólogo: {{ $appointment['doctor'] ?? '—' }}</p>
+    <p>Médico: {{ $appointment['doctor'] ?? '—' }}</p>
     <p>Servicio: {{ $appointment['servicio'] ?? '—' }}</p>
     <p>Referencia: <span class="font-mono">{{ $appointment['referencia'] ?? '—' }}</span></p>
   </div>

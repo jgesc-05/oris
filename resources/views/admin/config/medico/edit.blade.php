@@ -31,7 +31,7 @@
         <x-form.select name="especialidad_id" label="Especialidad">
           <option value="1" {{ $medico['especialidad_id']==1?'selected':'' }}>Medicina general</option>
           <option value="2" {{ $medico['especialidad_id']==2?'selected':'' }}>Pediatría</option>
-          <option value="3" {{ $medico['especialidad_id']==3?'selected':'' }}>Odontología general</option>
+          <option value="3" {{ $medico['especialidad_id']==3?'selected':'' }}>Medicina interna</option>
         </x-form.select>
 
         <x-form.select name="estado" label="Estado">

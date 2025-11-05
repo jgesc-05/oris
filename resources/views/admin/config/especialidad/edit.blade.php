@@ -5,7 +5,7 @@
   // Datos mock mientras no hay backend
   $especialidad = $especialidad ?? [
     'id' => $id ?? 1,
-    'nombre' => 'Odontología general',
+    'nombre' => 'Medicina general',
     'estado' => 'activo',
     'descripcion' => 'Prevención, diagnóstico y tratamiento básico.',
   ];

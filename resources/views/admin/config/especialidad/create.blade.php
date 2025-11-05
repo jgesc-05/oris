@@ -5,7 +5,7 @@
 @section('admin-content')
   <x-ui.card
     title="Crear especialidad"
-    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Odontología general, Ortodoncia…)."
+    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Medicina general, Ortodoncia…)."
     class="max-w-4xl"
   >
     @php
@@ -22,7 +22,7 @@
           <x-form.input
             name="nombre"
             label="Nombre"
-            placeholder="Odontología general"
+            placeholder="Medicina general"
             required
             autocomplete="off"
           />

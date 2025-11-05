@@ -1,4 +1,3 @@
-{{-- resources/views/paciente/home.blade.php (o el que uses) --}}
 @extends('layouts.paciente')
 
 @section('title', 'Inicio — Paciente')
@@ -6,134 +5,110 @@
 @section('patient-content')
 @php
   $firstName   = $patient?->nombres ?? 'Javier';
-  $currentDate = \Carbon\Carbon::now()->locale('es')->translatedFormat('l, j \d\e F');
+  $currentDate = \Carbon\Carbon::now()->locale('es')->translatedFormat('l, j \\d\\e F');
 
-  // Si tu controlador ya pasa la próxima cita, usa esa; si no, este mock no rompe nada.
   $cita = $nextAppointment ?? [
     'dia'      => 'Lunes, 30 de septiembre',
     'hora'     => '9:00 AM',
     'doctor'   => 'Dra. Sandra Rodríguez',
-    'detalle'  => 'Control Ortodoncia',
-    'existe'   => true, // si no hay cita, pon false desde el controlador
+    'detalle'  => 'Control de rutina',
+    'existe'   => true,
   ];
 @endphp
 
-<div class="space-y-6">
+<div class="space-y-8">
 
   {{-- Encabezado --}}
-  <header>
-    <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">Hola, {{ $firstName }}</h1>
-    <p class="text-sm md:text-base text-neutral-600 mt-1">Tu próxima cita está programada</p>
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">Hola, {{ $firstName }}</h1>
+      <p class="text-sm md:text-base text-neutral-600 mt-1">Hoy es {{ $currentDate }}</p>
+    </div>
   </header>
 
-  {{-- Próxima cita (banner) --}}
-  <x-ui.card class="bg-white border-neutral-300">
-    @if(!empty($cita['existe']))
-      <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+  {{-- Próxima cita destacada --}}
+  @if(!empty($cita['existe']))
+    <x-ui.card class="relative bg-rose-50 border border-rose-200 p-6 overflow-hidden">
+      <div class="absolute right-4 top-4 text-5xl opacity-20 select-none">🩺</div>
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
         <div>
-          <div class="text-sm text-neutral-600">{{ $cita['dia'] }}</div>
-          <div class="text-sm text-neutral-600">{{ $cita['hora'] }}</div>
+          <h2 class="text-lg font-semibold text-rose-900">Tu próxima cita</h2>
+          <p class="text-sm text-neutral-700 mt-1">
+            {{ $cita['dia'] }} — {{ $cita['hora'] }}<br>
+            <span class="font-medium text-neutral-900">{{ $cita['doctor'] }}</span><br>
+            {{ $cita['detalle'] }}
+          </p>
         </div>
 
-        <div class="text-right">
-          <div class="text-sm font-medium text-neutral-900">{{ $cita['doctor'] }}</div>
-          <div class="text-xs text-neutral-600">{{ $cita['detalle'] }}</div>
+        <div class="flex gap-2 mt-2 md:mt-0">
+          <x-ui.button variant="secondary" size="sm" href="{{ route('paciente.citas.reprogramar.index') }}">Reprogramar</x-ui.button>
+          <x-ui.button variant="warning" size="sm" href="{{ route('paciente.citas.cancelar.index') }}">Cancelar</x-ui.button>
         </div>
       </div>
-
-      <x-slot name="footer">
-        <div class="flex flex-wrap gap-2">
-            <x-ui.button variant="secondary" size="sm" href="{{ route('paciente.citas.reprogramar.index') }}">
-            Reprogramar
-            </x-ui.button>
-          <x-ui.button variant="warning" size="sm" href="#">Cancelar</x-ui.button>
-        </div>
-      </x-slot>
-    @else
-      <div class="text-neutral-700">Sin citas programadas.</div>
-      <x-slot name="footer">
+    </x-ui.card>
+  @else
+    <x-ui.card class="bg-neutral-50 text-center py-6 border border-neutral-200">
+      <p class="text-neutral-700">No tienes citas programadas.</p>
+      <div class="mt-3">
         <x-ui.button variant="primary" size="sm" href="{{ route('paciente.citas.create') }}">Agendar cita</x-ui.button>
-      </x-slot>
-    @endif
-  </x-ui.card>
-
-  {{-- Acciones rápidas (4 tarjetas) --}}
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-    <a href="{{ route('paciente.citas.create') }}"
-    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
-    <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-        <div class="py-4">
-        <div class="text-2xl">🗓️</div>
-        <div class="mt-2 text-sm font-medium">Agendar cita</div>
-        </div>
+      </div>
     </x-ui.card>
-    </a>
+  @endif
 
-    <a href="{{ route('paciente.citas.cancelar.index') }}"
-    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
-    <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-        <div class="py-4">
-        <div class="text-2xl">⛔</div>
-        <div class="mt-2 text-sm font-medium">Cancelar cita</div>
-        </div>
-    </x-ui.card>
-    </a>
+  {{-- Acciones rápidas --}}
+  <div>
+    <h2 class="text-base font-semibold text-neutral-900 mb-3">Accesos rápidos</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      @php
+        $acciones = [
+          ['icono' => '🗓️', 'texto' => 'Agendar cita', 'ruta' => route('paciente.citas.create')],
+          ['icono' => '⛔', 'texto' => 'Cancelar cita', 'ruta' => route('paciente.citas.cancelar.index')],
+          ['icono' => '📝', 'texto' => 'Modificar cita', 'ruta' => route('paciente.citas.reprogramar.index')],
+          ['icono' => '📋', 'texto' => 'Mis citas', 'ruta' => route('paciente.citas.index')],
+        ];
+      @endphp
 
-
-    <a href="{{ route('paciente.citas.reprogramar.index') }}"
-    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
-    <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-        <div class="py-4">
-        <div class="text-2xl">📝</div>
-        <div class="mt-2 text-sm font-medium">Modificar cita</div>
-        </div>
-    </x-ui.card>
-    </a>
-
-
-    <a href="{{ route('paciente.citas.index') }}"
-    class="block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-[var(--radius)]">
-    <x-ui.card class="bg-white hover:bg-neutral-200 transition cursor-pointer text-center">
-        <div class="py-4">
-        <div class="text-2xl">👤</div>
-        <div class="mt-2 text-sm font-medium">Mis citas</div>
-        </div>
-    </x-ui.card>
-    </a>
-
+      @foreach ($acciones as $a)
+        <a href="{{ $a['ruta'] }}"
+           class="group block bg-white hover:bg-rose-50 border border-neutral-200 rounded-[var(--radius)] p-5 text-center transition shadow-sm hover:shadow-md">
+          <div class="flex flex-col items-center justify-center gap-2">
+            <div class="text-3xl group-hover:scale-110 transition">{{ $a['icono'] }}</div>
+            <div class="text-sm font-medium text-neutral-900 group-hover:text-rose-700">{{ $a['texto'] }}</div>
+          </div>
+        </a>
+      @endforeach
+    </div>
   </div>
 
   {{-- Historial de citas --}}
   <div>
     <h2 class="text-base font-semibold text-neutral-900 mb-2">Historial de citas</h2>
-    <x-ui.card class="p-0 overflow-x-auto">
+    <x-ui.card class="p-0 overflow-x-auto shadow-sm">
       <table class="min-w-full text-sm">
-        <thead class="bg-neutral-100 text-neutral-700">
+        <thead class="bg-neutral-100 text-neutral-700 border-b border-neutral-200">
           <tr>
-            <th class="px-3 py-2 text-left">Fecha</th>
-            <th class="px-3 py-2 text-left">Odontólogo</th>
-            <th class="px-3 py-2 text-left">Servicio</th>
-            <th class="px-3 py-2 text-left">Estado</th>
+            <th class="px-4 py-2 text-left font-medium">Fecha</th>
+            <th class="px-4 py-2 text-left font-medium">Médico</th>
+            <th class="px-4 py-2 text-left font-medium">Servicio</th>
+            <th class="px-4 py-2 text-left font-medium">Estado</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-neutral-200">
-          <tr>
-            <td class="px-3 py-2">20 de Junio</td>
-            <td class="px-3 py-2">Antonio Londoño</td>
-            <td class="px-3 py-2">Limpieza dental</td>
-            <td class="px-3 py-2">Completada</td>
+          <tr class="hover:bg-neutral-50 transition">
+            <td class="px-4 py-2">20 de junio</td>
+            <td class="px-4 py-2">Dr. Antonio Londoño</td>
+            <td class="px-4 py-2">Chequeo general</td>
+            <td class="px-4 py-2"><x-ui.badge variant="success">Completada</x-ui.badge></td>
           </tr>
-          <tr>
-            <td class="px-3 py-2">30 de agosto</td>
-            <td class="px-3 py-2">Sandra Rodríguez</td>
-            <td class="px-3 py-2">Control de ortodoncia</td>
-            <td class="px-3 py-2">Cancelada</td>
+          <tr class="hover:bg-neutral-50 transition">
+            <td class="px-4 py-2">30 de agosto</td>
+            <td class="px-4 py-2">Dra. Sandra Rodríguez</td>
+            <td class="px-4 py-2">Control de rutina</td>
+            <td class="px-4 py-2"><x-ui.badge variant="warning">Cancelada</x-ui.badge></td>
           </tr>
         </tbody>
       </table>
     </x-ui.card>
   </div>
-
 </div>
 @endsection

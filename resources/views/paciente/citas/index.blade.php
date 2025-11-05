@@ -11,7 +11,7 @@
         <tr>
           <th class="px-3 py-2 text-left">Fecha</th>
           <th class="px-3 py-2 text-left">Hora</th>
-          <th class="px-3 py-2 text-left">Odontólogo</th>
+          <th class="px-3 py-2 text-left">Médico</th>
           <th class="px-3 py-2 text-left">Servicio</th>
           <th class="px-3 py-2 text-left">Estado</th>
         </tr>
