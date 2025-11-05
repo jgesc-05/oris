@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use App\Mail\PatientLoginLink;
 use App\Models\User;
+use App\Models\UserType;
 
 class PatientAuthController extends Controller
 {
@@ -42,9 +43,19 @@ class PatientAuthController extends Controller
 
         Log::info("Validated");
 
-        // Crear paciente (tipo_usuario = 3)
+        $patientTypeId = $this->getPatientUserTypeId();
+
+        if (!$patientTypeId) {
+            Log::error('Tipo de usuario "Paciente" no encontrado durante el registro.');
+
+            return back()
+                ->withErrors(['error' => 'No se pudo registrar el paciente. Contacta al administrador.'])
+                ->withInput();
+        }
+
+        // Crear paciente con el tipo correspondiente
         $paciente = \App\Models\User::create([
-            'id_tipo_usuario'   => 3,
+            'id_tipo_usuario'   => $patientTypeId,
             'id_tipo_documento' => $request->id_tipo_documento,
             'numero_documento'  => $request->numero_documento,
             'nombres'           => $request->nombres,
@@ -72,8 +83,16 @@ class PatientAuthController extends Controller
         ]);
         Log::info($request);
 
-        // Buscar al paciente (tipo de usuario = 3)
-        $patient = User::where('id_tipo_usuario', 3)
+        $patientTypeId = $this->getPatientUserTypeId();
+
+        if (!$patientTypeId) {
+            Log::error('Tipo de usuario "Paciente" no encontrado durante el login.');
+
+            return back()->withErrors(['error' => 'No es posible iniciar sesión en este momento. Contacta al administrador.']);
+        }
+
+        // Buscar al paciente con el tipo correcto
+        $patient = User::where('id_tipo_usuario', $patientTypeId)
             ->where('id_tipo_documento', $request->id_tipo_documento)
             ->where('numero_documento', $request->numero_documento)
             ->where('fecha_nacimiento', $request->fecha_nacimiento)
@@ -109,5 +128,18 @@ class PatientAuthController extends Controller
         auth()->guard('paciente')->loginUsingId($patientId, false);
 
         return redirect()->route('paciente.dashboard');
+    }
+
+    private function getPatientUserTypeId(): ?int
+    {
+        static $patientTypeId = null;
+
+        if ($patientTypeId !== null) {
+            return $patientTypeId;
+        }
+
+        $patientTypeId = UserType::where('nombre', 'Paciente')->value('id_tipo_usuario');
+
+        return $patientTypeId;
     }
 }
