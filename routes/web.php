@@ -55,6 +55,8 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
             Route::post('reprogramar/seleccionar', [PatientPortalController::class, 'reprogramarSelect'])->name('reprogramar.submit');
             Route::get('reprogramar/{id}/editar', [PatientPortalController::class, 'reprogramarEdit'])->whereNumber('id')->name('reprogramar.edit');
             Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
+            Route::get('reprogramar/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->name('reprogramar.confirmada');
+
             Route::get('cancelar',         [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
             Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');
             Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
@@ -115,5 +117,4 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
         return view('admin.config.medico.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.medico.edit');
     });
-
 

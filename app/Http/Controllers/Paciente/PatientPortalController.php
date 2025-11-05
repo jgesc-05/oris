@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Paciente;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -97,8 +98,16 @@ class PatientPortalController extends Controller
             'medico'       => ['required', 'string', 'max:150'],
         ]);
 
-        // TODO: Persistir la cita en base de datos.
-        return back()->with('status', 'Tu solicitud de cita fue recibida. Pronto te contactaremos para confirmar.');
+        // Simulación de creación de cita (reemplazar por DB cuando esté lista)
+        $appointment = [
+            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
+            'doctor'     => $data['medico'],
+            'servicio'   => $data['servicio'],
+            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
+        ];
+
+        // Redirige a la vista de confirmación
+        return view('paciente.citas.confirmada', compact('appointment'));
     }
 
     public function reprogramarIndex()
@@ -172,11 +181,85 @@ class PatientPortalController extends Controller
             'hora'         => ['required', 'date_format:H:i'],
         ]);
 
+        $appointment = [
+            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
+            'doctor'     => $data['medico'],
+            'servicio'   => $data['servicio'],
+            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
+        ];
+
         // TODO: Guardar cambios de la cita en la BD.
         return redirect()
-            ->route('paciente.citas.index')
-            ->with('status', 'Tu cita fue reprogramada correctamente.');
+            ->route('paciente.citas.reprogramar.confirmada')
+            ->with('appointment', $appointment);
     }
+
+    public function reprogramarConfirmada()
+    {
+        $appointment = session('appointment');
+
+        if (!$appointment) {
+            return redirect()->route('paciente.citas.reprogramar.index');
+        }
+
+        return view('paciente.citas.reprogramar.confirmada', compact('appointment'));
+    }
+
+
+
+    public function citasReprogramarSubmit(Request $request)
+    {
+        $data = $request->validate([
+            'cita_id' => ['required'],
+            'fecha'   => ['nullable', 'date'],
+            'hora'    => ['nullable', 'string'],
+            'medico'  => ['nullable', 'string'],
+            'servicio'=> ['nullable', 'string'],
+        ]);
+
+        // Simulación de actualización (luego conectar a la DB real)
+        $appointment = [
+            'fecha_hora' => isset($data['fecha'])
+                ? Carbon::parse(($data['fecha'] ?? now()->toDateString()) . ' ' . ($data['hora'] ?? '08:00'))->translatedFormat('l j \\d\\e F, g:i A')
+                : 'Miércoles 8 de Octubre, 10:00 AM',
+            'doctor'     => $data['medico'] ?? 'Luisa Mantilla',
+            'servicio'   => $data['servicio'] ?? 'Tratamiento de conducto',
+            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
+        ];
+
+        // Retornar la pantalla de confirmación
+        return redirect()
+            ->route('paciente.citas.reprogramar.confirmada')
+            ->with('appointment', $appointment);
+    }
+
+
+    public function citasReprogramarUpdate(Request $request, $id)
+    {
+        $data = $request->validate([
+            'especialidad' => ['required', 'string', 'max:100'],
+            'fecha'        => ['required', 'date'],
+            'servicio'     => ['required', 'string', 'max:150'],
+            'hora'         => ['required', 'string'],
+            'medico'       => ['required', 'string', 'max:150'],
+        ]);
+
+        // 🔹 Simulación de actualización
+        // En el futuro aquí actualizarías en la base de datos usando el modelo Cita::find($id)->update($data)
+        $appointment = [
+            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
+            'doctor'     => $data['medico'],
+            'servicio'   => $data['servicio'],
+            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
+        ];
+
+        // 🔹 Mostrar pantalla de confirmación
+        return redirect()
+            ->route('paciente.citas.reprogramar.confirmada')
+            ->with('appointment', $appointment);
+    }
+
+
 
     public function citasCancelarIndex()
     {

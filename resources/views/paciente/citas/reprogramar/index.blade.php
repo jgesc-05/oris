@@ -7,7 +7,7 @@
   <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Reprogramar cita</h1>
 
   <x-ui.card class="max-w-5xl p-0">
-    <form method="POST" action="{{ route('paciente.citas.reprogramar.submit') }}">
+    <form method="POST" action="{{ route('paciente.citas.reprogramar.submit') }}" class="flex flex-col gap-0">
       @csrf
 
       <div class="overflow-x-auto">
@@ -26,7 +26,7 @@
             @foreach($appointments as $a)
               <tr>
                 <td class="px-3 py-2 text-center">
-                  <input type="radio" name="cita_id" value="{{ $a['id'] }}" class="form-radio">
+                  <input type="radio" name="cita_id" value="{{ $a['id'] }}" class="form-radio" required>
                 </td>
                 <td class="px-3 py-2">{{ $a['fecha'] }}</td>
                 <td class="px-3 py-2">{{ $a['hora'] }}</td>
@@ -41,14 +41,11 @@
         </table>
       </div>
 
-        <form method="POST" action="{{ route('paciente.citas.reprogramar.submit') }}">
-        @csrf
-        <!-- radios ... -->
+      <div class="border-t border-neutral-200 p-4">
         <x-ui.button variant="primary" size="lg" block class="rounded-full">
-            Reprogramar cita
+          Reprogramar cita
         </x-ui.button>
-        </form>
-
+      </div>
     </form>
   </x-ui.card>
 @endsection
