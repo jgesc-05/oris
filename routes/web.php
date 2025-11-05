@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
 
@@ -107,8 +108,14 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
 
     /** Configuración - Servicios */
-    Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
-    Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
+
+    //Crear servicio
+    Route::get('/config/servicios/crear', [ServiceController::class, 'create'])->name('config.servicio.create');
+    Route::post('/config/servicios/crear', [ServiceController::class, 'store'])->name('config.servicio.store');
+
+    Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
+    //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
+    //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
     Route::get('/config/servicios/{id}/editar', function ($id) {
         return view('admin.config.servicio.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.servicio.edit');

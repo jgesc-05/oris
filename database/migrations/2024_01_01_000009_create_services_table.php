@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id('id_servicio');
             $table->foreignId('id_tipos_especialidad')->constrained('specialty_type', 'id_tipos_especialidad')->onDelete('cascade');
             $table->string('nombre', 100);
-            $table->integer('duracion');
+            $table->integer('duracion')->nullable();
             $table->decimal('precio_base', 10, 2);
-            $table->string('estado', 50);
+            $table->string('estado', 50)->default('activo');
             $table->string('descripcion', 255);
         });
     }
