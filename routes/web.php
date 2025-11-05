@@ -98,9 +98,13 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
 
     Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
-    Route::get('/config/especialidades/{id}/editar', function ($id) {
-        return view('admin.config.especialidad.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.especialidad.edit');
+
+    //Vista de edición (para pasar parámetro de id real)
+    Route::get('/config/especialidades/{id}/editar', [SpecialtyController::class, 'edit'])
+    ->name('config.especialidad.edit');
+
+    //Actualización de la especialidad
+    Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
 
     /** Configuración - Servicios */
     Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');

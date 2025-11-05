@@ -77,4 +77,32 @@ class SpecialtyController extends Controller
                 'success' => "La especialidad '{$specialty->nombre}' ha sido eliminada correctamente." // <-- Mensaje
             ]);
     }
+
+    //Editar especialidad
+    public function edit(int $id){
+
+        $specialty = Specialty::findOrFail($id);
+
+        return view('admin.config.especialidad.edit', compact('specialty'));
+
+    }
+
+    //Actualizar especialidad
+    public function update(Request $request, int $id){
+
+        $specialty = Specialty::findOrFail($id);
+
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:100',
+            'estado' => 'required|string|in:activo,inactivo',
+            'descripcion' => 'required|string|max:255',
+        ]);
+
+        $specialty->update($validated);
+
+        return redirect()
+            ->route('admin.config.especialidad.index')
+            ->with('success', 'La especialidad se actualizó correctamente.');
+
+    }
 }
