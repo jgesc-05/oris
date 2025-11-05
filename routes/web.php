@@ -113,13 +113,21 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/config/servicios/crear', [ServiceController::class, 'create'])->name('config.servicio.create');
     Route::post('/config/servicios/crear', [ServiceController::class, 'store'])->name('config.servicio.store');
 
+    //Listar los servicios disponibles (tabla principal)
     Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
+    
     //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
     //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
 
+    //Editar los servicios
     Route::get('/config/servicios/{id}/editar', [ServiceController::class, 'edit'])->name('config.servicio.edit');
+    //Actualizar servicio
     Route::put('/config/servicios/{id}/editar', [ServiceController::class, 'update'])->name('config.servicio.update');
+    
+    //Cambiar estado del servicio
     Route::post('/config/servicios/{id}/toggle', [ServiceController::class, 'toggleState'])->name('config.servicio.toggle');
+    
+    //Eliminar los servicios
     Route::delete('/config/servicios/{id}/eliminar', [ServiceController::class, 'destroy'])->name('config.servicio.destroy');
 
     /*Route::get('/config/servicios/{id}/editar', function ($id) {
