@@ -116,9 +116,15 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
     //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
     //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
-    Route::get('/config/servicios/{id}/editar', function ($id) {
+
+    Route::get('/config/servicios/{id}/editar', [ServiceController::class, 'edit'])->name('config.servicio.edit');
+    Route::put('/config/servicios/{id}/editar', [ServiceController::class, 'update'])->name('config.servicio.update');
+    Route::post('/config/servicios/{id}/toggle', [ServiceController::class, 'toggleState'])->name('config.servicio.toggle');
+    Route::delete('/config/servicios/{id}/eliminar', [ServiceController::class, 'destroy'])->name('config.servicio.destroy');
+
+    /*Route::get('/config/servicios/{id}/editar', function ($id) {
         return view('admin.config.servicio.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.servicio.edit');
+    })->whereNumber('id')->name('config.servicio.edit');*/
 
     /** Configuración - Médicos */
     Route::view('/config/medicos', 'admin.config.medico.index')->name('config.medico.index');

@@ -49,7 +49,7 @@
                   </x-ui.button>
 
                   {{-- Botón de activar/desactivar --}}
-                  <form action={{--"{{ route('admin.config.servicio.toggle', $s->id_servicio) }}"--}} method="POST" style="display:inline;">
+                  <form action="{{ route('admin.config.servicio.toggle', $s->id_servicio) }}" method="POST" style="display:inline;">
                     @csrf
                     <x-ui.button 
                         variant="{{ $s->estado === 'activo' ? 'warning' : 'success' }}" 
@@ -60,7 +60,7 @@
                   </form>
 
                   {{-- Botón de eliminar --}}
-                  <form action={{--"{{ route('admin.config.servicio.destroy', $s->id_servicio) }}"--}} method="POST"
+                  <form action="{{ route('admin.config.servicio.destroy', $s->id_servicio) }}" method="POST"
                         onsubmit="return confirm('¿Estás seguro de que quieres eliminar este servicio? Esta acción es irreversible.');"
                         style="display: inline;">
                       @csrf
