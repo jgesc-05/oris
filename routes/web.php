@@ -48,6 +48,12 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
         Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
         Route::get('servicios', [PatientPortalController::class, 'servicios'])->name('servicios');
         Route::get('medicos', [PatientPortalController::class, 'medicos'])->name('medicos');
+        Route::prefix('citas')->name('citas.')->group(function () {
+            Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
+            Route::post('/', [PatientPortalController::class, 'citasStore'])->name('store');
+            Route::get('reprogramar',  [PatientPortalController::class, 'citasReprogramarIndex'])->name('reprogramar.index');
+            Route::post('reprogramar', [PatientPortalController::class, 'citasReprogramarSubmit'])->name('reprogramar.submit');
+        });
     });
 });
 
@@ -104,3 +110,5 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
         return view('admin.config.medico.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.medico.edit');
     });
+
+

@@ -75,15 +75,6 @@
         @endforeach
       </nav>
 
-      {{-- Salir en móvil --}}
-      <div class="container-pro pb-2 flex justify-center">
-        @if(\Illuminate\Support\Facades\Route::has('logout'))
-          <form action="{{ $logoutUrl }}" method="POST">
-            @csrf
-            <x-ui.button type="submit" variant="info" size="sm">Salir</x-ui.button>
-          </form>
-        @endif
-      </div>
-    </div>
+
   @endif
 </header>
