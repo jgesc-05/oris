@@ -5,7 +5,7 @@
 @section('admin-content')
   <x-ui.card
     title="Crear especialidad"
-    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Odontología general, Ortodoncia…)."
+    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Pediatría, Cardiología…)."
     class="max-w-4xl"
   >
     @php
@@ -14,7 +14,18 @@
         : url('/admin/config/especialidad'); // fallback temporal
     @endphp
 
-    <form method="POST" action="{{ $storeUrl }}" class="mt-2">
+
+    @if ($errors->any())
+  <x-ui.alert variant="warning" title="Ocurrieron algunos errores:">
+    <ul class="list-disc list-inside space-y-1">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </x-ui.alert>
+@endif
+
+    <form method="POST" action="{{ route('admin.config.especialidad.createSp') }}" class="mt-2">
       @csrf
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -22,9 +33,10 @@
           <x-form.input
             name="nombre"
             label="Nombre"
-            placeholder="Odontología general"
+            placeholder=""
             required
             autocomplete="off"
+            :error="$errors->first('nombre')"
           />
           <p class="text-xs text-neutral-500 mt-1">Nombre visible para pacientes y personal.</p>
         </div>
@@ -43,6 +55,7 @@
             label="Descripción"
             rows="5"
             placeholder="Describe el alcance, casos típicos y consideraciones…"
+            :error="$errors->first('descripcion')"
           />
         </div>
       </div>

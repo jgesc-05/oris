@@ -3,6 +3,8 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\SpecialtyController;
+use App\Models\Specialty;
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -81,11 +83,28 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::view('/config', 'admin.config.index')->name('config');
 
     /** Configuración - Especialidades */
-    Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
-    Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
-    Route::get('/config/especialidades/{id}/editar', function ($id) {
-        return view('admin.config.especialidad.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.especialidad.edit');
+    Route::get('/config/especialidades', [SpecialtyController::class, 'index'])->name('config.especialidad.index');
+    //Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
+    //Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
+
+    //Crear especialidad (con alertas)
+    Route::get('/config/especialidades/crear', [SpecialtyController::class, 'showCreate'])->name('config.especialidad.create');
+
+    //Desactivar o activar la especialidad (inactiva o activa)
+    Route::post('/config/especialidades/{id}/toggle', [SpecialtyController::class, 'toggleState'])->name('config.especialidad.toggle');
+
+    //Eliminar especialidad
+    Route::delete('/config/especialidades/{id}', [SpecialtyController::class, 'destroy'])->name('config.especialidad.destroy');   
+
+
+    Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
+
+    //Vista de edición (para pasar parámetro de id real)
+    Route::get('/config/especialidades/{id}/editar', [SpecialtyController::class, 'edit'])
+    ->name('config.especialidad.edit');
+
+    //Actualización de la especialidad
+    Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
 
     /** Configuración - Servicios */
     Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
