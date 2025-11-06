@@ -86,10 +86,13 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
     // Detalle de usuario (mock)
-    Route::get('/usuarios/{usuario}', function ($usuario) {
+    /*Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);
-    })->whereNumber('usuario')->name('usuarios.show');
+    })->whereNumber('usuario')->name('usuarios.show');*/
    // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+
+   //Mostrar info de usuario
+   Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
    
    //Edición de datos de usuario
    Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');

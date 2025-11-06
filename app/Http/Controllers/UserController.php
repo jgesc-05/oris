@@ -255,6 +255,28 @@ return back()->withErrors([
                 'title' => 'Usuario Eliminado Con Éxito',
                 'success' => "El usuario '{$user->nombres} {$user->apellidos}' ha sido eliminado correctamente."
             ]);
-    }   
+    }
+    
+    // Mostrar detalle de usuario
+    public function show(int $id)
+    {
+        $user = User::with(['userType', 'documentType'])->findOrFail($id);
+
+        return view('admin.usuarios.show', compact('user'));
+    }
+
+    //Suspender usuario en show
+    public function toggleStateShow(int $id)
+    {
+        $user = User::findOrFail($id);
+    
+        // Cambiar entre activo/inactivo
+        $user->estado = ($user->estado === 'activo') ? 'inactivo' : 'activo';
+        $user->save();
+    
+        // CORRECCIÓN: Pasar el ID del usuario como parámetro a la ruta 'show'
+        return redirect()->route('admin.usuarios.show', $user) 
+                         ->with('success', 'Estado del usuario actualizado correctamente.');
+    }
     
 }
