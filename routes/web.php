@@ -10,6 +10,8 @@ use App\Http\Controllers\Paciente\PatientPortalController;
 use App\Http\Controllers\Secretary\SecretaryAppointmentController;
 use App\Http\Controllers\Secretary\SecretaryPatientController;
 use App\Http\Controllers\Secretary\SecretaryPortalController;
+use App\Http\Controllers\Secretaria\SecretaryScheduleController;
+
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -33,7 +35,7 @@ Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login'
 Route::post('/logout', [UserController::class, 'staffLogout'])->name('logout');
 
 // ============================================
-// AUTH - Pacientes
+// Pacientes
 // ============================================
 Route::prefix('paciente')->name('paciente.')->group(function () {
     // Mostrar formulario de login
@@ -112,6 +114,15 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->g
         Route::get('cancelar/{patient}', [SecretaryAppointmentController::class, 'showCancelList'])->name('cancelar.list');
         Route::post('cancelar/{patient}', [SecretaryAppointmentController::class, 'cancelAppointment'])->name('cancelar.confirm');
     })->where(['patient' => '[0-9]+']);
+
+    Route::prefix('horarios')->name('horarios.')->group(function () {
+        Route::get('bloquear', [SecretaryScheduleController::class, 'showBlockForm'])
+            ->name('bloquear');
+        Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
+            ->name('bloquear.store');
+});
+
+
 });
 
 Route::prefix('medico')->name('medico.')->middleware(['web', 'auth'])->group(function () {

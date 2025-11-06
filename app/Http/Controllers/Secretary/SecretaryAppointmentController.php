@@ -164,7 +164,11 @@ class SecretaryAppointmentController extends Controller
     {
         $appointments = $this->mockAppointments($patient);
 
-        return view('secretaria.citas.cancelar.index', compact('patient', 'appointments'));
+        return view('secretaria.citas.cancelar.index', [
+            'patient'      => $patient,
+            'appointments' => $appointments,
+            'patientId'    => $patient->id_usuario,
+        ]);
     }
 
     public function cancelAppointment(Request $request, User $patient)

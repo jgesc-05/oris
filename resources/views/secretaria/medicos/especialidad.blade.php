@@ -17,7 +17,7 @@
     <x-ui.card class="space-y-6 p-6">
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($medicos as $medico)
-          <div class="group rounded-xl border border-neutral-200 bg-white hover:border-primary-200 shadow-sm hover:shadow-md transition-all duration-200 ease-out p-5">
+          <div class="group rounded-xl border border-neutral-200 bg-white hover:border-primary-200 shadow-sm hover:shadow-md transition-all duración-200 ease-out p-5">
             <div class="space-y-2">
               <h2 class="text-lg font-semibold text-neutral-900">{{ $medico['nombre'] }}</h2>
               <p class="text-sm text-neutral-600 leading-snug">{{ $medico['descripcion'] }}</p>
@@ -44,7 +44,8 @@
           </div>
         @endforeach
       </section>
-
+        <br>
+        
       <div class="flex flex-col md:flex-row justify-between items-center gap-3">
         <x-ui.button variant="secondary" size="md" class="rounded-full px-6"
           href="{{ route('secretaria.medicos.index') }}">

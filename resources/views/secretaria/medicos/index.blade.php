@@ -46,6 +46,8 @@
         @endforeach
       </section>
 
+      <br>
+
       <x-ui.alert variant="info" class="mb-0">
         ¿No encuentras la especialidad que buscas? Contáctanos para confirmar disponibilidad.
       </x-ui.alert>

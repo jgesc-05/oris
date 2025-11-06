@@ -43,12 +43,8 @@
           </div>
         </div>
 
-        <div class="md:w-1/3 flex flex-col items-center gap-4">
-          <div class="text-6xl">{{ $medico['icono'] ?? '👨‍⚕️' }}</div>
-          <x-ui.button variant="primary" size="lg" class="rounded-full px-8 shadow-sm hover:shadow-md"
-            href="{{ route('secretaria.citas.agendar.lookup') }}">
-            Agendar cita
-          </x-ui.button>
+
+
         </div>
       </div>
 
@@ -57,6 +53,12 @@
           href="{{ route('secretaria.medicos.especialidad', ['especialidad' => $medico['especialidad_slug']]) }}">
           ← Volver a {{ $medico['especialidad'] }}
         </x-ui.button>
+
+        <x-ui.button variant="primary" size="lg" class="rounded-full px-8 shadow-sm hover:shadow-md"
+            href="{{ route('secretaria.citas.agendar.lookup') }}">
+            Agendar cita
+        </x-ui.button>
+
         <x-ui.button variant="ghost" size="md" class="rounded-full px-6"
           href="{{ route('secretaria.medicos.index') }}">
           Ver todas las especialidades

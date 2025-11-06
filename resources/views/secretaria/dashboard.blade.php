@@ -3,75 +3,100 @@
 @section('title', 'Inicio — Secretaría')
 
 @section('secretary-content')
-  <div class="space-y-6">
-    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">
-          Hola, {{ $secretary?->nombres ?? 'Secretaría' }}
-        </h1>
-        <p class="text-sm md:text-base text-neutral-600">
-          Hoy es {{ now()->translatedFormat('l, j \\d\\e F Y') }}
-        </p>
-      </div>
 
-      <div class="flex gap-2">
-        <x-ui.button variant="primary" size="sm" :href="route('secretaria.citas.agendar.lookup')">Agendar cita</x-ui.button>
-        <x-ui.button variant="secondary" size="sm" :href="route('secretaria.agenda')">Ver agenda</x-ui.button>
-      </div>
-    </header>
+@php
+  $firstName   = $patient?->nombres ?? 'Javier';
+  $currentDate = \Carbon\Carbon::now()->locale('es')->translatedFormat('l, j \\d\\e F');
 
-    <x-ui.card class="p-6 space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <x-ui.card class="bg-neutral-50 text-center shadow-none border border-neutral-200">
-          <div class="text-sm uppercase tracking-wide text-neutral-500">Citas agendadas hoy</div>
-          <div class="mt-2 text-3xl font-semibold text-neutral-900">{{ $summary['agendadas_hoy'] }}</div>
-        </x-ui.card>
-        <x-ui.card class="bg-neutral-50 text-center shadow-none border border-neutral-200">
-          <div class="text-sm uppercase tracking-wide text-neutral-500">Citas pendientes</div>
-          <div class="mt-2 text-3xl font-semibold text-neutral-900">{{ $summary['pendientes'] }}</div>
-        </x-ui.card>
-        <x-ui.card class="bg-neutral-50 text-center shadow-none border border-neutral-200">
-          <div class="text-sm uppercase tracking-wide text-neutral-500">Pacientes del día</div>
-          <div class="mt-2 text-3xl font-semibold text-neutral-900">{{ $summary['pacientes_hoy'] }}</div>
-        </x-ui.card>
-      </div>
+  $cita = $nextAppointment ?? [
+    'dia'      => 'Lunes, 30 de septiembre',
+    'hora'     => '9:00 AM',
+    'doctor'   => 'Dra. Sandra Rodríguez',
+    'detalle'  => 'Control de rutina',
+    'existe'   => true,
+  ];
+@endphp
 
-      <div class="space-y-3">
-        <div class="flex items-center justify-between">
-          <h2 class="text-base font-semibold text-neutral-900">Agenda del día</h2>
-          <x-ui.button variant="ghost" size="sm" :href="route('secretaria.agenda')">Ver completa</x-ui.button>
-        </div>
+<div class="space-y-8">
 
-        <div class="border border-neutral-200 rounded-[var(--radius)] overflow-hidden">
-          <table class="min-w-full text-sm">
-            <thead class="bg-neutral-100 text-neutral-700">
-              <tr>
-                <th class="px-4 py-2 text-left font-medium">Hora</th>
-                <th class="px-4 py-2 text-left font-medium">Paciente</th>
-                <th class="px-4 py-2 text-left font-medium">Servicio</th>
-                <th class="px-4 py-2 text-left font-medium">Médico</th>
-                <th class="px-4 py-2 text-left font-medium">Acciones</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-neutral-200 bg-white">
-              @foreach ($agenda as $item)
-                <tr>
-                  <td class="px-4 py-3 text-neutral-900 font-medium">{{ $item['hora'] }}</td>
-                  <td class="px-4 py-3 text-neutral-700">{{ $item['paciente'] }}</td>
-                  <td class="px-4 py-3 text-neutral-700">{{ $item['servicio'] }}</td>
-                  <td class="px-4 py-3 text-neutral-700">{{ $item['medico'] }}</td>
-                  <td class="px-4 py-3 text-neutral-700">
-                    <div class="flex gap-2">
-                      <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.reprogramar.lookup')">Reprogramar</x-ui.button>
-                      <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.cancelar.lookup')">Cancelar</x-ui.button>
-                    </div>
-                  </td>
-                </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
+  {{-- Encabezado --}}
+  <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">
+        Hola, {{ $secretary?->nombres ?? 'Juliana' }}
+      </h1>
+      <p class="text-sm md:text-base text-neutral-600 mt-1">Hoy es {{ $currentDate }}</p>
+    </div>
+  </header>
+
+
+    {{-- Tarjeta principal --}}
+    <x-ui.card class="p-8 space-y-8 bg-white border border-neutral-200 shadow-sm">
+
+      {{-- Acciones principales --}}
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+        {{-- Agendar cita --}}
+        <a href="{{ route('secretaria.citas.agendar.lookup') }}" class="block">
+          <x-ui.card class="bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center justify-center py-6">
+              <div class="text-3xl mb-2">🗓️</div>
+              <p class="font-medium text-neutral-800 text-sm">Agendar cita</p>
+            </div>
+          </x-ui.card>
+        </a>
+
+        {{-- Cancelar cita --}}
+        <a href="{{ route('secretaria.citas.cancelar.lookup') }}" class="block">
+          <x-ui.card class="bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center justify-center py-6">
+              <div class="text-3xl mb-2">🚫</div>
+              <p class="font-medium text-neutral-800 text-sm">Cancelar cita</p>
+            </div>
+          </x-ui.card>
+        </a>
+
+        {{-- Modificar cita --}}
+        <a href="{{ route('secretaria.citas.reprogramar.lookup') }}" class="block">
+          <x-ui.card class="bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center justify-center py-6">
+              <div class="text-3xl mb-2">📝</div>
+              <p class="font-medium text-neutral-800 text-sm">Modificar cita</p>
+            </div>
+          </x-ui.card>
+        </a>
+
+        {{-- Crear paciente --}}
+        <a href="{{ route('secretaria.pacientes.create') }}" class="block">
+          <x-ui.card class="bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center justify-center py-6">
+              <div class="text-3xl mb-2">👤</div>
+              <p class="font-medium text-neutral-800 text-sm">Crear paciente</p>
+            </div>
+          </x-ui.card>
+        </a>
+
+        {{-- Bloquear horario --}}
+        <a href="{{ route('secretaria.horarios.bloquear') }}" class="block">
+          <x-ui.card class="bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center justify-center py-6">
+              <div class="text-3xl mb-2">⛔</div>
+              <p class="font-medium text-neutral-800 text-sm">Bloquear horario</p>
+            </div>
+          </x-ui.card>
+        </a>
       </div>
+        <br>
+      {{-- Bandeja de trabajo --}}
+      <x-ui.card class="bg-neutral-100 border border-neutral-300 p-5">
+        <h2 class="text-base font-semibold text-neutral-900 mb-3">Bandeja de trabajo de hoy</h2>
+        <ul class="text-sm text-neutral-700 space-y-1 list-disc pl-5">
+          <li>{{ $summary['citas_programadas'] ?? 12 }} citas programadas</li>
+          <li>{{ $summary['citas_canceladas'] ?? 3 }} citas canceladas</li>
+          <li>{{ $summary['pagos_pendientes'] ?? 2 }} pagos pendientes</li>
+        </ul>
+
+      </x-ui.card>
+
     </x-ui.card>
   </div>
 @endsection

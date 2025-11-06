@@ -12,10 +12,7 @@
         </p>
       </div>
 
-      <div class="flex gap-2">
-        <x-ui.button variant="secondary" size="sm" :href="route('secretaria.citas.agendar.lookup')">Agendar cita</x-ui.button>
-        <x-ui.button variant="ghost" size="sm">Exportar</x-ui.button>
-      </div>
+
     </header>
 
     <x-ui.card class="p-5 space-y-4">

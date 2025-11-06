@@ -44,21 +44,13 @@
                   >
                     Ver detalle
                   </x-ui.button>
-                  <x-ui.button
-                    variant="ghost"
-                    size="sm"
-                    class="rounded-full px-4 py-1 text-xs"
-                    :href="route('secretaria.citas.agendar.lookup')"
-                  >
-                    Agendar
-                  </x-ui.button>
                 </div>
               </div>
             </div>
           </div>
         @endforeach
       </div>
-
+        <br>
       <div class="flex flex-col md:flex-row justify-between items-center gap-3">
         <x-ui.button variant="secondary" size="md" class="rounded-full px-6"
           href="{{ route('secretaria.servicios.index') }}">

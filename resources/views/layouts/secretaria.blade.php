@@ -14,7 +14,6 @@
   <x-partials.navbar-top
     :items="$secretaryNavItems ?? []"
     :profile="$profile"
-    brand="Panel Secretaría"
     logoutRoute="logout"
   />
 @endsection
