@@ -7,6 +7,11 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
 use App\Http\Controllers\Paciente\PatientPortalController;
+use App\Http\Controllers\Secretary\SecretaryAppointmentController;
+use App\Http\Controllers\Secretary\SecretaryPatientController;
+use App\Http\Controllers\Secretary\SecretaryPortalController;
+use App\Http\Controllers\Secretary\SecretaryScheduleController;
+
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -30,7 +35,7 @@ Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login'
 Route::post('/logout', [UserController::class, 'staffLogout'])->name('logout');
 
 // ============================================
-// AUTH - Pacientes
+// Pacientes
 // ============================================
 Route::prefix('paciente')->name('paciente.')->group(function () {
     // Mostrar formulario de login
@@ -70,6 +75,58 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
             Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
         });
     });
+});
+
+Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->group(function () {
+    Route::get('inicio', [SecretaryPortalController::class, 'inicio'])->name('inicio');
+    Route::get('agenda', [SecretaryPortalController::class, 'agenda'])->name('agenda');
+
+    Route::get('servicios', [SecretaryPortalController::class, 'servicios'])->name('servicios.index');
+    Route::get('servicios/{especialidad}', [SecretaryPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
+    Route::get('servicios/{especialidad}/{servicio}', [SecretaryPortalController::class, 'serviciosDetalle'])->name('servicios.detalle');
+
+    Route::get('medicos', [SecretaryPortalController::class, 'medicos'])->name('medicos.index');
+    Route::get('medicos/{especialidad}', [SecretaryPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
+    Route::get('medicos/{especialidad}/{medico}', [SecretaryPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
+
+    Route::prefix('pacientes')->name('pacientes.')->group(function () {
+        Route::get('/', [SecretaryPatientController::class, 'index'])->name('index');
+        Route::get('crear', [SecretaryPatientController::class, 'create'])->name('create');
+        Route::post('/', [SecretaryPatientController::class, 'store'])->name('store');
+        Route::get('{patient}', [SecretaryPatientController::class, 'show'])->whereNumber('patient')->name('show');
+    });
+
+    Route::prefix('citas')->name('citas.')->group(function () {
+        Route::get('agendar', [SecretaryAppointmentController::class, 'showAgendarLookup'])->name('agendar.lookup');
+        Route::post('agendar', [SecretaryAppointmentController::class, 'submitAgendarLookup'])->name('agendar.lookup.submit');
+        Route::get('agendar/{patient}', [SecretaryAppointmentController::class, 'showCreateForm'])->name('create.form');
+        Route::post('agendar/{patient}', [SecretaryAppointmentController::class, 'storeAppointment'])->name('create.store');
+
+        Route::get('reprogramar', [SecretaryAppointmentController::class, 'showReprogramarLookup'])->name('reprogramar.lookup');
+        Route::post('reprogramar', [SecretaryAppointmentController::class, 'submitReprogramarLookup'])->name('reprogramar.lookup.submit');
+        Route::get('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'showReprogramSelection'])->name('reprogramar.seleccion');
+        Route::post('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'submitReprogramSelection'])->name('reprogramar.seleccion.submit');
+        Route::get('reprogramar/{patient}/{appointment}/editar', [SecretaryAppointmentController::class, 'editReprogram'])->name('reprogramar.edit');
+        Route::put('reprogramar/{patient}/{appointment}', [SecretaryAppointmentController::class, 'updateReprogram'])->name('reprogramar.update');
+
+        Route::get('cancelar', [SecretaryAppointmentController::class, 'showCancelarLookup'])->name('cancelar.lookup');
+        Route::post('cancelar', [SecretaryAppointmentController::class, 'submitCancelarLookup'])->name('cancelar.lookup.submit');
+        Route::get('cancelar/{patient}', [SecretaryAppointmentController::class, 'showCancelList'])->name('cancelar.list');
+        Route::post('cancelar/{patient}', [SecretaryAppointmentController::class, 'cancelAppointment'])->name('cancelar.confirm');
+    })->where(['patient' => '[0-9]+']);
+
+    Route::prefix('horarios')->name('horarios.')->group(function () {
+        Route::get('bloquear', [SecretaryScheduleController::class, 'showBlockForm'])
+            ->name('bloquear');
+        Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
+            ->name('bloquear.store');
+});
+
+
+});
+
+Route::prefix('medico')->name('medico.')->middleware(['web', 'auth'])->group(function () {
+    Route::view('dashboard', 'medico.dashboard')->name('dashboard');
 });
 
 // routes/web.php
