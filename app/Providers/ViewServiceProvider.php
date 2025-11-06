@@ -18,6 +18,16 @@ class ViewServiceProvider extends ServiceProvider
             ];
             $view->with('adminNavItems', $items);
         });
+
+        \Illuminate\Support\Facades\View::composer(['layouts.paciente', 'paciente.*'], function ($view) {
+            $items = [
+                ['label' => 'Inicio',    'href' => route('paciente.inicio'),    'active' => request()->routeIs('paciente.inicio')],
+                ['label' => 'Servicios', 'href' => route('paciente.servicios'), 'active' => request()->routeIs('paciente.servicios*')],
+                ['label' => 'Médicos',   'href' => route('paciente.medicos'),   'active' => request()->routeIs('paciente.medicos*')],
+            ];
+
+            $view->with('patientNavItems', $items);
+        });
     }
 
 }

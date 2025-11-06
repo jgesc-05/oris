@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PatientAuthController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
+use App\Http\Controllers\Paciente\PatientPortalController;
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -44,11 +45,31 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 
     // Verificación del enlace
     Route::get('verificar-login/{token}', [PatientAuthController::class, 'verifyLogin'])->name('login.verify');
+    Route::post('logout', [PatientAuthController::class, 'logout'])->middleware('auth:paciente')->name('logout');
 
-    // Dashboard del paciente (después de autenticarse)
-    Route::middleware('auth:paciente')->get('dashboard', function () {
-        return view('paciente.dashboard');
-    })->name('dashboard');
+    // Sección privada del paciente
+    Route::middleware('auth:paciente')->group(function () {
+        Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
+        Route::get('servicios', [PatientPortalController::class, 'servicios'])->name('servicios');
+        Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
+        Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
+        Route::get('medicos', [PatientPortalController::class, 'medicos'])->name('medicos');
+        Route::get('medicos/{especialidad}', [PatientPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
+        Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
+        Route::prefix('citas')->name('citas.')->group(function () {
+            Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
+            Route::post('/', [PatientPortalController::class, 'citasStore'])->name('store');
+            Route::get('reprogramar', [PatientPortalController::class, 'reprogramarIndex'])->name('reprogramar.index');
+            Route::post('reprogramar/seleccionar', [PatientPortalController::class, 'reprogramarSelect'])->name('reprogramar.submit');
+            Route::get('reprogramar/{id}/editar', [PatientPortalController::class, 'reprogramarEdit'])->whereNumber('id')->name('reprogramar.edit');
+            Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
+            Route::get('reprogramar/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->name('reprogramar.confirmada');
+
+            Route::get('cancelar',         [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
+            Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');
+            Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
+        });
+    });
 });
 
 // routes/web.php
@@ -95,7 +116,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::post('/config/especialidades/{id}/toggle', [SpecialtyController::class, 'toggleState'])->name('config.especialidad.toggle');
 
     //Eliminar especialidad
-    Route::delete('/config/especialidades/{id}', [SpecialtyController::class, 'destroy'])->name('config.especialidad.destroy');   
+    Route::delete('/config/especialidades/{id}', [SpecialtyController::class, 'destroy'])->name('config.especialidad.destroy');
 
 
     Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
@@ -115,7 +136,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
     //Listar los servicios disponibles (tabla principal)
     Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
-    
+
     //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
     //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
 
@@ -123,10 +144,10 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/config/servicios/{id}/editar', [ServiceController::class, 'edit'])->name('config.servicio.edit');
     //Actualizar servicio
     Route::put('/config/servicios/{id}/editar', [ServiceController::class, 'update'])->name('config.servicio.update');
-    
+
     //Cambiar estado del servicio
     Route::post('/config/servicios/{id}/toggle', [ServiceController::class, 'toggleState'])->name('config.servicio.toggle');
-    
+
     //Eliminar los servicios
     Route::delete('/config/servicios/{id}/eliminar', [ServiceController::class, 'destroy'])->name('config.servicio.destroy');
 

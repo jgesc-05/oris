@@ -11,7 +11,7 @@
       'nombre'    => 'Laura González Pérez',
       'correo'    => 'lauragonzalez@saludsonrisa.com',
       'documento' => '1032456789',
-      'rol'       => 'Secretaria',     // Admin | Secretaria | Odontólogo | Paciente
+      'rol'       => 'Secretaria',     // Admin | Secretaria | Médico | Paciente
       'estado'    => 'Activo',         // Activo | Inactivo
       'ultimo'    => '20/09/2025 10:15',
       'telefono'  => '+57 302 123 4567',

@@ -27,9 +27,9 @@
         />
       </div>
 
-      {{-- Odontólogo --}}
+      {{-- Médico --}}
       <div class="lg:col-span-3">
-        <x-form.select name="odontologo" label="Odontólogo">
+        <x-form.select name="medico" label="Médico">
           <option value="">-- Todos --</option>
           <option>Juan Pérez</option>
           <option>Andrés Martínez</option>
@@ -45,7 +45,7 @@
           <option>Cirugía Oral</option>
           <option>Endodoncia</option>
           <option>Ortodoncia</option>
-          <option>Odontología General</option>
+          <option>Medicina General</option>
         </x-form.select>
       </div>
 
@@ -93,13 +93,13 @@
         <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-700 inline-block rounded"></span> Cirugía Oral (48%)</div>
         <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-500 inline-block rounded"></span> Endodoncia (23%)</div>
         <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-400 inline-block rounded"></span> Ortodoncia (17%)</div>
-        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-300 inline-block rounded"></span> Odontología General (12%)</div>
+        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-300 inline-block rounded"></span> Medicina General (12%)</div>
       </div>
     </x-ui.card>
 
-    {{-- Ocupación por odontólogo (barras mock) --}}
+    {{-- Ocupación por médico (barras mock) --}}
     <x-ui.card>
-      <div class="text-center font-semibold mb-3">Ocupación por odontólogo</div>
+      <div class="text-center font-semibold mb-3">Ocupación por médico</div>
       <div class="grid grid-cols-7 gap-3 items-end h-56">
         @php
           $barras = [

@@ -12,8 +12,8 @@ class UserTypeSeeder extends Seeder
         DB::table('user_types')->insert([
             ['nombre' => 'Administrador', 'created_at' => now(), 'updated_at' => now()],
             ['nombre' => 'Médico', 'created_at' => now(), 'updated_at' => now()],
-            ['nombre' => 'Paciente', 'created_at' => now(), 'updated_at' => now()],
             ['nombre' => 'Secretaria', 'created_at' => now(), 'updated_at' => now()],
+            ['nombre' => 'Paciente', 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 }

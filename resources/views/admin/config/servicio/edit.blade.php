@@ -11,7 +11,7 @@
         {{-- Especialidad --}}
         <x-form.select name="id_tipos_especialidad" label="Especialidad" required>
           @foreach($specialties as $specialty)
-            <option value="{{ $specialty->id_tipos_especialidad }}" 
+            <option value="{{ $specialty->id_tipos_especialidad }}"
                     {{ $service->id_tipos_especialidad == $specialty->id_tipos_especialidad ? 'selected' : '' }}>
               {{ $specialty->nombre }}
             </option>
