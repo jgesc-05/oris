@@ -69,9 +69,13 @@ $credentials = $request->validate([
 $user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
 
 // 3. Verificación de existencia y contraseña
-if ($user && Hash::check($credentials['password'], $user->password)) {
-    
-    // 4. Inicio de sesión y seguridad de sesión
+if (
+    $user
+    && in_array($user->id_tipo_usuario, [1, 2, 3], true)
+    && Hash::check($credentials['password'], $user->password)
+) {
+
+    //1 sesiones
     Auth::guard('web')->login($user);
     $request->session()->regenerate();
 
@@ -79,7 +83,6 @@ if ($user && Hash::check($credentials['password'], $user->password)) {
         'ultimo_acceso' => now(),
     ]);
 
-    // 5. Redirección por rol (usando id_tipo_usuario)
     return $this->redirectToRole($user->id_tipo_usuario);
 }
 
@@ -98,10 +101,10 @@ return back()->withErrors([
                 return redirect()->intended(route('admin.dashboard'));
             case 2:
                 //Médico
-                /*return redirect()->intended(route(''));*/
+                return redirect()->intended(route('medico.dashboard'));
             case 3:
                 //Secretaria
-                /*return redirect()->intended(route(''));*/
+                return redirect()->intended(route('secretaria.inicio'));
             default:
                 Auth::logout(); 
                 return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
@@ -181,4 +184,3 @@ return back()->withErrors([
     
 }   
     
-

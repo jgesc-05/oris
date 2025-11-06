@@ -28,6 +28,18 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('patientNavItems', $items);
         });
+
+        \Illuminate\Support\Facades\View::composer(['layouts.secretaria', 'secretaria.*'], function ($view) {
+            $items = [
+                ['label' => 'Inicio',    'href' => route('secretaria.inicio'),    'active' => request()->routeIs('secretaria.inicio')],
+                ['label' => 'Agenda',    'href' => route('secretaria.agenda'),    'active' => request()->routeIs('secretaria.agenda')],
+                ['label' => 'Pacientes', 'href' => route('secretaria.pacientes.index'), 'active' => request()->routeIs('secretaria.pacientes.*')],
+                ['label' => 'Médicos',   'href' => route('secretaria.medicos.index'),   'active' => request()->routeIs('secretaria.medicos.*')],
+                ['label' => 'Servicios', 'href' => route('secretaria.servicios.index'), 'active' => request()->routeIs('secretaria.servicios.*')],
+            ];
+
+            $view->with('secretaryNavItems', $items);
+        });
     }
 
 }
