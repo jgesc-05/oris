@@ -95,6 +95,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
    Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
    Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
 
+   //Suspender usuario
+   Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
+
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
     Route::get('/pacientes/{paciente}', function ($paciente) {

@@ -226,6 +226,19 @@ return back()->withErrors([
             ->route('admin.usuarios.index')
             ->with('success', 'El usuario se actualizó correctamente.');
     }
+
+    //Cambiar estado (suspender)
+    public function toggleState(int $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Cambiar entre activo/inactivo
+        $user->estado = ($user->estado === 'activo') ? 'inactivo' : 'activo';
+        $user->save();
+
+        return redirect()->route('admin.usuarios.index')
+                        ->with('success', 'Estado del usuario actualizado correctamente.');
+    }
 }   
     
 

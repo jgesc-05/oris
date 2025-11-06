@@ -107,7 +107,16 @@
                 <div class="flex items-center gap-2">
                     <x-ui.button variant="secondary" size="sm" :href="route('admin.usuarios.show', $u->id_usuario)">Ver</x-ui.button>
                     <x-ui.button variant="ghost" size="sm" :href="route('admin.usuarios.edit', $u->id_usuario)">Editar</x-ui.button>
-                    <x-ui.button variant="warning" size="sm">Suspender</x-ui.button>
+                    <form method="POST" action="{{ route('admin.usuarios.toggle-state', $u->id_usuario) }}" class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <x-ui.button 
+                            variant="warning" 
+                            size="sm"
+                            type="submit">
+                            {{ $u->estado === 'activo' ? 'Suspender' : 'Activar' }}
+                        </x-ui.button>
+                    </form>
                     <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
                 </div>
             </td>
