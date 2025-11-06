@@ -1,16 +1,25 @@
 {{-- resources/views/admin/usuarios/index.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Usuarios — Admin')
+@if (session('success'))
+  <x-ui.alert variant="success" title="Operación exitosa" class="mb-4">
+    {{ session('success') }}
+  </x-ui.alert>
+@endif
+
 
 @section('admin-content')
+  {{-- Mensaje de éxito - DEBE ESTAR AL PRINCIPIO --}}
+
 
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-xl md:text-2xl font-bold text-neutral-900">Usuarios</h1>
-
     <x-ui.button variant="primary" :href="route('admin.usuarios.create')">
       + Crear nuevo usuario
     </x-ui.button>
   </div>
+
+  
 
   {{-- Filtros + búsqueda --}}
   <x-ui.card class="mb-4">
@@ -98,8 +107,23 @@
                 <div class="flex items-center gap-2">
                     <x-ui.button variant="secondary" size="sm" :href="route('admin.usuarios.show', $u->id_usuario)">Ver</x-ui.button>
                     <x-ui.button variant="ghost" size="sm" :href="route('admin.usuarios.edit', $u->id_usuario)">Editar</x-ui.button>
-                    <x-ui.button variant="warning" size="sm">Suspender</x-ui.button>
-                    <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
+                    <form method="POST" action="{{ route('admin.usuarios.toggle-state', $u->id_usuario) }}" class="inline">
+                        @csrf
+                        @method('PATCH')
+                        <x-ui.button 
+                            variant="warning" 
+                            size="sm"
+                            type="submit">
+                            {{ $u->estado === 'activo' ? 'Suspender' : 'Activar' }}
+                        </x-ui.button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.usuarios.destroy', $u->id_usuario) }}" class="inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ $u->nombres }} {{ $u->apellidos }}? Esta acción no se puede deshacer.')">
+                      @csrf
+                      @method('DELETE')
+                      <x-ui.button variant="ghost" size="sm" type="submit">
+                          Eliminar
+                      </x-ui.button>
+                  </form>
                 </div>
             </td>
         </tr>
