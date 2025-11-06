@@ -10,7 +10,7 @@ use App\Http\Controllers\Paciente\PatientPortalController;
 use App\Http\Controllers\Secretary\SecretaryAppointmentController;
 use App\Http\Controllers\Secretary\SecretaryPatientController;
 use App\Http\Controllers\Secretary\SecretaryPortalController;
-use App\Http\Controllers\Secretaria\SecretaryScheduleController;
+use App\Http\Controllers\Secretary\SecretaryScheduleController;
 
 
 Route::get('/', function () {

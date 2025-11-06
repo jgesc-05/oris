@@ -4,19 +4,6 @@
 
 @section('secretary-content')
 
-@php
-  $firstName   = $patient?->nombres ?? 'Javier';
-  $currentDate = \Carbon\Carbon::now()->locale('es')->translatedFormat('l, j \\d\\e F');
-
-  $cita = $nextAppointment ?? [
-    'dia'      => 'Lunes, 30 de septiembre',
-    'hora'     => '9:00 AM',
-    'doctor'   => 'Dra. Sandra Rodríguez',
-    'detalle'  => 'Control de rutina',
-    'existe'   => true,
-  ];
-@endphp
-
 <div class="space-y-8">
 
   {{-- Encabezado --}}
@@ -25,7 +12,7 @@
       <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">
         Hola, {{ $secretary?->nombres ?? 'Juliana' }}
       </h1>
-      <p class="text-sm md:text-base text-neutral-600 mt-1">Hoy es {{ $currentDate }}</p>
+      <p class="text-sm md:text-base text-neutral-600 mt-1">Hoy es {{ now()->locale('es')->translatedFormat('l, j \\d\\e F') }}</p>
     </div>
   </header>
 
