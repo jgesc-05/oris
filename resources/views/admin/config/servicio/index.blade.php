@@ -1,59 +1,80 @@
-@extends('layouts.paciente')
+{{-- resources/views/admin/config/servicio/index.blade.php --}}
+@extends('layouts.admin')
+@section('title','Servicios — Configuración')
 
-@section('title', 'Especialidades médicas — Paciente')
+@if (session('success'))
+  <x-ui.alert variant="success" title="Operación exitosa" class="mb-4">
+    {{ session('success') }}
+  </x-ui.alert>
+@endif
 
-@section('patient-content')
-  {{-- Encabezado --}}
-  <div class="mb-8 text-left">
-    <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">Especialidades médicas</h1>
-    <p class="text-neutral-600 text-sm mt-1">Selecciona una especialidad para conocer los servicios disponibles</p>
-  </div>
+@section('admin-content')
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl md:text-2xl font-bold">Servicios</h1>
+    <x-ui.button variant="primary" :href="route('admin.config.servicio.create')">+ Nuevo servicio</x-ui.button>
+  </div>
 
-  <x-ui.card class="space-y-6 p-6">
-    {{-- Grid de especialidades (3 por fila) --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      @foreach ($especialidades as $esp)
-        <div class="group block rounded-xl border border-neutral-200 bg-neutral-50 hover:bg-white hover:border-rose-200 shadow-sm hover:shadow-md transition-all duration-200 ease-out p-5">
+  <x-ui.card>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-neutral-200">
+        <thead class="bg-neutral-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-xs font-medium text-neutral-600 uppercase">Servicio</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-neutral-600 uppercase">Especialidad</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-neutral-600 uppercase">Estado</th>
+            <th class="px-4 py-2 text-left text-xs font-medium text-neutral-600 uppercase">Acciones</th>
+          </tr>
+        </thead>
 
-          <div class="flex items-center gap-5">
-            {{-- Icono y título (Ahora muestra '✨') --}}
-            <div class="flex flex-col items-center justify-center w-24 text-center">
-              <div class="text-4xl mb-2 text-neutral-700 group-hover:text-rose-700 transition-colors">
-                {{ $esp['icono'] }}
-              </div>
-              <h2 class="font-semibold text-sm text-neutral-900 leading-tight">
-                {{ $esp['nombre'] }}
-              </h2>
-            </div>
+        <tbody class="bg-white divide-y divide-neutral-200">
+          @foreach($services as $s)
+            <tr>
+              <td class="px-4 py-3 text-sm">{{ $s->nombre }}</td>
+              <td class="px-4 py-3 text-sm text-neutral-700">
+                {{ $s->tipoEspecialidad->nombre ?? 'Sin especialidad' }}
+              </td>
+              <td class="px-4 py-3">
+                @if($s->estado === 'activo')
+                  <x-ui.badge variant="success">Activo</x-ui.badge>
+                @else
+                  <x-ui.badge variant="neutral">Inactivo</x-ui.badge>
+                @endif
+              </td>
 
-            {{-- Línea divisoria vertical --}}
-            <div class="h-16 border-l border-neutral-300"></div>
+              <td class="px-4 py-3">
+                <div class="flex gap-2">
+                  {{-- Botón de editar --}}
+                  <x-ui.button variant="ghost" size="sm" :href="route('admin.config.servicio.edit', $s->id_servicio)">
+                    Editar
+                  </x-ui.button>
 
-            {{-- Descripción y botón --}}
-            <div class="flex-1">
-              <p class="text-sm text-neutral-600 leading-snug">
-                {{ $esp['descripcion'] }}
-              </p>
-              <div class="mt-3">
-                <x-ui.button variant="info" size="sm" class="rounded-full px-4 py-1 text-xs" href="route('paciente.servicios.especialidad', ['especialidad' => $esp['slug']])">
-                  Ver más
-                </x-ui.button>
-              </div>
-            </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
-    <br>
-    {{-- Botón general --}}
-    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <span class="text-sm text-neutral-600">
-        ¿Ya sabes qué servicio necesitas? Agenda tu cita directamente desde aquí.
-      </span>
-      <x-ui.button variant="primary" size="md" class="rounded-full px-6 shadow-sm hover:shadow-md"
-        href="{{ route('paciente.citas.create') }}">
-        Agendar cita
-      </x-ui.button>
-    </div>
-  </x-ui.card>
+                  {{-- Botón de activar/desactivar --}}
+                  <form action="{{ route('admin.config.servicio.toggle', $s->id_servicio) }}" method="POST" style="display:inline;">
+                    @csrf
+                    <x-ui.button 
+                        variant="{{ $s->estado === 'activo' ? 'warning' : 'success' }}" 
+                        size="sm"
+                        type="submit">
+                        {{ $s->estado === 'activo' ? 'Desactivar' : 'Activar' }}
+                    </x-ui.button>
+                  </form>
+
+                  {{-- Botón de eliminar --}}
+                  <form action="{{ route('admin.config.servicio.destroy', $s->id_servicio) }}" method="POST"
+                        onsubmit="return confirm('¿Estás seguro de que quieres eliminar este servicio? Esta acción es irreversible.');"
+                        style="display: inline;">
+                      @csrf
+                      @method('DELETE')
+                      <x-ui.button type="submit" variant="ghost" size="sm">
+                          Eliminar
+                      </x-ui.button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+  </x-ui.card>
 @endsection
