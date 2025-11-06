@@ -24,6 +24,7 @@
           name="fecha"
           label="Fecha"
           :value="old('fecha', $cita['fecha'])"
+          :min="now()->toDateString()"
           required
         />
 
@@ -36,6 +37,7 @@
 
         {{-- Hora --}}
         <x-form.select name="hora" label="Hora" required>
+          <option value="">-- Seleccionar --</option>
           @foreach($horas as $h)
             <option value="{{ $h }}" @selected(old('hora',$cita['hora']) === $h)>{{ \Carbon\Carbon::createFromFormat('H:i',$h)->format('g:i A') }}</option>
           @endforeach

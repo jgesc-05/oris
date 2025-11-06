@@ -130,6 +130,15 @@ class PatientAuthController extends Controller
         return redirect()->route('paciente.inicio');
     }
 
+    public function logout(Request $request)
+    {
+        auth('paciente')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('paciente.login');
+    }
+
     private function getPatientUserTypeId(): ?int
     {
         static $patientTypeId = null;

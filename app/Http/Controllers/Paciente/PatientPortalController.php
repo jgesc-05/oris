@@ -72,6 +72,12 @@ class PatientPortalController extends Controller
             ['nombre' => 'Exámenes especializados', 'descripcion' => 'Pruebas médicas según indicaciones clínicas.', 'icono' => '🧪'],
         ];
 
+        $servicios = collect($servicios)->map(function (array $servicio) use ($slug) {
+            $servicio['slug'] = Str::slug($servicio['nombre']);
+            $servicio['especialidad_slug'] = $slug;
+            return $servicio;
+        })->toArray();
+
         return view('paciente.servicios.especialidad', compact('especialidad', 'servicios'));
     }
 
@@ -80,27 +86,86 @@ class PatientPortalController extends Controller
     {
         $patient = Auth::guard('paciente')->user();
 
-        $doctors = [
+        $especialidades = [
+            ['nombre' => 'Medicina general',      'descripcion' => 'Seguimiento integral del estado de salud.',       'icono' => '🩺'],
+            ['nombre' => 'Pediatría',             'descripcion' => 'Atención especializada para niños y niñas.',      'icono' => '👶'],
+            ['nombre' => 'Cardiología',           'descripcion' => 'Tratamiento de enfermedades del corazón.',        'icono' => '❤️'],
+            ['nombre' => 'Dermatología',          'descripcion' => 'Cuidado de la piel, cabello y uñas.',             'icono' => '🧴'],
+            ['nombre' => 'Neurología',            'descripcion' => 'Trastornos del sistema nervioso.',               'icono' => '🧠'],
+            ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación de la movilidad y funcionalidad.', 'icono' => '🏃‍♀️'],
+        ];
+
+        $especialidades = collect($especialidades)->map(function (array $especialidad) {
+            $especialidad['slug'] = Str::slug($especialidad['nombre']);
+            return $especialidad;
+        })->toArray();
+
+        return view('paciente.medicos.index', [
+            'patient'        => $patient,
+            'especialidades' => $especialidades,
+        ]);
+    }
+
+    public function medicosEspecialidad(string $slug)
+    {
+        $patient = Auth::guard('paciente')->user();
+
+        $especialidad = [
+            'nombre' => Str::title(str_replace('-', ' ', $slug)),
+            'slug'   => $slug,
+        ];
+
+        $medicos = [
             [
-                'name' => 'Dra. Laura Hernández',
-                'specialty' => 'Medicina general',
-                'availability' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
+                'nombre'       => 'Dra. Laura Hernández',
+                'descripcion'  => 'Especialista en atención preventiva y control de enfermedades crónicas.',
+                'formacion'    => 'Médico cirujano — Universidad Nacional',
+                'experiencia'  => '10 años',
+                'disponibilidad' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
             ],
             [
-                'name' => 'Dr. Andrés Salazar',
-                'specialty' => 'Ortodoncia',
-                'availability' => 'Martes y jueves — 10:00 a.m. - 6:00 p.m.',
+                'nombre'       => 'Dr. Andrés Salazar',
+                'descripcion'  => 'Enfoque en diagnóstico temprano y medicina familiar.',
+                'formacion'    => 'Especialista en Medicina Familiar — Universidad Javeriana',
+                'experiencia'  => '8 años',
+                'disponibilidad' => 'Martes y jueves — 10:00 a.m. - 6:00 p.m.',
             ],
             [
-                'name' => 'Dra. Catalina Díaz',
-                'specialty' => 'Rehabilitación oral',
-                'availability' => 'Miércoles y sábado — 9:00 a.m. - 2:00 p.m.',
+                'nombre'       => 'Dra. Catalina Díaz',
+                'descripcion'  => 'Atención integral a pacientes con condiciones crónicas.',
+                'formacion'    => 'Medicina interna — Universidad de los Andes',
+                'experiencia'  => '12 años',
+                'disponibilidad' => 'Miércoles y sábado — 9:00 a.m. - 2:00 p.m.',
             ],
         ];
 
-        return view('paciente.medicos.index', [
+        $medicos = collect($medicos)->map(function (array $medico) use ($slug) {
+            $medico['slug'] = Str::slug($medico['nombre']);
+            $medico['especialidad_slug'] = $slug;
+            return $medico;
+        })->toArray();
+
+        return view('paciente.medicos.especialidad', compact('patient', 'especialidad', 'medicos'));
+    }
+
+    public function medicosDetalle(string $especialidad, string $medico)
+    {
+        $patient = Auth::guard('paciente')->user();
+
+        $medicoDetalle = [
+            'nombre'              => Str::title(str_replace('-', ' ', $medico)),
+            'especialidad'        => Str::title(str_replace('-', ' ', $especialidad)),
+            'especialidad_slug'   => $especialidad,
+            'descripcion'         => 'Profesional con un enfoque humano y preventivo, acompañando procesos de diagnóstico y tratamiento.',
+            'formacion'           => 'Médico cirujano — Universidad Nacional, especialización en Medicina interna.',
+            'experiencia'         => 'Más de 10 años en consulta externa y hospitalaria.',
+            'disponibilidad'      => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
+            'icono'               => '👨‍⚕️',
+        ];
+
+        return view('paciente.medicos.detalle', [
             'patient' => $patient,
-            'doctors' => $doctors,
+            'medico'  => $medicoDetalle,
         ]);
     }
 
@@ -117,9 +182,9 @@ class PatientPortalController extends Controller
     {
         $data = $request->validate([
             'especialidad' => ['required', 'string', 'max:100'],
-            'fecha'        => ['required', 'date'],
+            'fecha'        => ['required', 'date', 'after_or_equal:today'],
             'servicio'     => ['required', 'string', 'max:150'],
-            'hora'         => ['required'],
+            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
             'medico'       => ['required', 'string', 'max:150'],
         ]);
 
@@ -189,7 +254,7 @@ class PatientPortalController extends Controller
         $especialidades = ['Endodoncia', 'Ortodoncia', 'Medicina general'];
         $servicios      = ['Tratamiento de conducto', 'Control de ortodoncia', 'Limpieza dental'];
         $medicos        = ['Luisa Mantilla', 'Antonio Londoño', 'Sandra Rodríguez'];
-        $horas          = ['08:00', '09:00', '10:00', '11:00', '14:00', '15:00'];
+        $horas          = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
 
         return view('paciente.citas.reprogramar.edit', compact(
             'patient', 'cita', 'especialidades', 'servicios', 'medicos', 'horas'
@@ -202,8 +267,8 @@ class PatientPortalController extends Controller
             'especialidad' => ['required', 'string', 'max:100'],
             'servicio'     => ['required', 'string', 'max:150'],
             'medico'       => ['required', 'string', 'max:150'],
-            'fecha'        => ['required', 'date'],
-            'hora'         => ['required', 'date_format:H:i'],
+            'fecha'        => ['required', 'date', 'after_or_equal:today'],
+            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
         ]);
 
         $appointment = [
@@ -236,8 +301,8 @@ class PatientPortalController extends Controller
     {
         $data = $request->validate([
             'cita_id' => ['required'],
-            'fecha'   => ['nullable', 'date'],
-            'hora'    => ['nullable', 'string'],
+            'fecha'   => ['nullable', 'date', 'after_or_equal:today'],
+            'hora'    => ['nullable', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
             'medico'  => ['nullable', 'string'],
             'servicio'=> ['nullable', 'string'],
         ]);
@@ -263,9 +328,9 @@ class PatientPortalController extends Controller
     {
         $data = $request->validate([
             'especialidad' => ['required', 'string', 'max:100'],
-            'fecha'        => ['required', 'date'],
+            'fecha'        => ['required', 'date', 'after_or_equal:today'],
             'servicio'     => ['required', 'string', 'max:150'],
-            'hora'         => ['required', 'string'],
+            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
             'medico'       => ['required', 'string', 'max:150'],
         ]);
 
@@ -319,6 +384,25 @@ class PatientPortalController extends Controller
         return view('paciente.citas.index', compact('patient','appointments'));
     }
 
+
+    public function servicioDetalle(string $especialidad, string $servicio)
+    {
+        $especialidadNombre = Str::title(str_replace('-', ' ', $especialidad));
+        $servicioNombre     = Str::title(str_replace('-', ' ', $servicio));
+
+        $servicio = [
+            'nombre'            => $servicioNombre,
+            'especialidad'      => $especialidadNombre,
+            'especialidad_slug' => $especialidad,
+            'descripcion_corta' => 'Evaluación médica integral y orientación diagnóstica.',
+            'descripcion_larga' => 'Este servicio incluye una valoración clínica completa realizada por un médico general, con enfoque preventivo y diagnóstico. Ideal para chequeos, control de síntomas o derivación a especialistas.',
+            'duracion'          => '30 minutos',
+            'doctor'            => 'Dr. Andrés Gutiérrez',
+            'icono'             => '🩺',
+        ];
+
+        return view('paciente.servicios.detalle', compact('servicio'));
+    }
 
 
 

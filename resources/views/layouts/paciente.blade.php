@@ -14,7 +14,7 @@
   <x-partials.navbar-top
     :items="$patientNavItems ?? []"
     :profile="$profile"
-
+    logoutRoute="paciente.logout"
   />
 @endsection
 

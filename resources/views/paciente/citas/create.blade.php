@@ -20,6 +20,15 @@
   </x-ui.alert>
 @endif
 
+@php
+  $timeSlots = [];
+  foreach (range(7, 20) as $hour) {
+    foreach ([0, 30] as $minute) {
+      $timeSlots[] = sprintf('%02d:%02d', $hour, $minute);
+    }
+  }
+@endphp
+
 <x-ui.card class="max-w-5xl">
   <form method="POST" action="{{ $storeUrl }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
     @csrf
@@ -34,7 +43,13 @@
     </x-form.select>
 
     {{-- Fecha --}}
-    <x-form.input name="fecha" label="Fecha" type="date" required />
+    <x-form.input
+      name="fecha"
+      label="Fecha"
+      type="date"
+      required
+      :min="now()->toDateString()"
+    />
 
     {{-- Servicio específico (depende de la especialidad; mock por ahora) --}}
     <x-form.select name="servicio" label="Servicio específico" required>
@@ -46,7 +61,14 @@
     </x-form.select>
 
     {{-- Hora --}}
-    <x-form.input name="hora" label="Hora" type="time" required />
+    <x-form.select name="hora" label="Hora" required>
+      <option value="">-- Seleccionar --</option>
+      @foreach ($timeSlots as $slot)
+        <option value="{{ $slot }}" @selected(old('hora') === $slot)>
+          {{ \Carbon\Carbon::createFromFormat('H:i', $slot)->format('h:i A') }}
+        </option>
+      @endforeach
+    </x-form.select>
 
     {{-- Profesional --}}
     <x-form.select name="medico" label="Médico" required class="md:col-span-2">
