@@ -7,6 +7,11 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
 use App\Http\Controllers\Paciente\PatientPortalController;
+use App\Http\Controllers\Secretary\SecretaryAppointmentController;
+use App\Http\Controllers\Secretary\SecretaryPatientController;
+use App\Http\Controllers\Secretary\SecretaryPortalController;
+use App\Http\Controllers\Secretary\SecretaryScheduleController;
+
 
 Route::get('/', function () {
     return redirect()->route('acceder');
@@ -30,7 +35,7 @@ Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login'
 Route::post('/logout', [UserController::class, 'staffLogout'])->name('logout');
 
 // ============================================
-// AUTH - Pacientes
+// Pacientes
 // ============================================
 Route::prefix('paciente')->name('paciente.')->group(function () {
     // Mostrar formulario de login
@@ -65,11 +70,63 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
             Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
             Route::get('reprogramar/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->name('reprogramar.confirmada');
 
-            Route::get('cancelar',         [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
+            Route::get('cancelar', [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
             Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');
             Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
         });
     });
+});
+
+Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->group(function () {
+    Route::get('inicio', [SecretaryPortalController::class, 'inicio'])->name('inicio');
+    Route::get('agenda', [SecretaryPortalController::class, 'agenda'])->name('agenda');
+
+    Route::get('servicios', [SecretaryPortalController::class, 'servicios'])->name('servicios.index');
+    Route::get('servicios/{especialidad}', [SecretaryPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
+    Route::get('servicios/{especialidad}/{servicio}', [SecretaryPortalController::class, 'serviciosDetalle'])->name('servicios.detalle');
+
+    Route::get('medicos', [SecretaryPortalController::class, 'medicos'])->name('medicos.index');
+    Route::get('medicos/{especialidad}', [SecretaryPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
+    Route::get('medicos/{especialidad}/{medico}', [SecretaryPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
+
+    Route::prefix('pacientes')->name('pacientes.')->group(function () {
+        Route::get('/', [SecretaryPatientController::class, 'index'])->name('index');
+        Route::get('crear', [SecretaryPatientController::class, 'create'])->name('create');
+        Route::post('/', [SecretaryPatientController::class, 'store'])->name('store');
+        Route::get('{patient}', [SecretaryPatientController::class, 'show'])->whereNumber('patient')->name('show');
+    });
+
+    Route::prefix('citas')->name('citas.')->group(function () {
+        Route::get('agendar', [SecretaryAppointmentController::class, 'showAgendarLookup'])->name('agendar.lookup');
+        Route::post('agendar', [SecretaryAppointmentController::class, 'submitAgendarLookup'])->name('agendar.lookup.submit');
+        Route::get('agendar/{patient}', [SecretaryAppointmentController::class, 'showCreateForm'])->name('create.form');
+        Route::post('agendar/{patient}', [SecretaryAppointmentController::class, 'storeAppointment'])->name('create.store');
+
+        Route::get('reprogramar', [SecretaryAppointmentController::class, 'showReprogramarLookup'])->name('reprogramar.lookup');
+        Route::post('reprogramar', [SecretaryAppointmentController::class, 'submitReprogramarLookup'])->name('reprogramar.lookup.submit');
+        Route::get('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'showReprogramSelection'])->name('reprogramar.seleccion');
+        Route::post('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'submitReprogramSelection'])->name('reprogramar.seleccion.submit');
+        Route::get('reprogramar/{patient}/{appointment}/editar', [SecretaryAppointmentController::class, 'editReprogram'])->name('reprogramar.edit');
+        Route::put('reprogramar/{patient}/{appointment}', [SecretaryAppointmentController::class, 'updateReprogram'])->name('reprogramar.update');
+
+        Route::get('cancelar', [SecretaryAppointmentController::class, 'showCancelarLookup'])->name('cancelar.lookup');
+        Route::post('cancelar', [SecretaryAppointmentController::class, 'submitCancelarLookup'])->name('cancelar.lookup.submit');
+        Route::get('cancelar/{patient}', [SecretaryAppointmentController::class, 'showCancelList'])->name('cancelar.list');
+        Route::post('cancelar/{patient}', [SecretaryAppointmentController::class, 'cancelAppointment'])->name('cancelar.confirm');
+    })->where(['patient' => '[0-9]+']);
+
+    Route::prefix('horarios')->name('horarios.')->group(function () {
+        Route::get('bloquear', [SecretaryScheduleController::class, 'showBlockForm'])
+            ->name('bloquear');
+        Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
+            ->name('bloquear.store');
+    });
+
+
+});
+
+Route::prefix('medico')->name('medico.')->middleware(['web', 'auth'])->group(function () {
+    Route::view('dashboard', 'medico.dashboard')->name('dashboard');
 });
 
 // routes/web.php
@@ -89,20 +146,20 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     /*Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);
     })->whereNumber('usuario')->name('usuarios.show');*/
-   // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+    // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
-   //Mostrar info de usuario
-   Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
-   
-   //Edición de datos de usuario
-   Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
-   Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
+    //Mostrar info de usuario
+    Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
 
-   //Suspender usuario
-   Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
+    //Edición de datos de usuario
+    Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
 
-   //Eliminar usuario
-   Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+    //Suspender usuario
+    Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
+
+    //Eliminar usuario
+    Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
@@ -136,7 +193,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
     //Vista de edición (para pasar parámetro de id real)
     Route::get('/config/especialidades/{id}/editar', [SpecialtyController::class, 'edit'])
-    ->name('config.especialidad.edit');
+        ->name('config.especialidad.edit');
 
     //Actualización de la especialidad
     Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
@@ -174,4 +231,4 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/config/medicos/{id}/editar', function ($id) {
         return view('admin.config.medico.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.medico.edit');
-    });
+});

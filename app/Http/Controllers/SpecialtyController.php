@@ -12,7 +12,7 @@ class SpecialtyController extends Controller
 
     public function storeSpecialty(Request $request)
     {
-       $admin = Auth::user();
+        $admin = Auth::user();
 
         //Verificar rol del usuario autenticado
         if ($admin->userType->id_tipo_usuario != 1) {
@@ -26,7 +26,7 @@ class SpecialtyController extends Controller
             'descripcion' => 'required|string|max:255',
         ]);
 
-       
+
         //Creación
         Specialty::create([
             'nombre' => $validated['nombre'],
@@ -36,12 +36,13 @@ class SpecialtyController extends Controller
 
 
         return redirect()
-        ->route('admin.config.especialidad.index')
-        ->with('success', 'La especialidad fue creada correctamente.');
-}
+            ->route('admin.config.especialidad.index')
+            ->with('success', 'La especialidad fue creada correctamente.');
+    }
 
     //Mostrar las especialidades reales
-    public function index(){
+    public function index()
+    {
         $specialties = Specialty::all();
 
         return view('admin.config.especialidad.index', compact('specialties'));
@@ -56,10 +57,11 @@ class SpecialtyController extends Controller
         $specialty->save();
 
         return redirect()->route('admin.config.especialidad.index')
-                        ->with('success', 'Estado de la especialidad actualizado correctamente.');
+            ->with('success', 'Estado de la especialidad actualizado correctamente.');
     }
 
-    public function showCreate(){
+    public function showCreate()
+    {
         return view('admin.config.especialidad.create');
     }
 
@@ -72,15 +74,16 @@ class SpecialtyController extends Controller
 
         // 2. Redireccionar con un mensaje de éxito
         return redirect()
-               ->route('admin.config.especialidad.index') // Redirige al listado
-               ->with([
+            ->route('admin.config.especialidad.index') // Redirige al listado
+            ->with([
                 'title' => 'Especialidad Eliminada con Éxito', // <-- Nuevo Título
                 'success' => "La especialidad '{$specialty->nombre}' ha sido eliminada correctamente." // <-- Mensaje
             ]);
     }
 
     //Editar especialidad
-    public function edit(int $id){
+    public function edit(int $id)
+    {
 
         $specialty = Specialty::findOrFail($id);
 
@@ -89,7 +92,8 @@ class SpecialtyController extends Controller
     }
 
     //Actualizar especialidad
-    public function update(Request $request, int $id){
+    public function update(Request $request, int $id)
+    {
 
         $specialty = Specialty::findOrFail($id);
 

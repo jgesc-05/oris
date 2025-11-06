@@ -22,7 +22,7 @@ class UserController extends Controller
     }
     public function store(Request $request)
     {
-       $admin = Auth::user();
+        $admin = Auth::user();
 
         //Verificar rol del usuario autenticado
         if ($admin->userType->id_tipo_usuario != 1) {
@@ -53,72 +53,79 @@ class UserController extends Controller
 
 
         return redirect()
-        ->route('admin.usuarios.create')
-        ->with('success', 'El usuario fue registrado correctamente.');
-}
+            ->route('admin.usuarios.create')
+            ->with('success', 'El usuario fue registrado correctamente.');
+    }
 
     //Inicio de sesión
-    public function staffLogin(Request $request){
-// 1. Validación
-$credentials = $request->validate([
-    'correo_electronico' => ['required', 'email'],
-    'password' => ['required'],
-]);
+    public function staffLogin(Request $request)
+    {
+        // 1. Validación
+        $credentials = $request->validate([
+            'correo_electronico' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-// 2. Búsqueda manual por la columna de la BD
-$user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
+        // 2. Búsqueda manual por la columna de la BD
+        $user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
 
-// 3. Verificación de existencia y contraseña
-if ($user && Hash::check($credentials['password'], $user->password)) {
-    
-    // 4. Inicio de sesión y seguridad de sesión
-    Auth::guard('web')->login($user);
-    $request->session()->regenerate();
+        // 3. Verificación de existencia y contraseña
+        if (
+            $user
+            && in_array($user->id_tipo_usuario, [1, 2, 3], true)
+            && Hash::check($credentials['password'], $user->password)
+        ) {
 
-    $user->update([
-        'ultimo_acceso' => now(),
-    ]);
+            //1 sesiones
+            Auth::guard('web')->login($user);
+            $request->session()->regenerate();
 
-    // 5. Redirección por rol (usando id_tipo_usuario)
-    return $this->redirectToRole($user->id_tipo_usuario);
-}
+            $user->update([
+                'ultimo_acceso' => now(),
+            ]);
 
-// 6. Retorno de Fallo 
-return back()->withErrors([
-    'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
-])->onlyInput('correo_electronico');
+            return $this->redirectToRole($user->id_tipo_usuario);
+        }
+
+        // 6. Retorno de Fallo
+        return back()->withErrors([
+            'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->onlyInput('correo_electronico');
 
     }
 
     //Redireccionamiento a vista según el rol
-    public function redirectToRole(int $roleId){
+    public function redirectToRole(int $roleId)
+    {
         switch ($roleId) {
             case 1:
                 //Administrador
                 return redirect()->intended(route('admin.dashboard'));
             case 2:
                 //Médico
-                /*return redirect()->intended(route(''));*/
+                return redirect()->intended(route('medico.dashboard'));
             case 3:
                 //Secretaria
-                /*return redirect()->intended(route(''));*/
+                return redirect()->intended(route('secretaria.inicio'));
             default:
-                Auth::logout(); 
+                Auth::logout();
                 return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
         }
     }
 
     //Vista de login
-    public function viewStaffLogin(){
+    public function viewStaffLogin()
+    {
         return view('auth.login');
     }
 
     //Logout
-    public function staffLogout(){
+    public function staffLogout()
+    {
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
-        
+
         return redirect('/login');
     }
 
@@ -127,30 +134,30 @@ return back()->withErrors([
     {
         // Empezamos la consulta base
         $query = User::with('userType');
-    
+
         // Filtro de búsqueda (nombre, apellidos, correo o documento)
         if ($request->filled('q')) {
             $q = $request->input('q');
             $query->where(function ($subquery) use ($q) {
                 $subquery->where('nombres', 'like', "%{$q}%")
-                         ->orWhere('apellidos', 'like', "%{$q}%")
-                         ->orWhere('correo_electronico', 'like', "%{$q}%")
-                         ->orWhere('numero_documento', 'like', "%{$q}%");
+                    ->orWhere('apellidos', 'like', "%{$q}%")
+                    ->orWhere('correo_electronico', 'like', "%{$q}%")
+                    ->orWhere('numero_documento', 'like', "%{$q}%");
             });
         }
-    
+
         //  Filtro por rol
         if ($request->filled('rol')) {
             $query->whereHas('userType', function ($subquery) use ($request) {
                 $subquery->where('nombre', $request->rol);
             });
         }
-    
+
         // Filtro por estado
         if ($request->filled('estado')) {
             $query->where('estado', $request->estado);
         }
-    
+
         // Filtro por fecha de registro
         if ($request->filled('fecha')) {
             $today = now();
@@ -166,18 +173,21 @@ return back()->withErrors([
                     break;
             }
         }
-    
+
         // Ejecutar la consulta final
         $users = $query->orderBy('id_usuario', 'desc')
-                       ->paginate(10)
-                       ->withQueryString(); // mantiene los filtros al paginar
-    
+            ->paginate(10)
+            ->withQueryString(); // mantiene los filtros al paginar
+
         // Devolvemos también los valores de los filtros al view
         return view('admin.usuarios.index', [
             'users' => $users,
             'filters' => $request->only(['q', 'rol', 'estado', 'fecha']),
         ]);
     }
+
+
+
 
     //Editar usuario existente (por parte del admin)
     public function edit(int $id)
@@ -189,7 +199,7 @@ return back()->withErrors([
 
         return view('admin.usuarios.edit', compact('user', 'tiposDocumento', 'tiposUsuario'));
     }
-    
+
     //Actualizar usuario existente(admin)
     public function update(Request $request, int $id)
     {
@@ -237,14 +247,14 @@ return back()->withErrors([
         $user->save();
 
         return redirect()->route('admin.usuarios.index')
-                        ->with('success', 'Estado del usuario actualizado correctamente.');
+            ->with('success', 'Estado del usuario actualizado correctamente.');
     }
 
     //Eliminar usuario empresarial
     public function destroy(int $id)
     {
         $user = User::findOrFail($id);
-        
+
         // 1. Ejecutar la eliminación
         $user->delete();
 
@@ -256,7 +266,7 @@ return back()->withErrors([
                 'success' => "El usuario '{$user->nombres} {$user->apellidos}' ha sido eliminado correctamente."
             ]);
     }
-    
+
     // Mostrar detalle de usuario
     public function show(int $id)
     {
@@ -269,14 +279,14 @@ return back()->withErrors([
     public function toggleStateShow(int $id)
     {
         $user = User::findOrFail($id);
-    
+
         // Cambiar entre activo/inactivo
         $user->estado = ($user->estado === 'activo') ? 'inactivo' : 'activo';
         $user->save();
-    
+
         // CORRECCIÓN: Pasar el ID del usuario como parámetro a la ruta 'show'
-        return redirect()->route('admin.usuarios.show', $user) 
-                         ->with('success', 'Estado del usuario actualizado correctamente.');
+        return redirect()->route('admin.usuarios.show', $user)
+            ->with('success', 'Estado del usuario actualizado correctamente.');
     }
-    
+
 }

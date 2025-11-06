@@ -303,6 +303,47 @@ class UsersTableSeeder extends Seeder
                 'updated_at' => now(),
                 'ultimo_acceso' => null,
             ],
+
+
+            [
+            'id_usuario' => 21,
+            'id_tipo_usuario' => 3, // Secretaria
+            'id_tipo_documento' => 1,
+            'numero_documento' => '60000001',
+            'correo_electronico' => 'maria.secretaria@ips.com',
+            'telefono' => '3105559988',
+            'estado' => 'activo',
+            'nombres' => 'María',
+            'apellidos' => 'López Gómez',
+            'fecha_nacimiento' => '1995-07-12',
+            'fecha_ingreso_ips' => '2024-01-15',
+            'fecha_creacion_sistema' => now(),
+            'observaciones' => 'Secretaria de recepción principal',
+            'password' => bcrypt('12345678'),
+            'created_at' => now(),
+            'updated_at' => now(),
+            'ultimo_acceso' => null,
+        ],
+        [
+            'id_usuario' => 22,
+            'id_tipo_usuario' => 3, // Secretaria
+            'id_tipo_documento' => 1,
+            'numero_documento' => '60000002',
+            'correo_electronico' => 'laura.secretaria@ips.com',
+            'telefono' => '3204446677',
+            'estado' => 'activo',
+            'nombres' => 'Laura',
+            'apellidos' => 'Martínez Rojas',
+            'fecha_nacimiento' => '1993-04-05',
+            'fecha_ingreso_ips' => '2024-03-01',
+            'fecha_creacion_sistema' => now(),
+            'observaciones' => 'Secretaria del área de consultas externas',
+            'password' => bcrypt('12345678'),
+            'created_at' => now(),
+            'updated_at' => now(),
+            'ultimo_acceso' => null,
+        ],
+
         ]);
     }
 }
