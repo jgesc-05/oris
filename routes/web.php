@@ -70,7 +70,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
             Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
             Route::get('reprogramar/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->name('reprogramar.confirmada');
 
-            Route::get('cancelar',         [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
+            Route::get('cancelar', [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
             Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');
             Route::get('mis-citas', [PatientPortalController::class, 'citasIndex'])->name('index');
         });
@@ -120,7 +120,7 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->g
             ->name('bloquear');
         Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
             ->name('bloquear.store');
-});
+    });
 
 
 });
@@ -146,20 +146,20 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     /*Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);
     })->whereNumber('usuario')->name('usuarios.show');*/
-   // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+    // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
 
-   //Mostrar info de usuario
-   Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
-   
-   //Edición de datos de usuario
-   Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
-   Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
+    //Mostrar info de usuario
+    Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
 
-   //Suspender usuario
-   Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
+    //Edición de datos de usuario
+    Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
+    Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
 
-   //Eliminar usuario
-   Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+    //Suspender usuario
+    Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
+
+    //Eliminar usuario
+    Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
@@ -193,7 +193,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
 
     //Vista de edición (para pasar parámetro de id real)
     Route::get('/config/especialidades/{id}/editar', [SpecialtyController::class, 'edit'])
-    ->name('config.especialidad.edit');
+        ->name('config.especialidad.edit');
 
     //Actualización de la especialidad
     Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
@@ -231,4 +231,4 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/config/medicos/{id}/editar', function ($id) {
         return view('admin.config.medico.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.medico.edit');
-    });
+});

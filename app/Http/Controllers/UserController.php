@@ -22,7 +22,7 @@ class UserController extends Controller
     }
     public function store(Request $request)
     {
-       $admin = Auth::user();
+        $admin = Auth::user();
 
         //Verificar rol del usuario autenticado
         if ($admin->userType->id_tipo_usuario != 1) {
@@ -53,48 +53,50 @@ class UserController extends Controller
 
 
         return redirect()
-        ->route('admin.usuarios.create')
-        ->with('success', 'El usuario fue registrado correctamente.');
-}
+            ->route('admin.usuarios.create')
+            ->with('success', 'El usuario fue registrado correctamente.');
+    }
 
     //Inicio de sesión
-    public function staffLogin(Request $request){
-// 1. Validación
-$credentials = $request->validate([
-    'correo_electronico' => ['required', 'email'],
-    'password' => ['required'],
-]);
+    public function staffLogin(Request $request)
+    {
+        // 1. Validación
+        $credentials = $request->validate([
+            'correo_electronico' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
 
-// 2. Búsqueda manual por la columna de la BD
-$user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
+        // 2. Búsqueda manual por la columna de la BD
+        $user = User::where('correo_electronico', $credentials['correo_electronico'])->first();
 
-// 3. Verificación de existencia y contraseña
-if (
-    $user
-    && in_array($user->id_tipo_usuario, [1, 2, 3], true)
-    && Hash::check($credentials['password'], $user->password)
-) {
+        // 3. Verificación de existencia y contraseña
+        if (
+            $user
+            && in_array($user->id_tipo_usuario, [1, 2, 3], true)
+            && Hash::check($credentials['password'], $user->password)
+        ) {
 
-    //1 sesiones
-    Auth::guard('web')->login($user);
-    $request->session()->regenerate();
+            //1 sesiones
+            Auth::guard('web')->login($user);
+            $request->session()->regenerate();
 
-    $user->update([
-        'ultimo_acceso' => now(),
-    ]);
+            $user->update([
+                'ultimo_acceso' => now(),
+            ]);
 
-    return $this->redirectToRole($user->id_tipo_usuario);
-}
+            return $this->redirectToRole($user->id_tipo_usuario);
+        }
 
-// 6. Retorno de Fallo
-return back()->withErrors([
-    'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
-])->onlyInput('correo_electronico');
+        // 6. Retorno de Fallo
+        return back()->withErrors([
+            'correo_electronico' => 'Las credenciales no coinciden con nuestros registros.',
+        ])->onlyInput('correo_electronico');
 
     }
 
     //Redireccionamiento a vista según el rol
-    public function redirectToRole(int $roleId){
+    public function redirectToRole(int $roleId)
+    {
         switch ($roleId) {
             case 1:
                 //Administrador
@@ -112,12 +114,14 @@ return back()->withErrors([
     }
 
     //Vista de login
-    public function viewStaffLogin(){
+    public function viewStaffLogin()
+    {
         return view('auth.login');
     }
 
     //Logout
-    public function staffLogout(){
+    public function staffLogout()
+    {
         Auth::logout();
         request()->session()->invalidate();
         request()->session()->regenerateToken();
@@ -136,9 +140,9 @@ return back()->withErrors([
             $q = $request->input('q');
             $query->where(function ($subquery) use ($q) {
                 $subquery->where('nombres', 'like', "%{$q}%")
-                         ->orWhere('apellidos', 'like', "%{$q}%")
-                         ->orWhere('correo_electronico', 'like', "%{$q}%")
-                         ->orWhere('numero_documento', 'like', "%{$q}%");
+                    ->orWhere('apellidos', 'like', "%{$q}%")
+                    ->orWhere('correo_electronico', 'like', "%{$q}%")
+                    ->orWhere('numero_documento', 'like', "%{$q}%");
             });
         }
 
@@ -172,8 +176,8 @@ return back()->withErrors([
 
         // Ejecutar la consulta final
         $users = $query->orderBy('id_usuario', 'desc')
-                       ->paginate(10)
-                       ->withQueryString(); // mantiene los filtros al paginar
+            ->paginate(10)
+            ->withQueryString(); // mantiene los filtros al paginar
 
         // Devolvemos también los valores de los filtros al view
         return view('admin.usuarios.index', [
@@ -182,7 +186,6 @@ return back()->withErrors([
         ]);
     }
 
-}
 
 
 
@@ -244,7 +247,7 @@ return back()->withErrors([
         $user->save();
 
         return redirect()->route('admin.usuarios.index')
-                        ->with('success', 'Estado del usuario actualizado correctamente.');
+            ->with('success', 'Estado del usuario actualizado correctamente.');
     }
 
     //Eliminar usuario empresarial
@@ -283,7 +286,7 @@ return back()->withErrors([
 
         // CORRECCIÓN: Pasar el ID del usuario como parámetro a la ruta 'show'
         return redirect()->route('admin.usuarios.show', $user)
-                         ->with('success', 'Estado del usuario actualizado correctamente.');
+            ->with('success', 'Estado del usuario actualizado correctamente.');
     }
 
 }
