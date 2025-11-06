@@ -239,6 +239,22 @@ return back()->withErrors([
         return redirect()->route('admin.usuarios.index')
                         ->with('success', 'Estado del usuario actualizado correctamente.');
     }
-}   
-    
 
+    //Eliminar usuario empresarial
+    public function destroy(int $id)
+    {
+        $user = User::findOrFail($id);
+        
+        // 1. Ejecutar la eliminación
+        $user->delete();
+
+        // 2. Redireccionar con un mensaje de éxito
+        return redirect()
+            ->route('admin.usuarios.index')
+            ->with([
+                'title' => 'Usuario Eliminado Con Éxito',
+                'success' => "El usuario '{$user->nombres} {$user->apellidos}' ha sido eliminado correctamente."
+            ]);
+    }   
+    
+}

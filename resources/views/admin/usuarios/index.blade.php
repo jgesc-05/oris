@@ -117,7 +117,13 @@
                             {{ $u->estado === 'activo' ? 'Suspender' : 'Activar' }}
                         </x-ui.button>
                     </form>
-                    <x-ui.button variant="ghost" size="sm">Eliminar</x-ui.button>
+                    <form method="POST" action="{{ route('admin.usuarios.destroy', $u->id_usuario) }}" class="inline" onsubmit="return confirm('¿Estás seguro de que quieres eliminar a {{ $u->nombres }} {{ $u->apellidos }}? Esta acción no se puede deshacer.')">
+                      @csrf
+                      @method('DELETE')
+                      <x-ui.button variant="ghost" size="sm" type="submit">
+                          Eliminar
+                      </x-ui.button>
+                  </form>
                 </div>
             </td>
         </tr>

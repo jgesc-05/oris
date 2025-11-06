@@ -98,6 +98,9 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
    //Suspender usuario
    Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
 
+   //Eliminar usuario
+   Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
+
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
     Route::get('/pacientes/{paciente}', function ($paciente) {
