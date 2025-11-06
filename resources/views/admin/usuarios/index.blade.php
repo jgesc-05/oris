@@ -1,16 +1,25 @@
 {{-- resources/views/admin/usuarios/index.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Usuarios — Admin')
+@if (session('success'))
+  <x-ui.alert variant="success" title="Operación exitosa" class="mb-4">
+    {{ session('success') }}
+  </x-ui.alert>
+@endif
+
 
 @section('admin-content')
+  {{-- Mensaje de éxito - DEBE ESTAR AL PRINCIPIO --}}
+
 
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-xl md:text-2xl font-bold text-neutral-900">Usuarios</h1>
-
     <x-ui.button variant="primary" :href="route('admin.usuarios.create')">
       + Crear nuevo usuario
     </x-ui.button>
   </div>
+
+  
 
   {{-- Filtros + búsqueda --}}
   <x-ui.card class="mb-4">

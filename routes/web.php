@@ -89,7 +89,11 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
     Route::get('/usuarios/{usuario}', function ($usuario) {
         return view('admin.usuarios.show', ['id' => $usuario]);
     })->whereNumber('usuario')->name('usuarios.show');
-    Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+   // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
+   
+   //Edición de datos de usuario
+   Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
+   Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
 
     // ===== Pacientes =====
     Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
