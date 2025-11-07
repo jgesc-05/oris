@@ -99,6 +99,7 @@ class AppointmentAvailabilityService
     {
         $startDate = $startDate->copy()->startOfDay();
         $endDate = $endDate->copy()->endOfDay();
+        $now = Carbon::now();
 
         $slotsPerDate = [];
         $timeSlots = $this->allowedTimeSlots();
@@ -111,6 +112,10 @@ class AppointmentAvailabilityService
                 $slotEnd = $slotStart->copy()->addMinutes(30);
 
                 if ($slotStart->lt($startDate) || $slotEnd->gt($endDate)) {
+                    continue;
+                }
+
+                if ($slotStart->lt($now)) {
                     continue;
                 }
 

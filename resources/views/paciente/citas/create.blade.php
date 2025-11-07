@@ -107,6 +107,68 @@
 
                 let slots = [];
 
+                const createDateFromParts = (date, time = '00:00') => {
+                    if (!date) return null;
+                    const isoString = `${date}T${time}:00`;
+                    const candidate = new Date(isoString);
+                    return Number.isNaN(candidate.getTime()) ? null : candidate;
+                };
+
+                const sanitizeSlots = (rawSlots = []) => {
+                    const now = new Date();
+                    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                    return (rawSlots || [])
+                        .map(slot => {
+                            if (!slot || !slot.date) return null;
+
+                            const slotDate = createDateFromParts(slot.date);
+                            if (!slotDate || slotDate < todayStart) {
+                                return null;
+                            }
+
+                            const filteredTimes = (slot.times || []).filter(time => {
+                                if (!time || !time.value) return false;
+                                const slotDateTime = createDateFromParts(slot.date, time.value);
+                                return slotDateTime && slotDateTime >= now;
+                            });
+
+                            if (!filteredTimes.length) {
+                                return null;
+                            }
+
+                            return {
+                                ...slot,
+                                times: filteredTimes,
+                            };
+                        })
+                        .filter(Boolean);
+                };
+
+                const validateFutureSelection = () => {
+                    horaSelect.setCustomValidity('');
+                    const selectedDate = fechaSelect.value;
+                    const selectedTime = horaSelect.value;
+
+                    if (!selectedDate || !selectedTime) {
+                        return true;
+                    }
+
+                    const selectedDateTime = createDateFromParts(selectedDate, selectedTime);
+                    if (!selectedDateTime) {
+                        return true;
+                    }
+
+                    if (selectedDateTime < new Date()) {
+                        const message = 'Selecciona una fecha y hora futuras.';
+                        horaSelect.setCustomValidity(message);
+                        horaSelect.reportValidity();
+                        return false;
+                    }
+
+                    return true;
+                };
+
                 const resetSelect = (select, placeholder, disable = true) => {
                     select.innerHTML = `<option value="">${placeholder}</option>`;
                     select.value = '';
@@ -213,6 +275,8 @@
                     if (initialTime && slot.times.some(time => time.value === initialTime)) {
                         horaSelect.value = initialTime;
                     }
+
+                    validateFutureSelection();
                 };
 
                 const fetchAvailability = async (doctorId) => {
@@ -234,7 +298,8 @@
                         const response = await fetch(url.toString());
                         const data = await response.json();
                         console.log('[Agendar] Disponibilidad recibida:', data);
-                        slots = data.slots || [];
+                        slots = sanitizeSlots(Array.isArray(data.slots) ? data.slots : []);
+                        console.log('[Agendar] Slots sanitizados:', slots);
                         populateDates();
                     } catch (error) {
                         console.error('[Agendar] Error al cargar disponibilidad:', error);
@@ -262,6 +327,18 @@
                 fechaSelect.addEventListener('change', (event) => {
                     console.log('[Agendar] Evento change fecha:', event.target.value);
                     populateHours(event.target.value);
+                    validateFutureSelection();
+                });
+
+                horaSelect.addEventListener('change', () => {
+                    validateFutureSelection();
+                });
+
+                form.addEventListener('submit', (event) => {
+                    if (!validateFutureSelection()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
                 });
 
                 // Inicialización
