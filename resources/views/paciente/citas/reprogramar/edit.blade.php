@@ -1,3 +1,4 @@
+{{-- resources/views/paciente/citas/reprogramar.blade.php --}}
 @extends('layouts.paciente')
 
 @section('title', 'Reprogramar cita — Paciente')
@@ -11,8 +12,20 @@
         </x-ui.alert>
     @endif
 
+    @if (session('status'))
+        <x-ui.alert variant="success" class="mb-4">
+            {{ session('status') }}
+        </x-ui.alert>
+    @endif
+
     @php
+        // Valores base (prioriza old() y cae al valor de la cita)
         $selectedSpecialty = old('id_tipos_especialidad', $appointment->servicio?->id_tipos_especialidad);
+        $selectedService = old('id_servicio', $appointment->id_servicio);
+        $selectedDoctor = old('id_usuario_medico', $appointment->id_usuario_medico);
+        $selectedDate = old('fecha', optional($appointment->fecha_hora_inicio)->toDateString());
+        $selectedTime = old('hora', optional($appointment->fecha_hora_inicio)->format('H:i'));
+
         $serviceOptions = $selectedSpecialty
             ? $services->where('id_tipos_especialidad', $selectedSpecialty)
             : collect();
@@ -22,16 +35,14 @@
         <form id="reprogramarForm" method="POST"
             action="{{ route('paciente.citas.reprogramar.update', $appointment->id_cita) }}"
             class="grid grid-cols-1 md:grid-cols-2 gap-4" data-availability-url="{{ $availabilityUrl }}"
-            data-appointment-id="{{ $appointment->id_cita }}"
-            data-initial-service="{{ old('id_servicio', $appointment->id_servicio) }}"
-            data-initial-doctor="{{ old('id_usuario_medico', $appointment->id_usuario_medico) }}"
-            data-initial-date="{{ old('fecha', $appointment->fecha_hora_inicio->toDateString()) }}"
-            data-initial-time="{{ old('hora', $appointment->fecha_hora_inicio->format('H:i')) }}">
+            data-appointment-id="{{ $appointment->id_cita }}" data-initial-service="{{ $selectedService }}"
+            data-initial-doctor="{{ $selectedDoctor }}" data-initial-date="{{ $selectedDate }}"
+            data-initial-time="{{ $selectedTime }}">
             @csrf
             @method('PUT')
 
             {{-- Especialidad --}}
-            <x-form.select name="id_tipos_especialidad" label="Especialidad" required id="select-especialidad">
+            <x-form.select name="id_tipos_especialidad" label="Especialidad" required>
                 @foreach ($specialties as $specialty)
                     <option value="{{ $specialty->id_tipos_especialidad }}" @selected($selectedSpecialty == $specialty->id_tipos_especialidad)>
                         {{ $specialty->nombre }}
@@ -40,32 +51,33 @@
             </x-form.select>
 
             {{-- Servicio --}}
-            <x-form.select name="id_servicio" label="Servicio" required id="select-servicio" disabled>
+            <x-form.select name="id_servicio" label="Servicio" required :disabled="!$selectedSpecialty">
+                <option value="">-- Seleccionar --</option>
                 @foreach ($serviceOptions as $service)
-                    <option value="{{ $service->id_servicio }}" @selected(old('id_servicio', $appointment->id_servicio) == $service->id_servicio)>
+                    <option value="{{ $service->id_servicio }}" @selected($selectedService == $service->id_servicio)>
                         {{ $service->nombre }}
                     </option>
                 @endforeach
             </x-form.select>
 
             {{-- Médico --}}
-            <x-form.select name="id_usuario_medico" label="Médico" class="md:col-span-2" required id="select-medico"
-                disabled>
+            <x-form.select name="id_usuario_medico" label="Médico" required class="md:col-span-2" :disabled="!$selectedSpecialty">
+                <option value="">-- Seleccionar --</option>
                 @foreach ($doctors as $doctor)
-                    <option value="{{ $doctor->id_usuario }}" @selected(old('id_usuario_medico', $appointment->id_usuario_medico) == $doctor->id_usuario)>
+                    <option value="{{ $doctor->id_usuario }}" @selected($selectedDoctor == $doctor->id_usuario)>
                         {{ $doctor->nombres }} {{ $doctor->apellidos }}
                     </option>
                 @endforeach
             </x-form.select>
 
             {{-- Fecha --}}
-            <x-form.select name="fecha" label="Fecha" required id="select-fecha" disabled>
-                <option value="">Selecciona un médico</option>
+            <x-form.select name="fecha" label="Fecha" required :disabled="!$selectedDoctor">
+                <option value="">{{ $selectedDoctor ? 'Cargando…' : 'Selecciona un médico' }}</option>
             </x-form.select>
 
             {{-- Hora --}}
-            <x-form.select name="hora" label="Hora" required id="select-hora" disabled>
-                <option value="">Selecciona una fecha</option>
+            <x-form.select name="hora" label="Hora" required :disabled="!$selectedDate">
+                <option value="">{{ $selectedDate ? 'Cargando…' : 'Selecciona una fecha' }}</option>
             </x-form.select>
 
             {{-- Notas --}}
@@ -83,22 +95,24 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                console.log('[Reprogramar] Script inicializado');
-                const services = @json($servicesPayload);
-                const doctors = @json($doctorsPayload ?? []);
-                console.log('[Reprogramar] Servicios disponibles:', services);
-                console.log('[Reprogramar] Doctores disponibles:', doctors);
+                console.log('[Reprogramar] Init');
 
+                // Backend payloads (mismo shape que en "agendar")
+                const services = @json($servicesPayload); // [{ id, name, specialty_id }, ...]
+                const doctors = @json($doctorsPayload ?? []); // [{ id, nombres, apellidos, specialty_id }, ...]
+
+                // Selecciona por "name" para evitar desajustes de id
                 const form = document.getElementById('reprogramarForm');
-                const specialtySelect = document.getElementById('select-especialidad');
-                const serviceSelect = document.getElementById('select-servicio');
-                const doctorSelect = document.getElementById('select-medico');
-                const fechaSelect = document.getElementById('select-fecha');
-                const horaSelect = document.getElementById('select-hora');
+                const specialtySelect = document.querySelector('[name="id_tipos_especialidad"]');
+                const serviceSelect = document.querySelector('[name="id_servicio"]');
+                const doctorSelect = document.querySelector('[name="id_usuario_medico"]');
+                const fechaSelect = document.querySelector('[name="fecha"]');
+                const horaSelect = document.querySelector('[name="hora"]');
 
                 const availabilityUrl = form.dataset.availabilityUrl;
                 const appointmentId = form.dataset.appointmentId;
-                let preselectedService = form.dataset.initialService;
+
+                const initialService = form.dataset.initialService; // NUEVO
                 const initialDoctor = form.dataset.initialDoctor;
                 const initialDate = form.dataset.initialDate;
                 const initialTime = form.dataset.initialTime;
@@ -112,126 +126,98 @@
                 };
 
                 const populateServices = () => {
-                    const specialtyId = Number(specialtySelect.value);
-                    console.log('[Reprogramar] populateServices -> specialty:', specialtyId);
-                    const filteredServices = services.filter(service => service.specialty_id === specialtyId);
-                    console.log('[Reprogramar] Servicios filtrados:', filteredServices);
+                    const specialtyId = String(specialtySelect.value || '');
+                    const filtered = services.filter(s => String(s.specialty_id) === specialtyId);
 
                     resetSelect(serviceSelect, '-- Seleccionar --', true);
                     resetSelect(doctorSelect, '-- Seleccionar --', true);
                     resetSelect(fechaSelect, 'Selecciona un médico', true);
                     resetSelect(horaSelect, 'Selecciona una fecha', true);
 
-                    if (!specialtyId) {
-                        return;
-                    }
+                    if (!specialtyId) return;
 
-                    filteredServices.forEach(service => {
-                        const option = document.createElement('option');
-                        option.value = service.id;
-                        option.textContent = service.name;
-                        serviceSelect.appendChild(option);
+                    filtered.forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = String(s.id);
+                        opt.textContent = s.name;
+                        serviceSelect.appendChild(opt);
                     });
 
-                    if (filteredServices.length) {
+                    if (filtered.length) {
                         serviceSelect.disabled = false;
-                    }
 
-                    if (filteredServices.length && preselectedService) {
-                        serviceSelect.value = preselectedService;
-                        preselectedService = null;
+                        // Preselección del servicio (todo en string)
+                        if (initialService && filtered.some(s => String(s.id) === String(initialService))) {
+                            serviceSelect.value = String(initialService);
+                        }
                     }
 
                     populateDoctors(specialtyId);
-                    handleServiceChange();
                 };
 
                 const populateDoctors = (specialtyId) => {
-                    console.log('[Reprogramar] populateDoctors -> specialty:', specialtyId);
-                    const filtered = doctors.filter(doctor => doctor.specialty_id === specialtyId);
-                    console.log('[Reprogramar] Doctores filtrados:', filtered);
-
+                    const filtered = doctors.filter(d => String(d.specialty_id) === String(specialtyId));
                     resetSelect(doctorSelect, '-- Seleccionar --', true);
 
-                    filtered.forEach(doctor => {
-                        const option = document.createElement('option');
-                        option.value = doctor.id;
-                        option.textContent = `${doctor.nombres} ${doctor.apellidos}`;
-                        doctorSelect.appendChild(option);
+                    filtered.forEach(d => {
+                        const opt = document.createElement('option');
+                        opt.value = String(d.id);
+                        opt.textContent = `${d.nombres} ${d.apellidos}`;
+                        doctorSelect.appendChild(opt);
                     });
 
                     if (filtered.length) {
                         doctorSelect.disabled = false;
-                    }
 
-                    if (filtered.length && initialDoctor && filtered.some(doc => String(doc.id) === String(
-                            initialDoctor))) {
-                        doctorSelect.value = initialDoctor;
-                    }
-                };
-
-                const handleServiceChange = () => {
-                    console.log('[Reprogramar] handleServiceChange valor:', serviceSelect.value);
-                    if (serviceSelect.value) {
-                        doctorSelect.disabled = false;
-                    } else {
-                        doctorSelect.value = '';
-                        doctorSelect.disabled = true;
-                        resetSelect(fechaSelect, 'Selecciona un médico');
-                        resetSelect(horaSelect, 'Selecciona una fecha');
+                        // Preselección médico robusta (string-string)
+                        if (initialDoctor && filtered.some(doc => String(doc.id) === String(initialDoctor))) {
+                            doctorSelect.value = String(initialDoctor);
+                        }
                     }
                 };
 
                 const populateDates = () => {
-                    console.log('[Reprogramar] populateDates con slots:', slots);
                     resetSelect(fechaSelect, slots.length ? '-- Seleccionar --' : 'Sin horarios disponibles', slots
                         .length === 0);
                     resetSelect(horaSelect, 'Selecciona una fecha');
 
                     slots.forEach(slot => {
                         const option = document.createElement('option');
-                        option.value = slot.date;
+                        option.value = slot.date; // string
                         option.textContent = slot.label;
                         fechaSelect.appendChild(option);
                     });
 
-                    if (slots.length && initialDate && slots.some(slot => slot.date === initialDate)) {
-                        fechaSelect.value = initialDate;
+                    if (slots.length && initialDate && slots.some(s => String(s.date) === String(initialDate))) {
+                        fechaSelect.value = String(initialDate);
                         populateHours(initialDate);
                     }
                 };
 
                 const populateHours = (date) => {
-                    console.log('[Reprogramar] populateHours fecha:', date);
                     resetSelect(horaSelect, 'Selecciona una fecha');
-
-                    const slot = slots.find(item => item.date === date);
-                    console.log('[Reprogramar] Slot encontrado:', slot);
-                    if (!slot) {
-                        return;
-                    }
+                    const slot = slots.find(s => String(s.date) === String(date));
+                    if (!slot) return;
 
                     slot.times.forEach(time => {
                         const option = document.createElement('option');
-                        option.value = time.value;
+                        option.value = String(time.value);
                         option.textContent = time.label;
                         horaSelect.appendChild(option);
                     });
 
                     horaSelect.disabled = slot.times.length === 0;
 
-                    if (initialTime && slot.times.some(time => time.value === initialTime)) {
-                        horaSelect.value = initialTime;
+                    if (initialTime && slot.times.some(t => String(t.value) === String(initialTime))) {
+                        horaSelect.value = String(initialTime);
                     }
                 };
 
                 const fetchAvailability = async (doctorId) => {
-                    console.log('[Reprogramar] fetchAvailability médico:', doctorId);
                     resetSelect(fechaSelect, 'Cargando...', true);
                     resetSelect(horaSelect, 'Selecciona una fecha', true);
 
                     if (!doctorId) {
-                        console.log('[Reprogramar] Sin médico seleccionado');
                         slots = [];
                         resetSelect(fechaSelect, 'Selecciona un médico', true);
                         return;
@@ -239,64 +225,51 @@
 
                     try {
                         const url = new URL(availabilityUrl, window.location.origin);
-                        url.searchParams.append('id_usuario_medico', doctorId);
-                        if (appointmentId) {
-                            url.searchParams.append('cita_id', appointmentId);
-                        }
-                        console.log('[Reprogramar] Consultando disponibilidad:', url.toString());
+                        url.searchParams.append('id_usuario_medico', String(doctorId));
+                        // Para reprogramar: el backend debe excluir la franja de la cita actual
+                        if (appointmentId) url.searchParams.append('cita_id', String(appointmentId));
+
+                        console.log('[Reprogramar] Fetch disponibilidad:', url.toString());
                         const response = await fetch(url.toString());
                         const data = await response.json();
-                        console.log('[Reprogramar] Disponibilidad recibida:', data);
-                        slots = data.slots || [];
+                        slots = Array.isArray(data.slots) ? data.slots : [];
                         populateDates();
-                    } catch (error) {
-                        console.error('[Reprogramar] Error al cargar disponibilidad:', error);
+                    } catch (e) {
+                        console.error('[Reprogramar] Error disponibilidad:', e);
                         slots = [];
                         resetSelect(fechaSelect, 'Error al cargar fechas', true);
                     }
                 };
 
+                // Listeners
                 specialtySelect.addEventListener('change', () => {
-                    console.log('[Reprogramar] Cambio especialidad');
                     populateServices();
                 });
 
                 serviceSelect.addEventListener('change', () => {
-                    console.log('[Reprogramar] Cambio servicio');
-                    handleServiceChange();
+                    // El servicio no altera disponibilidad; se mantiene por consistencia del flujo
                 });
 
-                doctorSelect.addEventListener('change', (event) => {
-                    console.log('[Reprogramar] Cambio médico:', event.target.value);
-                    fetchAvailability(event.target.value);
+                doctorSelect.addEventListener('change', (e) => {
+                    fetchAvailability(e.target.value);
                 });
 
-                fechaSelect.addEventListener('change', (event) => {
-                    console.log('[Reprogramar] Cambio fecha:', event.target.value);
-                    populateHours(event.target.value);
+                fechaSelect.addEventListener('change', (e) => {
+                    populateHours(e.target.value);
                 });
 
-                if (specialtySelect.value) {
-                    console.log('[Reprogramar] Especialidad inicial:', specialtySelect.value);
+                // Inicialización
+                if (specialtySelect && specialtySelect.value) {
                     populateServices();
-                } else {
-                    resetSelect(serviceSelect, '-- Seleccionar --', true);
-                    resetSelect(doctorSelect, '-- Seleccionar --', true);
+
+                    if (initialDoctor) {
+                        fetchAvailability(initialDoctor).then(() => {
+                            if (initialDate) populateHours(initialDate);
+                        });
+                    }
                 }
 
-                handleServiceChange();
-
-                if (initialDoctor) {
-                    console.log('[Reprogramar] Doctor inicial:', initialDoctor);
-                    fetchAvailability(initialDoctor).then(() => {
-                        if (initialDate) {
-                            console.log('[Reprogramar] Fecha inicial:', initialDate);
-                            populateHours(initialDate);
-                        }
-                    });
-                }
-
-                console.log('[Reprogramar] Script listo');
+                console.log('[Reprogramar] Ready');
             });
         </script>
     @endpush
