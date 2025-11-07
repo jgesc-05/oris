@@ -56,8 +56,13 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::middleware('auth:paciente')->group(function () {
         Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
         Route::get('servicios', [SpecialtyController::class, 'patientIndex'])->name('servicios');
-        Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
-        Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
+        //Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
+        Route::get('servicios/{slug}', [ServiceController::class, 'showBySpecialty'])
+        ->name('servicios.especialidad');
+        Route::get('servicios/{especialidad}/{servicio}', [ServiceController::class, 'showService'])
+        ->name('servicios.detalle');
+
+        //Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
         Route::get('medicos', [SpecialtyController::class, 'indexDoctors'])->name('medicos');
         Route::get('medicos/{especialidad}', [PatientPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
         Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');

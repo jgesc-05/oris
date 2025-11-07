@@ -36,7 +36,7 @@
               </p>
               <div class="mt-3">
                 <x-ui.button variant="info" size="sm" class="rounded-full px-4 py-1 text-xs"
-                  :href="route('paciente.servicios.especialidad', ['especialidad' => $esp['slug']])">
+                  :href="route('paciente.servicios.especialidad', $esp['slug'])">
                   Ver más
                 </x-ui.button>
               </div>

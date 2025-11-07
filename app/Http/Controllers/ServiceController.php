@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Service;
 use App\Models\Specialty;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 
 class ServiceController extends Controller
 {
@@ -107,4 +107,66 @@ class ServiceController extends Controller
             ->with('success', 'El servicio se actualizó correctamente.');
 
     }
+
+    //Mostrar servicios por especialidad
+    public function showBySpecialty($slug)
+    {
+        // Buscar la especialidad por slug del nombre (convertido a formato URL)
+        $specialty = Specialty::whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$slug])->first();
+
+        if (!$specialty) {
+            abort(404, 'Especialidad no encontrada');
+        }
+
+        // Obtener los servicios activos asociados a esa especialidad
+        $servicios = Service::where('id_tipos_especialidad', $specialty->id_tipos_especialidad)
+            ->where('estado', 'activo')
+            ->get()
+            ->map(function ($serv) {
+                return [
+                    'nombre' => $serv->nombre,
+                    'descripcion' => $serv->descripcion ?? 'Sin descripción',
+                    'slug' => Str::slug($serv->nombre),
+                    'icono' => '🩺',
+                ];
+            });
+
+        // Armar los datos de la especialidad para la vista
+        $especialidad = [
+            'nombre' => $specialty->nombre,
+            'descripcion' => $specialty->descripcion ?? '',
+            'slug' => Str::slug($specialty->nombre),
+        ];
+
+        // Retornar la vista del paciente
+        return view('paciente.servicios.especialidad', compact('especialidad', 'servicios'));
+    }
+
+    public function showService($especialidadSlug, $servicioSlug)
+    {
+        $especialidad = Specialty::whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$especialidadSlug])
+            ->firstOrFail();
+
+        $service = Service::where('id_tipos_especialidad', $especialidad->id_tipos_especialidad)
+            ->whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$servicioSlug])
+            ->firstOrFail();
+
+        // Arreglo que se usará en la vista
+        $servicio = [
+            'nombre' => $service->nombre,
+            'especialidad' => $especialidad->nombre,
+            'descripcion_corta' => Str::limit($service->descripcion ?? 'Sin descripción', 120),
+            'descripcion_larga' => $service->descripcion ?? '',
+            'duracion' => $service->duracion ?? '30 minutos',
+            'icono' => '🩺',
+        ];
+
+        $especialidad = [
+            'nombre' => $especialidad->nombre,
+            'slug' => Str::slug($especialidad->nombre),
+        ];
+
+        return view('paciente.servicios.detalle', compact('servicio', 'especialidad'));
+    }
+
 }
