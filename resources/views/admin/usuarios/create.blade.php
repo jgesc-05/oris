@@ -81,7 +81,7 @@
 
 {{-- Campos específicos para DOCTOR --}}
 <div id="doctor-fields" class="hidden md:col-span-2 border-t pt-4 mt-2">
-  <h2 class="text-lg font-semibold text-neutral-800 mb-4">Información del doctor</h2>
+  <h2 class="text-lg font-semibold text-neutral-800 mb-4">Información del médico</h2>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <x-form.select name="id_tipos_especialidad" label="Especialidad médica">
@@ -184,7 +184,6 @@
       </div>
 
       <div class="pt-4 text-center">
-        {{-- Ya modificado --}}
         <x-ui.button type="submit" variant="primary" class="px-8 py-3">
           Crear usuario
         </x-ui.button>
@@ -194,7 +193,6 @@
   <script>
   function toggleDoctorFields(value) {
     const doctorFields = document.getElementById('doctor-fields');
-    // 👇 Cambia el número por el ID real del tipo de usuario "Doctor"
     doctorFields.classList.toggle('hidden', value != 2);
   }
 
