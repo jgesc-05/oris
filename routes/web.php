@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
@@ -63,7 +64,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
         ->name('servicios.detalle');
 
         //Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
-        Route::get('medicos', [SpecialtyController::class, 'indexDoctors'])->name('medicos');
+        Route::get('medicos', [DoctorController::class, 'indexDoctors'])->name('medicos');
         Route::get('medicos/{especialidad}', [PatientPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
         Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
         Route::prefix('citas')->name('citas.')->group(function () {
