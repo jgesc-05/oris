@@ -23,6 +23,7 @@ return new class extends Migration
 
             $table->dateTime('fecha_hora_inicio');
             $table->dateTime('fecha_hora_fin');
+            $table->string('estado', 20)->default('Programada');
             $table->text('notas')->nullable();
             $table->string('motivo_cancelacion', 255)->nullable();
 

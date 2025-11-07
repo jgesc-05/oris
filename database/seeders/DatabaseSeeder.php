@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DoctorsTableSeeder::class,
             ServicesTableSeeder::class,
             AgendaAvailabilitySeeder::class,
+            AppointmentsTableSeeder::class,
         ]);
 
         // Puedes dejar el ejemplo del usuario si quieres
