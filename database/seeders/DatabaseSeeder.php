@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             DoctorsTableSeeder::class,
             ServicesTableSeeder::class,
+            AgendaAvailabilitySeeder::class,
         ]);
 
         // Puedes dejar el ejemplo del usuario si quieres
