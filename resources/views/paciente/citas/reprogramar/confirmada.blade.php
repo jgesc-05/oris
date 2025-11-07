@@ -3,19 +3,17 @@
 @section('title', 'Cita reprogramada — Paciente')
 
 @section('patient-content')
-  @php
-    $appointment = $appointment ?? session('appointment', []);
-  @endphp
-
   <h1 class="text-xl md:text-2xl font-bold text-neutral-900 mb-4">Cita reprogramada</h1>
 
   {{-- Resumen --}}
   <div class="border rounded-md bg-neutral-100 p-4 mb-3">
     <h2 class="font-semibold mb-2">Resumen de la cita</h2>
-    <p>Nueva fecha y hora: {{ $appointment['fecha_hora'] ?? '—' }}</p>
-    <p>Médico: {{ $appointment['doctor'] ?? '—' }}</p>
-    <p>Servicio: {{ $appointment['servicio'] ?? '—' }}</p>
-    <p>Referencia: <span class="font-mono">{{ $appointment['referencia'] ?? '—' }}</span></p>
+    <p>
+      Nueva fecha y hora:
+      {{ $appointment->fecha_hora_inicio->locale('es')->translatedFormat('l j \\d\\e F, h:i A') }}
+    </p>
+    <p>Médico: {{ $appointment->medico?->nombres }} {{ $appointment->medico?->apellidos }}</p>
+    <p>Servicio: {{ $appointment->servicio?->nombre }}</p>
   </div>
 
   {{-- Mensaje de confirmación --}}

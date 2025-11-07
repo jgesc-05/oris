@@ -8,10 +8,13 @@
   {{-- Resumen --}}
   <div class="border rounded-md bg-neutral-100 p-4 mb-3">
     <h2 class="font-semibold mb-2">Resumen de la cita</h2>
-    <p>Fecha y hora: {{ $appointment['fecha_hora'] }}</p>
-    <p>Médico: {{ $appointment['doctor'] }}</p>
-    <p>Servicio: {{ $appointment['servicio'] }}</p>
-    <p>Referencia: <span class="font-mono">{{ $appointment['referencia'] }}</span></p>
+    <p>
+      Fecha y hora:
+      {{ $appointment->fecha_hora_inicio->locale('es')->translatedFormat('l j \\d\\e F, h:i A') }}
+    </p>
+    <p>Médico: {{ $appointment->medico?->nombres }} {{ $appointment->medico?->apellidos }}</p>
+    <p>Servicio: {{ $appointment->servicio?->nombre }}</p>
+    <p>Estado: {{ $appointment->estado }}</p>
   </div>
 
   {{-- Mensaje de confirmación --}}
