@@ -11,6 +11,7 @@ class Doctor extends Model
 
     protected $table = 'doctors';
     protected $primaryKey = 'id_usuario';
+    public $incrementing = false;
     public $timestamps = true;
 
     protected $fillable = [
