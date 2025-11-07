@@ -61,8 +61,8 @@ class AppointmentsTableSeeder extends Seeder
                 }
 
                 foreach ($timeRanges as [$from, $to]) {
-                    $slotStart = Carbon::parse($date->toDateString().' '.$from);
-                    $slotEndBoundary = Carbon::parse($date->toDateString().' '.$to);
+                    $slotStart = Carbon::parse($date->toDateString() . ' ' . $from);
+                    $slotEndBoundary = Carbon::parse($date->toDateString() . ' ' . $to);
 
                     while ($slotStart < $slotEndBoundary) {
                         $slotEnd = $slotStart->copy()->addMinutes(30);
@@ -83,8 +83,8 @@ class AppointmentsTableSeeder extends Seeder
             }
         }
 
-        $novemberSlots = array_values(array_filter($allSlots, fn ($slot) => $slot['start']->month === 11));
-        $decemberSlots = array_values(array_filter($allSlots, fn ($slot) => $slot['start']->month === 12));
+        $novemberSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->month === 11));
+        $decemberSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->month === 12));
         shuffle($novemberSlots);
         shuffle($decemberSlots);
 
@@ -99,7 +99,7 @@ class AppointmentsTableSeeder extends Seeder
         }
 
         $statusPast = ['Cumplida', 'Cancelada'];
-        $statusFuture = ['Programada', 'Confirmada', 'Cancelada'];
+        $statusFuture = ['Confirmada', 'Cancelada'];
         $cancelReasons = [
             'Paciente solicitó cancelación',
             'Médico indispuesto',
