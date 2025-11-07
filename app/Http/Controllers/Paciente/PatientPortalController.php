@@ -65,17 +65,17 @@ class PatientPortalController extends Controller
         $patient = Auth::guard('paciente')->user();
 
         $especialidades = [
-            ['nombre' => 'Medicina general',       'descripcion' => 'Atención primaria y chequeos preventivos.',     'icono' => '🩺'],
-            ['nombre' => 'Pediatría',              'descripcion' => 'Salud y desarrollo infantil.',                 'icono' => '👶'],
-            ['nombre' => 'Cardiología',            'descripcion' => 'Enfermedades del corazón y circulación.',      'icono' => '❤️'],
-            ['nombre' => 'Dermatología',           'descripcion' => 'Cuidado de la piel, cabello y uñas.',           'icono' => '🧴'],
-            ['nombre' => 'Ginecología',            'descripcion' => 'Salud reproductiva y atención femenina.',       'icono' => '🌸'],
-            ['nombre' => 'Neurología',             'descripcion' => 'Trastornos del sistema nervioso.',              'icono' => '🧠'],
-            ['nombre' => 'Oftalmología',           'descripcion' => 'Cuidado de los ojos y la visión.',              'icono' => '👁️'],
-            ['nombre' => 'Traumatología',          'descripcion' => 'Lesiones musculares y óseas.',                  'icono' => '🦵'],
-            ['nombre' => 'Psiquiatría',            'descripcion' => 'Salud mental y emocional.',                     'icono' => '🧘'],
-            ['nombre' => 'Endocrinología',         'descripcion' => 'Trastornos hormonales y metabólicos.',          'icono' => '🧬'],
-            ['nombre' => 'Rehabilitación física',  'descripcion' => 'Recuperación funcional y motora.',              'icono' => '🏃‍♂️'],
+            ['nombre' => 'Medicina general', 'descripcion' => 'Atención primaria y chequeos preventivos.', 'icono' => '🩺'],
+            ['nombre' => 'Pediatría', 'descripcion' => 'Salud y desarrollo infantil.', 'icono' => '👶'],
+            ['nombre' => 'Cardiología', 'descripcion' => 'Enfermedades del corazón y circulación.', 'icono' => '❤️'],
+            ['nombre' => 'Dermatología', 'descripcion' => 'Cuidado de la piel, cabello y uñas.', 'icono' => '🧴'],
+            ['nombre' => 'Ginecología', 'descripcion' => 'Salud reproductiva y atención femenina.', 'icono' => '🌸'],
+            ['nombre' => 'Neurología', 'descripcion' => 'Trastornos del sistema nervioso.', 'icono' => '🧠'],
+            ['nombre' => 'Oftalmología', 'descripcion' => 'Cuidado de los ojos y la visión.', 'icono' => '👁️'],
+            ['nombre' => 'Traumatología', 'descripcion' => 'Lesiones musculares y óseas.', 'icono' => '🦵'],
+            ['nombre' => 'Psiquiatría', 'descripcion' => 'Salud mental y emocional.', 'icono' => '🧘'],
+            ['nombre' => 'Endocrinología', 'descripcion' => 'Trastornos hormonales y metabólicos.', 'icono' => '🧬'],
+            ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación funcional y motora.', 'icono' => '🏃‍♂️'],
         ];
 
         $especialidades = collect($especialidades)->map(function (array $especialidad) {
@@ -95,7 +95,7 @@ class PatientPortalController extends Controller
 
         $especialidad = [
             'nombre' => $nombre,
-            'slug'   => $slug,
+            'slug' => $slug,
         ];
 
         $servicios = [
@@ -120,11 +120,11 @@ class PatientPortalController extends Controller
         $patient = Auth::guard('paciente')->user();
 
         $especialidades = [
-            ['nombre' => 'Medicina general',      'descripcion' => 'Seguimiento integral del estado de salud.',       'icono' => '🩺'],
-            ['nombre' => 'Pediatría',             'descripcion' => 'Atención especializada para niños y niñas.',      'icono' => '👶'],
-            ['nombre' => 'Cardiología',           'descripcion' => 'Tratamiento de enfermedades del corazón.',        'icono' => '❤️'],
-            ['nombre' => 'Dermatología',          'descripcion' => 'Cuidado de la piel, cabello y uñas.',             'icono' => '🧴'],
-            ['nombre' => 'Neurología',            'descripcion' => 'Trastornos del sistema nervioso.',               'icono' => '🧠'],
+            ['nombre' => 'Medicina general', 'descripcion' => 'Seguimiento integral del estado de salud.', 'icono' => '🩺'],
+            ['nombre' => 'Pediatría', 'descripcion' => 'Atención especializada para niños y niñas.', 'icono' => '👶'],
+            ['nombre' => 'Cardiología', 'descripcion' => 'Tratamiento de enfermedades del corazón.', 'icono' => '❤️'],
+            ['nombre' => 'Dermatología', 'descripcion' => 'Cuidado de la piel, cabello y uñas.', 'icono' => '🧴'],
+            ['nombre' => 'Neurología', 'descripcion' => 'Trastornos del sistema nervioso.', 'icono' => '🧠'],
             ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación de la movilidad y funcionalidad.', 'icono' => '🏃‍♀️'],
         ];
 
@@ -134,7 +134,7 @@ class PatientPortalController extends Controller
         })->toArray();
 
         return view('paciente.medicos.index', [
-            'patient'        => $patient,
+            'patient' => $patient,
             'especialidades' => $especialidades,
         ]);
     }
@@ -145,29 +145,29 @@ class PatientPortalController extends Controller
 
         $especialidad = [
             'nombre' => Str::title(str_replace('-', ' ', $slug)),
-            'slug'   => $slug,
+            'slug' => $slug,
         ];
 
         $medicos = [
             [
-                'nombre'       => 'Dra. Laura Hernández',
-                'descripcion'  => 'Especialista en atención preventiva y control de enfermedades crónicas.',
-                'formacion'    => 'Médico cirujano — Universidad Nacional',
-                'experiencia'  => '10 años',
+                'nombre' => 'Dra. Laura Hernández',
+                'descripcion' => 'Especialista en atención preventiva y control de enfermedades crónicas.',
+                'formacion' => 'Médico cirujano — Universidad Nacional',
+                'experiencia' => '10 años',
                 'disponibilidad' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
             ],
             [
-                'nombre'       => 'Dr. Andrés Salazar',
-                'descripcion'  => 'Enfoque en diagnóstico temprano y medicina familiar.',
-                'formacion'    => 'Especialista en Medicina Familiar — Universidad Javeriana',
-                'experiencia'  => '8 años',
+                'nombre' => 'Dr. Andrés Salazar',
+                'descripcion' => 'Enfoque en diagnóstico temprano y medicina familiar.',
+                'formacion' => 'Especialista en Medicina Familiar — Universidad Javeriana',
+                'experiencia' => '8 años',
                 'disponibilidad' => 'Martes y jueves — 10:00 a.m. - 6:00 p.m.',
             ],
             [
-                'nombre'       => 'Dra. Catalina Díaz',
-                'descripcion'  => 'Atención integral a pacientes con condiciones crónicas.',
-                'formacion'    => 'Medicina interna — Universidad de los Andes',
-                'experiencia'  => '12 años',
+                'nombre' => 'Dra. Catalina Díaz',
+                'descripcion' => 'Atención integral a pacientes con condiciones crónicas.',
+                'formacion' => 'Medicina interna — Universidad de los Andes',
+                'experiencia' => '12 años',
                 'disponibilidad' => 'Miércoles y sábado — 9:00 a.m. - 2:00 p.m.',
             ],
         ];
@@ -186,30 +186,33 @@ class PatientPortalController extends Controller
         $patient = Auth::guard('paciente')->user();
 
         $medicoDetalle = [
-            'nombre'              => Str::title(str_replace('-', ' ', $medico)),
-            'especialidad'        => Str::title(str_replace('-', ' ', $especialidad)),
-            'especialidad_slug'   => $especialidad,
-            'descripcion'         => 'Profesional con un enfoque humano y preventivo, acompañando procesos de diagnóstico y tratamiento.',
-            'formacion'           => 'Médico cirujano — Universidad Nacional, especialización en Medicina interna.',
-            'experiencia'         => 'Más de 10 años en consulta externa y hospitalaria.',
-            'disponibilidad'      => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
-            'icono'               => '👨‍⚕️',
+            'nombre' => Str::title(str_replace('-', ' ', $medico)),
+            'especialidad' => Str::title(str_replace('-', ' ', $especialidad)),
+            'especialidad_slug' => $especialidad,
+            'descripcion' => 'Profesional con un enfoque humano y preventivo, acompañando procesos de diagnóstico y tratamiento.',
+            'formacion' => 'Médico cirujano — Universidad Nacional, especialización en Medicina interna.',
+            'experiencia' => 'Más de 10 años en consulta externa y hospitalaria.',
+            'disponibilidad' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
+            'icono' => '👨‍⚕️',
         ];
 
         return view('paciente.medicos.detalle', [
             'patient' => $patient,
-            'medico'  => $medicoDetalle,
+            'medico' => $medicoDetalle,
         ]);
     }
 
     public function citasCreate()
     {
         $patient = $this->patient();
+
         $specialties = Specialty::where('estado', 'activo')->orderBy('nombre')->get();
+
         $services = Service::with('tipoEspecialidad')
             ->where('estado', 'activo')
             ->orderBy('nombre')
             ->get();
+
         $servicesPayload = $services->map(function ($service) {
             return [
                 'id' => $service->id_servicio,
@@ -217,7 +220,23 @@ class PatientPortalController extends Controller
                 'specialty_id' => $service->id_tipos_especialidad,
             ];
         })->values()->all();
-        $doctors = $this->doctorQuery()->orderBy('nombres')->get();
+
+        // Obtener doctores CON su especialidad desde la tabla doctors
+        $doctors = User::whereHas('userType', fn($query) => $query->where('nombre', 'Médico'))
+            ->with('doctor.tipoEspecialidad') // Asumiendo que tienes esta relación
+            ->orderBy('nombres')
+            ->get();
+
+        // Crear payload de doctores con su especialidad
+        $doctorsPayload = $doctors->map(function ($doctor) {
+            return [
+                'id' => $doctor->id_usuario,
+                'nombres' => $doctor->nombres,
+                'apellidos' => $doctor->apellidos,
+                'specialty_id' => $doctor->doctor?->id_tipos_especialidad, // Desde la tabla doctors
+            ];
+        })->values()->all();
+
         $availabilityUrl = route('paciente.citas.disponibilidad');
 
         return view('paciente.citas.create', compact(
@@ -226,10 +245,10 @@ class PatientPortalController extends Controller
             'services',
             'servicesPayload',
             'doctors',
+            'doctorsPayload', // ← IMPORTANTE: Agregar esto
             'availabilityUrl'
         ));
     }
-
     public function citasStore(Request $request)
     {
         $patient = $this->patient();
@@ -312,10 +331,12 @@ class PatientPortalController extends Controller
         }
 
         $specialties = Specialty::where('estado', 'activo')->orderBy('nombre')->get();
+
         $services = Service::with('tipoEspecialidad')
             ->where('estado', 'activo')
             ->orderBy('nombre')
             ->get();
+
         $servicesPayload = $services->map(function ($service) {
             return [
                 'id' => $service->id_servicio,
@@ -323,7 +344,21 @@ class PatientPortalController extends Controller
                 'specialty_id' => $service->id_tipos_especialidad,
             ];
         })->values()->all();
-        $doctors = $this->doctorQuery()->orderBy('nombres')->get();
+
+        $doctors = User::whereHas('userType', fn($query) => $query->where('nombre', 'Médico'))
+            ->with('doctor.tipoEspecialidad')
+            ->orderBy('nombres')
+            ->get();
+
+        $doctorsPayload = $doctors->map(function ($doctor) {
+            return [
+                'id' => $doctor->id_usuario,
+                'nombres' => $doctor->nombres,
+                'apellidos' => $doctor->apellidos,
+                'specialty_id' => $doctor->doctor?->id_tipos_especialidad,
+            ];
+        })->values()->all();
+
         $availabilityUrl = route('paciente.citas.disponibilidad');
 
         return view('paciente.citas.reprogramar.edit', compact(
@@ -333,6 +368,7 @@ class PatientPortalController extends Controller
             'services',
             'servicesPayload',
             'doctors',
+            'doctorsPayload', // ← IMPORTANTE
             'availabilityUrl'
         ));
     }
@@ -493,17 +529,17 @@ class PatientPortalController extends Controller
     public function servicioDetalle(string $especialidad, string $servicio)
     {
         $especialidadNombre = Str::title(str_replace('-', ' ', $especialidad));
-        $servicioNombre     = Str::title(str_replace('-', ' ', $servicio));
+        $servicioNombre = Str::title(str_replace('-', ' ', $servicio));
 
         $servicio = [
-            'nombre'            => $servicioNombre,
-            'especialidad'      => $especialidadNombre,
+            'nombre' => $servicioNombre,
+            'especialidad' => $especialidadNombre,
             'especialidad_slug' => $especialidad,
             'descripcion_corta' => 'Evaluación médica integral y orientación diagnóstica.',
             'descripcion_larga' => 'Este servicio incluye una valoración clínica completa realizada por un médico general, con enfoque preventivo y diagnóstico. Ideal para chequeos, control de síntomas o derivación a especialistas.',
-            'duracion'          => '30 minutos',
-            'doctor'            => 'Dr. Andrés Gutiérrez',
-            'icono'             => '🩺',
+            'duracion' => '30 minutos',
+            'doctor' => 'Dr. Andrés Gutiérrez',
+            'icono' => '🩺',
         ];
 
         return view('paciente.servicios.detalle', compact('servicio'));

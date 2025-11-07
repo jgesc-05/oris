@@ -30,4 +30,9 @@ class Doctor extends Model
     {
         return $this->belongsTo(Specialty::class, 'id_tipos_especialidad', 'id_tipos_especialidad');
     }
+
+    public function tipoEspecialidad()
+    {
+        return $this->specialty();
+    }
 }
