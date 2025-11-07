@@ -87,9 +87,21 @@
 
     @push('scripts')
         <script>
+            console.log('Verificación elementos:', {
+                form,
+                specialtySelect,
+                serviceSelect,
+                doctorSelect,
+                fechaSelect,
+                horaSelect
+            });
+
             document.addEventListener('DOMContentLoaded', () => {
+                console.log('[Agendar] Init script');
                 const services = @json($servicesPayload);
                 const doctors = @json($doctorsPayload ?? []);
+                console.log('[Agendar] Servicios cargados:', services);
+                console.log('[Agendar] Doctores cargados:', doctors);
 
                 const form = document.getElementById('agendarForm');
                 const specialtySelect = document.getElementById('select-especialidad');
@@ -113,7 +125,9 @@
 
                 const populateServices = () => {
                     const specialtyId = Number(specialtySelect.value);
+                    console.log('[Agendar] populateServices -> specialtyId:', specialtyId);
                     const filtered = services.filter(service => service.specialty_id === specialtyId);
+                    console.log('[Agendar] Servicios filtrados:', filtered);
 
                     resetSelect(serviceSelect, '-- Seleccionar --', true);
                     resetSelect(doctorSelect, '-- Seleccionar --', true);
@@ -121,6 +135,7 @@
                     resetSelect(horaSelect, 'Selecciona una fecha', true);
 
                     if (!specialtyId) {
+                        console.log('[Agendar] Sin especialidad, servicios permanecen deshabilitados');
                         return;
                     }
 
@@ -142,7 +157,9 @@
                 };
 
                 const populateDoctors = (specialtyId) => {
+                    console.log('[Agendar] populateDoctors -> specialtyId:', specialtyId);
                     const filtered = doctors.filter(doctor => doctor.specialty_id === specialtyId);
+                    console.log('[Agendar] Doctores filtrados:', filtered);
 
                     resetSelect(doctorSelect, '-- Seleccionar --', true);
 
@@ -160,11 +177,13 @@
                 };
 
                 const handleServiceChange = () => {
+                    console.log('[Agendar] Cambio servicio, valor actual:', serviceSelect.value);
                     // El servicio es informativo, no afecta la disponibilidad
                     // Los horarios dependen solo del médico
                 };
 
                 const populateDates = () => {
+                    console.log('[Agendar] populateDates con slots:', slots);
                     resetSelect(fechaSelect, slots.length ? '-- Seleccionar --' : 'Sin horarios disponibles', slots
                         .length === 0);
                     resetSelect(horaSelect, 'Selecciona una fecha');
@@ -183,9 +202,11 @@
                 };
 
                 const populateHours = (date) => {
+                    console.log('[Agendar] populateHours para fecha:', date);
                     resetSelect(horaSelect, 'Selecciona una fecha');
 
                     const slot = slots.find(item => item.date === date);
+                    console.log('[Agendar] Slot encontrado:', slot);
                     if (!slot) {
                         return;
                     }
@@ -205,10 +226,12 @@
                 };
 
                 const fetchAvailability = async (doctorId) => {
+                    console.log('[Agendar] fetchAvailability para médico:', doctorId);
                     resetSelect(fechaSelect, 'Cargando...', true);
                     resetSelect(horaSelect, 'Selecciona una fecha', true);
 
                     if (!doctorId) {
+                        console.log('[Agendar] Médico no seleccionado, slots vacíos');
                         slots = [];
                         resetSelect(fechaSelect, 'Selecciona un médico', true);
                         return;
@@ -217,12 +240,14 @@
                     try {
                         const url = new URL(availabilityUrl, window.location.origin);
                         url.searchParams.append('id_usuario_medico', doctorId);
+                        console.log('[Agendar] Solicitando disponibilidad a:', url.toString());
                         const response = await fetch(url.toString());
                         const data = await response.json();
+                        console.log('[Agendar] Disponibilidad recibida:', data);
                         slots = data.slots || [];
                         populateDates();
                     } catch (error) {
-                        console.error('Error al cargar disponibilidad:', error);
+                        console.error('[Agendar] Error al cargar disponibilidad:', error);
                         slots = [];
                         resetSelect(fechaSelect, 'Error al cargar fechas', true);
                     }
@@ -230,31 +255,42 @@
 
                 // Event Listeners
                 specialtySelect.addEventListener('change', () => {
+                    console.log('[Agendar] Evento change especialidad');
                     populateServices();
                 });
 
-                serviceSelect.addEventListener('change', handleServiceChange);
+                serviceSelect.addEventListener('change', () => {
+                    console.log('[Agendar] Evento change servicio');
+                    handleServiceChange();
+                });
 
                 doctorSelect.addEventListener('change', (event) => {
+                    console.log('[Agendar] Evento change médico:', event.target.value);
                     fetchAvailability(event.target.value);
                 });
 
                 fechaSelect.addEventListener('change', (event) => {
+                    console.log('[Agendar] Evento change fecha:', event.target.value);
                     populateHours(event.target.value);
                 });
 
                 // Inicialización
                 if (specialtySelect.value) {
+                    console.log('[Agendar] Inicialización con especialidad preseleccionada:', specialtySelect.value);
                     populateServices();
 
                     if (initialDoctor) {
+                        console.log('[Agendar] Inicialización con doctor preseleccionado:', initialDoctor);
                         fetchAvailability(initialDoctor).then(() => {
                             if (initialDate) {
+                                console.log('[Agendar] Inicialización con fecha preseleccionada:', initialDate);
                                 populateHours(initialDate);
                             }
                         });
                     }
                 }
+
+                console.log('[Agendar] Script listo para interacción');
             });
         </script>
     @endpush
