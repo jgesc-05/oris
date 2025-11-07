@@ -18,7 +18,8 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->string('universidad', 100);
             $table->string('numero_licencia', 50);
-            $table->text('descripcion')->nullable();
+            $table->text('descripcion');
+            $table->integer('experiencia')->nullable();
             $table->timestamps();
         });
 

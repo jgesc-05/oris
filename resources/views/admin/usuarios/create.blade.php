@@ -105,6 +105,8 @@
       value="{{ old('numero_licencia') }}"
     />
 
+
+
     <div class="md:col-span-2">
       <x-form.textarea
         name="descripcion"
@@ -112,6 +114,14 @@
         label="Descripción profesional"
         value="{{ old('descripcion') }}"
       />
+
+      <x-form.input
+      name="experiencia"
+      required
+      label="Experiencia (en años)"
+      value="{{ old('experiencia') }}"
+    />
+
     </div>
   </div>
 </div>

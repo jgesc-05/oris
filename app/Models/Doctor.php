@@ -20,6 +20,7 @@ class Doctor extends Model
         'universidad',
         'numero_licencia',
         'descripcion',
+        'experiencia',
     ];
 
     public function user()
