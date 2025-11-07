@@ -33,11 +33,13 @@
       @csrf
 
       {{-- Tipo de documento --}}
-      <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
-        <option value="1" @selected(old('id_tipo_documento')==='1')>Cédula de ciudadanía</option>
-        <option value="TI" @selected(old('id_tipo_documento')==='TI')>Tarjeta de identidad</option>
-        <option value="CE" @selected(old('id_tipo_documento')==='CE')>Cédula de extranjería</option>
-        <option value="PA" @selected(old('id_tipo_documento')==='PA')>Pasaporte</option>
+      <x-form.select name="id_tipo_documento" label="Tipo de documento" required :placeholder="null">
+        @foreach (($documentTypes ?? []) as $documentType)
+          <option value="{{ $documentType->id_tipo_documento }}"
+            @selected(old('id_tipo_documento') == $documentType->id_tipo_documento)>
+            {{ $documentType->name }}
+          </option>
+        @endforeach
       </x-form.select>
 
       {{-- Número de documento --}}

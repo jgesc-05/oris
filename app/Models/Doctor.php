@@ -13,11 +13,21 @@ class Doctor extends Model
     protected $primaryKey = 'id_usuario';
     public $timestamps = true;
 
-    protected $fillable = ['id_usuario', 'universidad', 'numero_licencia', 'descripcion'];
+    protected $fillable = [
+        'id_usuario',
+        'id_tipos_especialidad',
+        'universidad',
+        'numero_licencia',
+        'descripcion',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'id_usuario', 'id_usuario');
     }
-}
 
+    public function specialty()
+    {
+        return $this->belongsTo(Specialty::class, 'id_tipos_especialidad', 'id_tipos_especialidad');
+    }
+}

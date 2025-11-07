@@ -16,9 +16,14 @@ class DatabaseSeeder extends Seeder
     {
         // Ejecuta los seeders
         $this->call([
-            DocumentTypeSeeder::class,
             UserTypeSeeder::class,
+            DocumentTypeSeeder::class,
+            SpecialtyTypeSeeder::class,
             UsersTableSeeder::class,
+            DoctorsTableSeeder::class,
+            ServicesTableSeeder::class,
+            AgendaAvailabilitySeeder::class,
+            AppointmentsTableSeeder::class,
         ]);
 
         // Puedes dejar el ejemplo del usuario si quieres
