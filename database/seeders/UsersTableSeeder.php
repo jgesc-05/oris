@@ -33,6 +33,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Laura',
                 'apellidos' => 'González',
                 'correo_electronico' => 'laura.administradora@vitalcare.com',
+                'fecha_nacimiento' => '1987-03-15',
                 'password' => $password,
             ],
             [
@@ -42,6 +43,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Carlos',
                 'apellidos' => 'Ramírez',
                 'correo_electronico' => 'carlos.admin@vitalcare.com',
+                'fecha_nacimiento' => '1984-11-02',
                 'password' => $password,
             ],
 
@@ -53,6 +55,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'María',
                 'apellidos' => 'López',
                 'correo_electronico' => 'maria.secretaria@vitalcare.com',
+                'fecha_nacimiento' => '1990-06-21',
                 'password' => $password,
             ],
             [
@@ -62,6 +65,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Sandra',
                 'apellidos' => 'Cárdenas',
                 'correo_electronico' => 'sandra.secretaria@vitalcare.com',
+                'fecha_nacimiento' => '1988-09-30',
                 'password' => $password,
             ],
 
@@ -73,6 +77,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Andrés',
                 'apellidos' => 'Mejía',
                 'correo_electronico' => 'andres.mejia@vitalcare.com',
+                'fecha_nacimiento' => '1979-01-12',
                 'password' => $password,
             ],
             [
@@ -82,6 +87,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Juliana',
                 'apellidos' => 'Martínez',
                 'correo_electronico' => 'juliana.martinez@vitalcare.com',
+                'fecha_nacimiento' => '1983-07-19',
                 'password' => $password,
             ],
             [
@@ -91,6 +97,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Felipe',
                 'apellidos' => 'Rojas',
                 'correo_electronico' => 'felipe.rojas@vitalcare.com',
+                'fecha_nacimiento' => '1981-04-25',
                 'password' => $password,
             ],
             [
@@ -100,6 +107,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Diana',
                 'apellidos' => 'Moreno',
                 'correo_electronico' => 'diana.moreno@vitalcare.com',
+                'fecha_nacimiento' => '1985-09-08',
                 'password' => $password,
             ],
             [
@@ -109,6 +117,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Camilo',
                 'apellidos' => 'Ortega',
                 'correo_electronico' => 'camilo.ortega@vitalcare.com',
+                'fecha_nacimiento' => '1987-12-14',
                 'password' => $password,
             ],
             [
@@ -118,6 +127,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Paola',
                 'apellidos' => 'Fernández',
                 'correo_electronico' => 'paola.fernandez@vitalcare.com',
+                'fecha_nacimiento' => '1989-02-10',
                 'password' => $password,
             ],
             [
@@ -127,6 +137,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Santiago',
                 'apellidos' => 'Pérez',
                 'correo_electronico' => 'santiago.perez@vitalcare.com',
+                'fecha_nacimiento' => '1978-05-03',
                 'password' => $password,
             ],
             [
@@ -136,6 +147,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Claudia',
                 'apellidos' => 'Vargas',
                 'correo_electronico' => 'claudia.vargas@vitalcare.com',
+                'fecha_nacimiento' => '1982-08-17',
                 'password' => $password,
             ],
             [
@@ -145,6 +157,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'John',
                 'apellidos' => 'Smith',
                 'correo_electronico' => 'john.smith@vitalcare.com',
+                'fecha_nacimiento' => '1976-10-28',
                 'password' => $password,
             ],
             [
@@ -154,6 +167,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Natalia',
                 'apellidos' => 'Gómez',
                 'correo_electronico' => 'natalia.gomez@vitalcare.com',
+                'fecha_nacimiento' => '1991-03-06',
                 'password' => $password,
             ],
 
@@ -165,6 +179,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Juan',
                 'apellidos' => 'Torres',
                 'correo_electronico' => 'juan.torres@gmail.com',
+                'fecha_nacimiento' => '1992-04-11',
                 'password' => $password,
             ],
             [
@@ -174,6 +189,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Camila',
                 'apellidos' => 'Mendoza',
                 'correo_electronico' => 'camila.mendoza@hotmail.com',
+                'fecha_nacimiento' => '1994-09-05',
                 'password' => $password,
             ],
             [
@@ -183,6 +199,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Mateo',
                 'apellidos' => 'Suárez',
                 'correo_electronico' => 'mateo.suarez@gmail.com',
+                'fecha_nacimiento' => '2010-02-18',
                 'password' => $password,
             ],
             [
@@ -192,6 +209,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Valentina',
                 'apellidos' => 'Castaño',
                 'correo_electronico' => 'valen.castano@gmail.com',
+                'fecha_nacimiento' => '1996-07-22',
                 'password' => $password,
             ],
             [
@@ -201,6 +219,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Esteban',
                 'apellidos' => 'García',
                 'correo_electronico' => 'esteban.garcia@gmail.com',
+                'fecha_nacimiento' => '1990-12-01',
                 'password' => $password,
             ],
             [
@@ -210,6 +229,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Daniela',
                 'apellidos' => 'López',
                 'correo_electronico' => 'daniela.lopez@gmail.com',
+                'fecha_nacimiento' => '1998-03-30',
                 'password' => $password,
             ],
             [
@@ -219,6 +239,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Ana',
                 'apellidos' => 'Rojas',
                 'correo_electronico' => 'ana.rojas@yahoo.com',
+                'fecha_nacimiento' => '1986-06-14',
                 'password' => $password,
             ],
             [
@@ -228,6 +249,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Sofía',
                 'apellidos' => 'Martínez',
                 'correo_electronico' => 'sofia.martinez@gmail.com',
+                'fecha_nacimiento' => '1993-11-09',
                 'password' => $password,
             ],
             [
@@ -237,6 +259,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Julián',
                 'apellidos' => 'Gómez',
                 'correo_electronico' => 'julian.gomez@gmail.com',
+                'fecha_nacimiento' => '1989-01-27',
                 'password' => $password,
             ],
             [
@@ -246,6 +269,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Tatiana',
                 'apellidos' => 'Rincón',
                 'correo_electronico' => 'tatiana.rincon@gmail.com',
+                'fecha_nacimiento' => '1997-05-16',
                 'password' => $password,
             ],
             [
@@ -255,6 +279,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Sebastián',
                 'apellidos' => 'Vega',
                 'correo_electronico' => 'sebastian.vega@hotmail.com',
+                'fecha_nacimiento' => '1991-08-04',
                 'password' => $password,
             ],
             [
@@ -264,6 +289,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Laura',
                 'apellidos' => 'Morales',
                 'correo_electronico' => 'laura.morales@gmail.com',
+                'fecha_nacimiento' => '1995-10-21',
                 'password' => $password,
             ],
             [
@@ -273,6 +299,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Andrés',
                 'apellidos' => 'Pardo',
                 'correo_electronico' => 'andres.pardo@gmail.com',
+                'fecha_nacimiento' => '1990-02-02',
                 'password' => $password,
             ],
             [
@@ -282,6 +309,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Isabella',
                 'apellidos' => 'Jiménez',
                 'correo_electronico' => 'isabella.jimenez@gmail.com',
+                'fecha_nacimiento' => '2011-06-03',
                 'password' => $password,
             ],
             [
@@ -291,6 +319,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Cristian',
                 'apellidos' => 'Nieto',
                 'correo_electronico' => 'cristian.nieto@gmail.com',
+                'fecha_nacimiento' => '1992-12-18',
                 'password' => $password,
             ],
             [
@@ -300,6 +329,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Daniel',
                 'apellidos' => 'Bermúdez',
                 'correo_electronico' => 'daniel.bermudez@gmail.com',
+                'fecha_nacimiento' => '1994-01-14',
                 'password' => $password,
             ],
             [
@@ -309,6 +339,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Tatiana',
                 'apellidos' => 'Rojas',
                 'correo_electronico' => 'tatiana.rojas@hotmail.com',
+                'fecha_nacimiento' => '1998-09-25',
                 'password' => $password,
             ],
             [
@@ -318,6 +349,7 @@ class UsersTableSeeder extends Seeder
                 'nombres' => 'Héctor',
                 'apellidos' => 'Linares',
                 'correo_electronico' => 'hector.linares@gmail.com',
+                'fecha_nacimiento' => '1987-07-07',
                 'password' => $password,
             ],
         ]);

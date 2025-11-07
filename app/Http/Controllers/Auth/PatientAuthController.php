@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Mail\PatientLoginLink;
 use App\Models\User;
 use App\Models\UserType;
+use App\Models\DocumentType;
 
 class PatientAuthController extends Controller
 {
@@ -19,12 +20,16 @@ class PatientAuthController extends Controller
      */
     public function showLoginForm()
     {
-        return view('auth.paciente.login');
+        $documentTypes = DocumentType::orderBy('name')->get();
+
+        return view('auth.paciente.login', compact('documentTypes'));
     }
 
     public function showRegister()
     {
-        return view('auth.paciente.register');
+        $documentTypes = DocumentType::orderBy('name')->get();
+
+        return view('auth.paciente.register', compact('documentTypes'));
     }
 
     public function register(Request $request)

@@ -23,11 +23,13 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de documento --}}
-        <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
-        <option value="1" @selected(old('id_tipo_documento')==='1')>Cédula de ciudadanía</option>
-        <option value="2" @selected(old('id_tipo_documento')==='2')>Tarjeta de identidad</option>
-        <option value="3" @selected(old('id_tipo_documento')==='3')>Cédula de extranjería</option>
-        <option value="4" @selected(old('id_tipo_documento')==='4')>Pasaporte</option>
+        <x-form.select name="id_tipo_documento" label="Tipo de documento" required :placeholder="null">
+          @foreach (($documentTypes ?? []) as $documentType)
+            <option value="{{ $documentType->id_tipo_documento }}"
+              @selected(old('id_tipo_documento') == $documentType->id_tipo_documento)>
+              {{ $documentType->name }}
+            </option>
+          @endforeach
         </x-form.select>
 
 
