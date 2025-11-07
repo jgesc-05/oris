@@ -19,7 +19,7 @@
           <strong>Especialidad:</strong> {{ $servicio['especialidad'] }}
         </div>
         <div class="mt-1 text-sm text-neutral-600">
-          <strong>Duración aproximada:</strong> {{ $servicio['duracion'] ?? '30 minutos' }}
+        <strong>Duración aproximada:</strong> {{ ($servicio['duracion'] ?? '30') . ' minutos' }}
         </div>
       </div>
 
