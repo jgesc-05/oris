@@ -27,10 +27,9 @@ class Specialty extends Model
         return $this->hasMany(Service::class, 'id_tipos_especialidad', 'id_tipos_especialidad');
     }
 
-    // Relación muchos a muchos con Doctor
     public function doctors()
     {
-        return $this->belongsToMany(Doctor::class, 'doctors_specialties', 'id_tipos_especialidad', 'id_usuario_doctor');
+        return $this->hasMany(Doctor::class, 'id_tipos_especialidad', 'id_tipos_especialidad');
     }
 
 }

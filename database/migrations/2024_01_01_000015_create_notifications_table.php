@@ -17,6 +17,10 @@ return new class extends Migration
             $table->json('contenido_json')->nullable();
             $table->string('plantilla', 100)->nullable();
             $table->dateTime('fecha_envio')->nullable();
+            $table->foreignId('id_canal')
+                ->nullable()
+                ->constrained('channel', 'id_canal')
+                ->nullOnDelete();
             $table->foreignId('id_cita')->nullable()->constrained('appointments', 'id_cita')->onDelete('cascade');
             $table->foreignId('id_usuario')->nullable()->constrained('users', 'id_usuario')->onDelete('cascade');
         });
