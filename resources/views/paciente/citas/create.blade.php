@@ -87,15 +87,6 @@
 
     @push('scripts')
         <script>
-            console.log('Verificación elementos:', {
-                form,
-                specialtySelect,
-                serviceSelect,
-                doctorSelect,
-                fechaSelect,
-                horaSelect
-            });
-
             document.addEventListener('DOMContentLoaded', () => {
                 console.log('[Agendar] Init script');
                 const services = @json($servicesPayload);
@@ -104,11 +95,11 @@
                 console.log('[Agendar] Doctores cargados:', doctors);
 
                 const form = document.getElementById('agendarForm');
-                const specialtySelect = document.getElementById('select-especialidad');
-                const serviceSelect = document.getElementById('select-servicio');
-                const doctorSelect = document.getElementById('select-medico');
-                const fechaSelect = document.getElementById('select-fecha');
-                const horaSelect = document.getElementById('select-hora');
+                const specialtySelect = document.getElementById('id_tipos_especialidad');
+                const serviceSelect = document.getElementById('id_servicio');
+                const doctorSelect = document.getElementById('id_usuario_medico');
+                const fechaSelect = document.getElementById('fecha');
+                const horaSelect = document.getElementById('hora');
 
                 const availabilityUrl = form.dataset.availabilityUrl;
                 const initialDoctor = form.dataset.initialDoctor;
