@@ -6,14 +6,7 @@
 @php
   $firstName   = $patient?->nombres ?? 'Javier';
   $currentDate = \Carbon\Carbon::now()->locale('es')->translatedFormat('l, j \\d\\e F');
-
-  $cita = $nextAppointment ?? [
-    'dia'      => 'Lunes, 30 de septiembre',
-    'hora'     => '9:00 AM',
-    'doctor'   => 'Dra. Sandra Rodríguez',
-    'detalle'  => 'Control de rutina',
-    'existe'   => true,
-  ];
+  $proximaCita = $nextAppointment ?? null;
 @endphp
 
 <div class="space-y-8">
@@ -28,16 +21,19 @@
 
   <x-ui.card class="space-y-6 p-6">
     {{-- Próxima cita destacada --}}
-    @if(!empty($cita['existe']))
+    @if($proximaCita)
       <div class="relative bg-rose-50 border border-rose-200 rounded-[var(--radius)] p-6 overflow-hidden">
         <div class="absolute right-4 top-4 text-5xl opacity-20 select-none">🩺</div>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
           <div>
             <h2 class="text-lg font-semibold text-rose-900">Tu próxima cita</h2>
             <p class="text-sm text-neutral-700 mt-1">
-              {{ $cita['dia'] }} — {{ $cita['hora'] }}<br>
-              <span class="font-medium text-neutral-900">{{ $cita['doctor'] }}</span><br>
-              {{ $cita['detalle'] }}
+              {{ $proximaCita->fecha_hora_inicio->locale('es')->translatedFormat('l, j \\d\\e F') }}
+              — {{ $proximaCita->fecha_hora_inicio->format('h:i A') }}<br>
+              <span class="font-medium text-neutral-900">
+                {{ $proximaCita->medico?->nombres }} {{ $proximaCita->medico?->apellidos }}
+              </span><br>
+              {{ $proximaCita->servicio?->nombre }}
             </p>
           </div>
 
@@ -95,18 +91,28 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-neutral-200">
-            <tr class="hover:bg-neutral-50 transition">
-              <td class="px-4 py-2">20 de junio</td>
-              <td class="px-4 py-2">Dr. Antonio Londoño</td>
-              <td class="px-4 py-2">Chequeo general</td>
-              <td class="px-4 py-2"><x-ui.badge variant="success">Completada</x-ui.badge></td>
-            </tr>
-            <tr class="hover:bg-neutral-50 transition">
-              <td class="px-4 py-2">30 de agosto</td>
-              <td class="px-4 py-2">Dra. Sandra Rodríguez</td>
-              <td class="px-4 py-2">Control de rutina</td>
-              <td class="px-4 py-2"><x-ui.badge variant="warning">Cancelada</x-ui.badge></td>
-            </tr>
+            @forelse(($recentAppointments ?? []) as $appointment)
+              <tr class="hover:bg-neutral-50 transition">
+                <td class="px-4 py-2">
+                  {{ $appointment->fecha_hora_inicio->locale('es')->translatedFormat('d \\d\\e F, h:i A') }}
+                </td>
+                <td class="px-4 py-2">
+                  {{ $appointment->medico?->nombres }} {{ $appointment->medico?->apellidos }}
+                </td>
+                <td class="px-4 py-2">{{ $appointment->servicio?->nombre }}</td>
+                <td class="px-4 py-2">
+                  <x-ui.badge variant="{{ $appointment->estado === 'Cancelada' ? 'warning' : 'success' }}">
+                    {{ $appointment->estado }}
+                  </x-ui.badge>
+                </td>
+              </tr>
+            @empty
+              <tr>
+                <td colspan="4" class="px-4 py-4 text-center text-neutral-600">
+                  Sin historial disponible aún.
+                </td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
       </div>

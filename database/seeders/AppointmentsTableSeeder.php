@@ -33,12 +33,14 @@ class AppointmentsTableSeeder extends Seeder
         DB::table('appointments')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-        $startDate = Carbon::create(2024, 11, 1);
-        $endDate = Carbon::create(2024, 12, 15);
+        $referenceYear = 2025;
+
+        $startDate = Carbon::create($referenceYear, 11, 1);
+        $endDate = Carbon::create($referenceYear, 12, 15);
         $holidays = collect([
-            '2024-11-04', // Festivo traslado Día de Todos los Santos
-            '2024-11-11', // Independencia de Cartagena
-            '2024-12-08', // Inmaculada Concepción (domingo, igual se evita)
+            Carbon::create($referenceYear, 11, 4)->toDateString(), // Traslado Día de Todos los Santos
+            Carbon::create($referenceYear, 11, 11)->toDateString(), // Independencia de Cartagena
+            Carbon::create($referenceYear, 12, 8)->toDateString(), // Inmaculada Concepción
         ]);
 
         $timeRanges = [
@@ -97,7 +99,7 @@ class AppointmentsTableSeeder extends Seeder
         }
 
         $statusPast = ['Cumplida', 'Cancelada'];
-        $statusFuture = ['Programada', 'Confirmada', 'En espera', 'Cancelada'];
+        $statusFuture = ['Programada', 'Confirmada', 'Cancelada'];
         $cancelReasons = [
             'Paciente solicitó cancelación',
             'Médico indispuesto',

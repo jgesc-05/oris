@@ -23,26 +23,42 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-neutral-200">
-            @foreach($appointments as $a)
+            @forelse($appointments as $appointment)
               <tr>
                 <td class="px-3 py-2 text-center">
-                  <input type="radio" name="cita_id" value="{{ $a['id'] }}" class="form-radio" required>
+                  <input type="radio" name="cita_id" value="{{ $appointment->id_cita }}" class="form-radio" required>
                 </td>
-                <td class="px-3 py-2">{{ $a['fecha'] }}</td>
-                <td class="px-3 py-2">{{ $a['hora'] }}</td>
-                <td class="px-3 py-2">{{ $a['doctor'] }}</td>
-                <td class="px-3 py-2">{{ $a['servicio'] }}</td>
                 <td class="px-3 py-2">
-                  <x-ui.badge variant="success">{{ $a['estado'] }}</x-ui.badge>
+                  {{ $appointment->fecha_hora_inicio->locale('es')->translatedFormat('d \\d\\e F') }}
+                </td>
+                <td class="px-3 py-2">{{ $appointment->fecha_hora_inicio->format('h:i A') }}</td>
+                <td class="px-3 py-2">
+                  {{ $appointment->medico?->nombres }} {{ $appointment->medico?->apellidos }}
+                </td>
+                <td class="px-3 py-2">{{ $appointment->servicio?->nombre }}</td>
+                <td class="px-3 py-2">
+                  <x-ui.badge variant="success">{{ $appointment->estado }}</x-ui.badge>
                 </td>
               </tr>
-            @endforeach
+            @empty
+              <tr>
+                <td colspan="6" class="px-3 py-4 text-center text-neutral-600">
+                  No tienes citas próximas para reprogramar.
+                </td>
+              </tr>
+            @endforelse
           </tbody>
         </table>
       </div>
 
       <div class="border-t border-neutral-200 p-4">
-        <x-ui.button variant="primary" size="lg" block class="rounded-full">
+        <x-ui.button
+          variant="primary"
+          size="lg"
+          block
+          class="rounded-full"
+          :disabled="($appointments ?? collect())->isEmpty()"
+        >
           Reprogramar cita
         </x-ui.button>
       </div>

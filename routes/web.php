@@ -62,13 +62,15 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
         Route::get('medicos/{especialidad}', [PatientPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
         Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
         Route::prefix('citas')->name('citas.')->group(function () {
+            Route::get('disponibilidad', [PatientPortalController::class, 'citasDisponibilidad'])->name('disponibilidad');
             Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
             Route::post('/', [PatientPortalController::class, 'citasStore'])->name('store');
             Route::get('reprogramar', [PatientPortalController::class, 'reprogramarIndex'])->name('reprogramar.index');
             Route::post('reprogramar/seleccionar', [PatientPortalController::class, 'reprogramarSelect'])->name('reprogramar.submit');
             Route::get('reprogramar/{id}/editar', [PatientPortalController::class, 'reprogramarEdit'])->whereNumber('id')->name('reprogramar.edit');
             Route::put('reprogramar/{id}', [PatientPortalController::class, 'reprogramarUpdate'])->whereNumber('id')->name('reprogramar.update');
-            Route::get('reprogramar/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->name('reprogramar.confirmada');
+            Route::get('confirmada/{id}', [PatientPortalController::class, 'citaConfirmada'])->whereNumber('id')->name('confirmada');
+            Route::get('reprogramar/{id}/confirmada', [PatientPortalController::class, 'reprogramarConfirmada'])->whereNumber('id')->name('reprogramar.confirmada');
 
             Route::get('cancelar', [PatientPortalController::class, 'citasCancelarIndex'])->name('cancelar.index');
             Route::post('cancelar/submit', [PatientPortalController::class, 'citasCancelarSubmit'])->name('cancelar.submit');

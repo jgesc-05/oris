@@ -7,23 +7,56 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use App\Models\Appointment;
+use App\Models\Service;
+use App\Models\Specialty;
+use App\Models\User;
+use App\Services\AppointmentAvailabilityService;
 
 class PatientPortalController extends Controller
 {
+    public function __construct(private AppointmentAvailabilityService $availability)
+    {
+    }
+    protected function patient()
+    {
+        return Auth::guard('paciente')->user();
+    }
+
+    protected function doctorQuery()
+    {
+        return User::whereHas('userType', fn($query) => $query->where('nombre', 'Médico'));
+    }
+
+    protected function patientAppointmentsQuery()
+    {
+        $patient = $this->patient();
+
+        return Appointment::with(['medico', 'servicio'])
+            ->where('id_usuario_paciente', $patient?->id_usuario);
+    }
+
     public function inicio()
     {
-        $patient = Auth::guard('paciente')->user();
-        $nextAppointment = [
-            'dia'     => 'Lunes, 30 de septiembre',
-            'hora'    => '9:00 AM',
-            'doctor'  => 'Dra. Sandra Rodríguez',
-            'detalle' => 'Control Ortodoncia',
-            'existe'  => false,
-        ];
+        $patient = $this->patient();
+
+        $nextAppointment = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->where('fecha_hora_inicio', '>=', now())
+            ->orderBy('fecha_hora_inicio')
+            ->first();
+
+        $recentAppointments = $this->patientAppointmentsQuery()
+            ->orderByDesc('fecha_hora_inicio')
+            ->limit(5)
+            ->get();
 
         return view('paciente.dashboard', [
             'patient' => $patient,
             'nextAppointment' => $nextAppointment,
+            'recentAppointments' => $recentAppointments,
         ]);
     }
 
@@ -171,58 +204,88 @@ class PatientPortalController extends Controller
 
     public function citasCreate()
     {
-        $patient = Auth::guard('paciente')->user();
+        $patient = $this->patient();
+        $specialties = Specialty::where('estado', 'activo')->orderBy('nombre')->get();
+        $services = Service::with('tipoEspecialidad')
+            ->where('estado', 'activo')
+            ->orderBy('nombre')
+            ->get();
+        $servicesPayload = $services->map(function ($service) {
+            return [
+                'id' => $service->id_servicio,
+                'name' => $service->nombre,
+                'specialty_id' => $service->id_tipos_especialidad,
+            ];
+        })->values()->all();
+        $doctors = $this->doctorQuery()->orderBy('nombres')->get();
+        $availabilityUrl = route('paciente.citas.disponibilidad');
 
-        return view('paciente.citas.create', [
-            'patient' => $patient,
-        ]);
+        return view('paciente.citas.create', compact(
+            'patient',
+            'specialties',
+            'services',
+            'servicesPayload',
+            'doctors',
+            'availabilityUrl'
+        ));
     }
 
     public function citasStore(Request $request)
     {
-        $data = $request->validate([
-            'especialidad' => ['required', 'string', 'max:100'],
-            'fecha'        => ['required', 'date', 'after_or_equal:today'],
-            'servicio'     => ['required', 'string', 'max:150'],
-            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
-            'medico'       => ['required', 'string', 'max:150'],
+        $patient = $this->patient();
+
+        $validated = $request->validate([
+            'id_tipos_especialidad' => ['required', 'exists:specialty_type,id_tipos_especialidad'],
+            'id_servicio' => ['required', 'exists:services,id_servicio'],
+            'id_usuario_medico' => ['required', 'exists:users,id_usuario'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora' => ['required', 'date_format:H:i', Rule::in($this->availability->allowedTimeSlots())],
+            'notas' => ['nullable', 'string', 'max:500'],
         ]);
 
-        // Simulación de creación de cita (reemplazar por DB cuando esté lista)
-        $appointment = [
-            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
-            'doctor'     => $data['medico'],
-            'servicio'   => $data['servicio'],
-            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
-        ];
+        $service = Service::where('estado', 'activo')
+            ->where('id_tipos_especialidad', $validated['id_tipos_especialidad'])
+            ->findOrFail($validated['id_servicio']);
+        $doctor = $this->doctorQuery()
+            ->where('id_usuario', $validated['id_usuario_medico'])
+            ->firstOrFail();
 
-        // Redirige a la vista de confirmación
+        $start = Carbon::parse($validated['fecha'] . ' ' . $validated['hora'])->seconds(0);
+        $end = $start->copy()->addMinutes(30);
+
+        $this->validateScheduleWindow($start);
+        $this->ensureSlotIsAvailable($doctor->id_usuario, $start, $end);
+
+        $appointment = Appointment::create([
+            'id_usuario_paciente' => $patient->id_usuario,
+            'id_usuario_medico' => $doctor->id_usuario,
+            'id_servicio' => $service->id_servicio,
+            'id_usuario_agenda' => $patient->id_usuario,
+            'fecha_hora_inicio' => $start,
+            'fecha_hora_fin' => $end,
+            'estado' => 'Programada',
+            'notas' => $validated['notas'] ?? null,
+        ]);
+
+        return redirect()->route('paciente.citas.confirmada', $appointment->id_cita);
+    }
+
+    public function citaConfirmada(int $id)
+    {
+        $appointment = $this->patientAppointmentsQuery()
+            ->findOrFail($id);
+
         return view('paciente.citas.confirmada', compact('appointment'));
     }
 
     public function reprogramarIndex()
     {
-        $patient = Auth::guard('paciente')->user();
-
-        // Mock de citas programadas
-        $appointments = [
-            [
-                'id'        => 101,
-                'fecha'     => '20 de octubre',
-                'hora'      => '10:00 AM',
-                'doctor'    => 'Antonio Londoño',
-                'servicio'  => 'Limpieza dental',
-                'estado'    => 'Programada',
-            ],
-            [
-                'id'        => 102,
-                'fecha'     => '30 de octubre',
-                'hora'      => '2:00 PM',
-                'doctor'    => 'Sandra Rodríguez',
-                'servicio'  => 'Control de ortodoncia',
-                'estado'    => 'Programada',
-            ],
-        ];
+        $patient = $this->patient();
+        $appointments = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->where('fecha_hora_inicio', '>=', now())
+            ->orderBy('fecha_hora_inicio')
+            ->get();
 
         return view('paciente.citas.reprogramar.index', compact('patient', 'appointments'));
     }
@@ -230,7 +293,7 @@ class PatientPortalController extends Controller
     public function reprogramarSelect(Request $request)
     {
         $data = $request->validate([
-            'cita_id' => ['required', 'integer'],
+            'cita_id' => ['required', 'exists:appointments,id_cita'],
         ]);
 
         return redirect()->route('paciente.citas.reprogramar.edit', $data['cita_id']);
@@ -238,150 +301,192 @@ class PatientPortalController extends Controller
 
     public function reprogramarEdit(int $id)
     {
-        $patient = Auth::guard('paciente')->user();
+        $patient = $this->patient();
+        $appointment = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->findOrFail($id);
 
-        // Mock temporal de la cita (reemplaza luego con consulta a DB)
-        $cita = [
-            'id'          => $id,
-            'especialidad'=> 'Endodoncia',
-            'servicio'    => 'Tratamiento de conducto',
-            'medico'      => 'Luisa Mantilla',
-            'fecha'       => '2025-10-08', // formato ISO (para input date)
-            'hora'        => '10:00',
-        ];
+        if ($appointment->fecha_hora_inicio->lt(now())) {
+            return redirect()->route('paciente.citas.reprogramar.index')
+                ->withErrors('La cita ya pasó y no puede reprogramarse.');
+        }
 
-        // Catálogos de selección (mock)
-        $especialidades = ['Endodoncia', 'Ortodoncia', 'Medicina general'];
-        $servicios      = ['Tratamiento de conducto', 'Control de ortodoncia', 'Limpieza dental'];
-        $medicos        = ['Luisa Mantilla', 'Antonio Londoño', 'Sandra Rodríguez'];
-        $horas          = ['08:00', '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'];
+        $specialties = Specialty::where('estado', 'activo')->orderBy('nombre')->get();
+        $services = Service::with('tipoEspecialidad')
+            ->where('estado', 'activo')
+            ->orderBy('nombre')
+            ->get();
+        $servicesPayload = $services->map(function ($service) {
+            return [
+                'id' => $service->id_servicio,
+                'name' => $service->nombre,
+                'specialty_id' => $service->id_tipos_especialidad,
+            ];
+        })->values()->all();
+        $doctors = $this->doctorQuery()->orderBy('nombres')->get();
+        $availabilityUrl = route('paciente.citas.disponibilidad');
 
         return view('paciente.citas.reprogramar.edit', compact(
-            'patient', 'cita', 'especialidades', 'servicios', 'medicos', 'horas'
+            'patient',
+            'appointment',
+            'specialties',
+            'services',
+            'servicesPayload',
+            'doctors',
+            'availabilityUrl'
         ));
     }
 
     public function reprogramarUpdate(Request $request, int $id)
     {
-        $data = $request->validate([
-            'especialidad' => ['required', 'string', 'max:100'],
-            'servicio'     => ['required', 'string', 'max:150'],
-            'medico'       => ['required', 'string', 'max:150'],
-            'fecha'        => ['required', 'date', 'after_or_equal:today'],
-            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
+        $patient = $this->patient();
+        $appointment = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->findOrFail($id);
+
+        $validated = $request->validate([
+            'id_tipos_especialidad' => ['required', 'exists:specialty_type,id_tipos_especialidad'],
+            'id_servicio' => ['required', 'exists:services,id_servicio'],
+            'id_usuario_medico' => ['required', 'exists:users,id_usuario'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora' => ['required', 'date_format:H:i', Rule::in($this->availability->allowedTimeSlots())],
+            'notas' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $appointment = [
-            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
-            'doctor'     => $data['medico'],
-            'servicio'   => $data['servicio'],
-            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
-        ];
+        $service = Service::where('estado', 'activo')
+            ->where('id_tipos_especialidad', $validated['id_tipos_especialidad'])
+            ->findOrFail($validated['id_servicio']);
+        $doctor = $this->doctorQuery()
+            ->where('id_usuario', $validated['id_usuario_medico'])
+            ->firstOrFail();
 
-        // TODO: Guardar cambios de la cita en la BD.
-        return redirect()
-            ->route('paciente.citas.reprogramar.confirmada')
-            ->with('appointment', $appointment);
+        $start = Carbon::parse($validated['fecha'] . ' ' . $validated['hora'])->seconds(0);
+        $end = $start->copy()->addMinutes(30);
+
+        $this->validateScheduleWindow($start);
+        $this->ensureSlotIsAvailable($doctor->id_usuario, $start, $end, $appointment->id_cita);
+
+        $appointment->update([
+            'id_usuario_medico' => $doctor->id_usuario,
+            'id_servicio' => $service->id_servicio,
+            'fecha_hora_inicio' => $start,
+            'fecha_hora_fin' => $end,
+            'estado' => 'Programada',
+            'notas' => $validated['notas'] ?? $appointment->notas,
+            'id_usuario_agenda' => $patient->id_usuario,
+            'id_usuario_cancela' => null,
+            'motivo_cancelacion' => null,
+        ]);
+
+        return redirect()->route('paciente.citas.reprogramar.confirmada', $appointment->id_cita);
     }
 
-    public function reprogramarConfirmada()
+    public function reprogramarConfirmada(int $id)
     {
-        $appointment = session('appointment');
-
-        if (!$appointment) {
-            return redirect()->route('paciente.citas.reprogramar.index');
-        }
+        $appointment = $this->patientAppointmentsQuery()
+            ->findOrFail($id);
 
         return view('paciente.citas.reprogramar.confirmada', compact('appointment'));
     }
 
-
-
-    public function citasReprogramarSubmit(Request $request)
-    {
-        $data = $request->validate([
-            'cita_id' => ['required'],
-            'fecha'   => ['nullable', 'date', 'after_or_equal:today'],
-            'hora'    => ['nullable', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
-            'medico'  => ['nullable', 'string'],
-            'servicio'=> ['nullable', 'string'],
-        ]);
-
-        // Simulación de actualización (luego conectar a la DB real)
-        $appointment = [
-            'fecha_hora' => isset($data['fecha'])
-                ? Carbon::parse(($data['fecha'] ?? now()->toDateString()) . ' ' . ($data['hora'] ?? '08:00'))->translatedFormat('l j \\d\\e F, g:i A')
-                : 'Miércoles 8 de Octubre, 10:00 AM',
-            'doctor'     => $data['medico'] ?? 'Luisa Mantilla',
-            'servicio'   => $data['servicio'] ?? 'Tratamiento de conducto',
-            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
-        ];
-
-        // Retornar la pantalla de confirmación
-        return redirect()
-            ->route('paciente.citas.reprogramar.confirmada')
-            ->with('appointment', $appointment);
-    }
-
-
-    public function citasReprogramarUpdate(Request $request, $id)
-    {
-        $data = $request->validate([
-            'especialidad' => ['required', 'string', 'max:100'],
-            'fecha'        => ['required', 'date', 'after_or_equal:today'],
-            'servicio'     => ['required', 'string', 'max:150'],
-            'hora'         => ['required', 'date_format:H:i', 'regex:/^(?:[01]\d|2[0-3]):(?:00|30)$/'],
-            'medico'       => ['required', 'string', 'max:150'],
-        ]);
-
-        // 🔹 Simulación de actualización
-        // En el futuro aquí actualizarías en la base de datos usando el modelo Cita::find($id)->update($data)
-        $appointment = [
-            'fecha_hora' => Carbon::parse($data['fecha'] . ' ' . $data['hora'])->translatedFormat('l j \\d\\e F, g:i A'),
-            'doctor'     => $data['medico'],
-            'servicio'   => $data['servicio'],
-            'referencia' => 'CITA-' . now()->year . '-' . rand(100000, 999999),
-        ];
-
-        // 🔹 Mostrar pantalla de confirmación
-        return redirect()
-            ->route('paciente.citas.reprogramar.confirmada')
-            ->with('appointment', $appointment);
-    }
-
-
-
     public function citasCancelarIndex()
     {
-        $patient = \Auth::guard('paciente')->user();
+        $patient = $this->patient();
 
-        // Mock: puedes reutilizar el mismo arreglo que usas en reprogramar
-        $appointments = [
-            ['id'=>1, 'fecha'=>'2025-11-10', 'hora'=>'09:00', 'doctor'=>'Dra. Laura Hernández', 'servicio'=>'Control', 'estado'=>'Confirmada'],
-            ['id'=>2, 'fecha'=>'2025-11-15', 'hora'=>'11:30', 'doctor'=>'Dr. Andrés Salazar',   'servicio'=>'Ortodoncia', 'estado'=>'Confirmada'],
-        ];
+        $appointments = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->where('fecha_hora_inicio', '>', now())
+            ->orderBy('fecha_hora_inicio')
+            ->get();
 
-        return view('paciente.citas.cancelar.index', compact('patient','appointments'));
+        return view('paciente.citas.cancelar.index', compact('patient', 'appointments'));
     }
 
-    public function citasCancelarSubmit(\Illuminate\Http\Request $request)
+    public function citasCancelarSubmit(Request $request)
     {
-        $request->validate(['cita_id' => 'required']);
-        // TODO: cancelar la cita seleccionada
-        return back()->with('status', 'Tu cita ha sido cancelada.');
+        $patient = $this->patient();
+
+        $validated = $request->validate([
+            'cita_id' => ['required', 'exists:appointments,id_cita'],
+            'motivo' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $appointment = $this->patientAppointmentsQuery()
+            ->where('estado', '<>', 'Cancelada')
+            ->where('fecha_hora_inicio', '>', now())
+            ->findOrFail($validated['cita_id']);
+
+        $appointment->update([
+            'estado' => 'Cancelada',
+            'id_usuario_cancela' => $patient->id_usuario,
+            'motivo_cancelacion' => $validated['motivo'] ?? 'Cancelada por el paciente',
+        ]);
+
+        return redirect()->route('paciente.citas.index')
+            ->with('status', 'Tu cita ha sido cancelada.');
     }
 
     public function citasIndex()
     {
-        $patient = \Auth::guard('paciente')->user();
+        $patient = $this->patient();
 
-        // Mock de citas (reemplaza por query real cuando tengas DB)
-        $appointments = [
-            ['fecha' => '20 de octubre', 'hora' => '10:00 AM', 'doctor' => 'Antonio Londoño',  'servicio' => 'Limpieza dental',        'estado' => 'Programada'],
-            ['fecha' => '30 de octubre', 'hora' => '2:00 PM',  'doctor' => 'Sandra Rodríguez', 'servicio' => 'Control de ortodoncia', 'estado' => 'Programada'],
-        ];
+        $appointments = $this->patientAppointmentsQuery()
+            ->orderByDesc('fecha_hora_inicio')
+            ->get();
 
-        return view('paciente.citas.index', compact('patient','appointments'));
+        return view('paciente.citas.index', compact('patient', 'appointments'));
+    }
+
+    public function citasDisponibilidad(Request $request)
+    {
+        $data = $request->validate([
+            'id_usuario_medico' => ['required', 'exists:users,id_usuario'],
+            'cita_id' => ['nullable', 'integer', 'exists:appointments,id_cita'],
+        ]);
+
+        $doctor = $this->doctorQuery()
+            ->where('id_usuario', $data['id_usuario_medico'])
+            ->firstOrFail();
+
+        $ignoreAppointmentId = null;
+        if (!empty($data['cita_id'])) {
+            $appointment = $this->patientAppointmentsQuery()
+                ->findOrFail($data['cita_id']);
+            $ignoreAppointmentId = $appointment->id_cita;
+        }
+
+        $slots = $this->availability->slotsForDoctorBetween(
+            $doctor->id_usuario,
+            now()->startOfDay(),
+            now()->copy()->addMonth()->endOfDay(),
+            $ignoreAppointmentId
+        );
+
+        return response()->json(['slots' => $slots]);
+    }
+
+    protected function validateScheduleWindow(Carbon $start): void
+    {
+        if ($start->lt(now())) {
+            throw ValidationException::withMessages([
+                'fecha' => 'No puedes seleccionar una fecha u hora en el pasado.',
+            ]);
+        }
+
+        if ($start->gt(now()->copy()->addMonth())) {
+            throw ValidationException::withMessages([
+                'fecha' => 'Solo puedes agendar dentro del próximo mes.',
+            ]);
+        }
+    }
+
+    protected function ensureSlotIsAvailable(int $doctorId, Carbon $start, Carbon $end, ?int $ignoreId = null): void
+    {
+        if (!$this->availability->slotIsAvailable($doctorId, $start, $end, $ignoreId)) {
+            throw ValidationException::withMessages([
+                'hora' => 'El horario seleccionado ya no está disponible. Por favor elige otro.',
+            ]);
+        }
     }
 
 
