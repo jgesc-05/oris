@@ -10,14 +10,22 @@ use Carbon\Carbon;
 class AppointmentAvailabilityService
 {
     /**
+     * Retorna los rangos laborales de la clínica.
+     */
+    public function clinicRanges(): array
+    {
+        return [
+            ['start' => '08:00', 'end' => '12:00'],
+            ['start' => '14:00', 'end' => '18:00'],
+        ];
+    }
+
+    /**
      * Retorna los horarios válidos (cada 30 min) para los formularios.
      */
     public function allowedTimeSlots(): array
     {
-        return collect([
-            ['start' => '08:00', 'end' => '12:00'],
-            ['start' => '14:00', 'end' => '18:00'],
-        ])->flatMap(function (array $range) {
+        return collect($this->clinicRanges())->flatMap(function (array $range) {
             $slots = [];
             $cursor = Carbon::createFromFormat('H:i', $range['start']);
             $end = Carbon::createFromFormat('H:i', $range['end']);
@@ -29,6 +37,31 @@ class AppointmentAvailabilityService
 
             return $slots;
         })->toArray();
+    }
+
+    /**
+     * Verifica si un rango cae dentro de la ventana laboral de la clínica.
+     */
+    public function fitsClinicSchedule(Carbon $start, Carbon $end): bool
+    {
+        foreach ($this->clinicRanges() as $range) {
+            $windowStart = Carbon::createFromFormat('Y-m-d H:i', $start->toDateString().' '.$range['start']);
+            $windowEnd = Carbon::createFromFormat('Y-m-d H:i', $start->toDateString().' '.$range['end']);
+
+            if ($start->gte($windowStart) && $end->lte($windowEnd)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Indica si el médico tiene disponibilidad declarada para el rango.
+     */
+    public function doctorIsWorking(int $doctorId, Carbon $start, Carbon $end): bool
+    {
+        return $this->matchesAvailability($doctorId, $start, $end);
     }
 
     public function slotIsAvailable(int $doctorId, Carbon $start, Carbon $end, ?int $ignoreAppointmentId = null): bool

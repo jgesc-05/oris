@@ -5,10 +5,18 @@ namespace App\Http\Controllers\Secretary;
 use App\Http\Controllers\Controller;
 use App\Models\ScheduleBlock;
 use App\Models\User;
+use App\Services\AppointmentAvailabilityService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class SecretaryScheduleController extends Controller
 {
+    public function __construct(private AppointmentAvailabilityService $availability)
+    {
+    }
+
     public function showBlockForm(Request $request)
     {
         $medicos = User::whereHas('userType', function ($query) {
@@ -24,16 +32,21 @@ class SecretaryScheduleController extends Controller
             ->limit(15)
             ->get();
 
-        return view('secretaria.horarios.bloquear', compact('medicos', 'blocks'));
+        $availabilityUrl = route('secretaria.citas.disponibilidad');
+
+        return view('secretaria.horarios.bloquear', compact('medicos', 'blocks', 'availabilityUrl'));
     }
 
     public function storeBlock(Request $request)
     {
+        $startSlots = $this->availability->allowedTimeSlots();
+        $endSlots = $this->buildEndSlots($startSlots);
+
         $data = $request->validate([
             'medico_id'  => ['required', 'integer'],
             'fecha'      => ['required', 'date', 'after_or_equal:today'],
-            'hora_desde' => ['required', 'date_format:H:i'],
-            'hora_hasta' => ['required', 'date_format:H:i', 'after:hora_desde'],
+            'hora_desde' => ['required', 'date_format:H:i', Rule::in($startSlots)],
+            'hora_hasta' => ['required', 'date_format:H:i', Rule::in($endSlots), 'after:hora_desde'],
             'motivo'     => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -41,29 +54,32 @@ class SecretaryScheduleController extends Controller
             ->whereHas('userType', fn ($query) => $query->where('nombre', 'Médico'))
             ->firstOrFail();
 
-        $overlap = ScheduleBlock::where('medico_id', $medico->id_usuario)
-            ->where('fecha', $data['fecha'])
-            ->where(function ($query) use ($data) {
-                $query->whereBetween('hora_desde', [$data['hora_desde'], $data['hora_hasta']])
-                    ->orWhereBetween('hora_hasta', [$data['hora_desde'], $data['hora_hasta']])
-                    ->orWhere(function ($q) use ($data) {
-                        $q->where('hora_desde', '<=', $data['hora_desde'])
-                          ->where('hora_hasta', '>=', $data['hora_hasta']);
-                    });
-            })
-            ->exists();
+        $start = Carbon::createFromFormat('Y-m-d H:i', $data['fecha'].' '.$data['hora_desde'])->seconds(0);
+        $end = Carbon::createFromFormat('Y-m-d H:i', $data['fecha'].' '.$data['hora_hasta'])->seconds(0);
 
-        if ($overlap) {
-            return back()
-                ->withErrors(['hora_desde' => 'El médico ya tiene un bloqueo que se superpone con el horario elegido.'])
-                ->withInput();
+        if (!$this->availability->fitsClinicSchedule($start, $end)) {
+            throw ValidationException::withMessages([
+                'hora_desde' => 'El rango seleccionado está fuera del horario laboral de la clínica.',
+            ]);
+        }
+
+        if (!$this->availability->doctorIsWorking($medico->id_usuario, $start, $end)) {
+            throw ValidationException::withMessages([
+                'hora_desde' => 'El médico no tiene disponibilidad activa en ese horario.',
+            ]);
+        }
+
+        if (!$this->availability->slotIsAvailable($medico->id_usuario, $start, $end)) {
+            throw ValidationException::withMessages([
+                'hora_desde' => 'Ya existe una cita o bloqueo para ese rango horario.',
+            ]);
         }
 
         ScheduleBlock::create([
             'medico_id'  => $medico->id_usuario,
-            'fecha'      => $data['fecha'],
-            'hora_desde' => $data['hora_desde'],
-            'hora_hasta' => $data['hora_hasta'],
+            'fecha'      => $start->toDateString(),
+            'hora_desde' => $start->format('H:i:s'),
+            'hora_hasta' => $end->format('H:i:s'),
             'motivo'     => $data['motivo'] ?? null,
             'created_by' => $request->user()?->id_usuario,
         ]);
@@ -71,5 +87,14 @@ class SecretaryScheduleController extends Controller
         return redirect()
             ->route('secretaria.horarios.bloquear')
             ->with('status', 'Horario bloqueado correctamente.');
+    }
+
+    protected function buildEndSlots(array $startSlots): array
+    {
+        return collect($startSlots)
+            ->map(fn ($slot) => Carbon::createFromFormat('H:i', $slot)->addMinutes(30)->format('H:i'))
+            ->unique()
+            ->values()
+            ->all();
     }
 }
