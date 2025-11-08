@@ -19,6 +19,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad Nacional de Colombia',
                 'numero_licencia' => 'MG-1001',
                 'descripcion' => 'Médico general con amplia experiencia en atención primaria y medicina preventiva.',
+                'experiencia' => 12,
             ],
             [
                 'email' => 'juliana.martinez@vitalcare.com',
@@ -26,6 +27,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad de Antioquia',
                 'numero_licencia' => 'MG-1002',
                 'descripcion' => 'Profesional enfocada en atención integral del paciente y promoción de la salud.',
+                'experiencia' => 9,
             ],
             [
                 'email' => 'felipe.rojas@vitalcare.com',
@@ -33,6 +35,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Pontificia Universidad Javeriana',
                 'numero_licencia' => 'CD-2001',
                 'descripcion' => 'Cardiólogo especializado en insuficiencia cardíaca y rehabilitación cardiovascular.',
+                'experiencia' => 15,
             ],
             [
                 'email' => 'diana.moreno@vitalcare.com',
@@ -40,6 +43,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad Industrial de Santander',
                 'numero_licencia' => 'CD-2002',
                 'descripcion' => 'Especialista en diagnóstico y manejo de enfermedades coronarias y arritmias.',
+                'experiencia' => 11,
             ],
             [
                 'email' => 'camilo.ortega@vitalcare.com',
@@ -47,6 +51,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad del Valle',
                 'numero_licencia' => 'PD-3001',
                 'descripcion' => 'Pediatra con experiencia en desarrollo infantil y enfermedades respiratorias.',
+                'experiencia' => 8,
             ],
             [
                 'email' => 'paola.fernandez@vitalcare.com',
@@ -54,6 +59,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad de La Sabana',
                 'numero_licencia' => 'PD-3002',
                 'descripcion' => 'Apasionada por el bienestar integral de los niños y adolescentes.',
+                'experiencia' => 7,
             ],
             [
                 'email' => 'santiago.perez@vitalcare.com',
@@ -61,6 +67,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad del Rosario',
                 'numero_licencia' => 'DM-4001',
                 'descripcion' => 'Dermatólogo experto en tratamientos estéticos y manejo de patologías cutáneas.',
+                'experiencia' => 10,
             ],
             [
                 'email' => 'claudia.vargas@vitalcare.com',
@@ -68,6 +75,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad CES',
                 'numero_licencia' => 'DM-4002',
                 'descripcion' => 'Enfocada en dermatología clínica y prevención del cáncer de piel.',
+                'experiencia' => 13,
             ],
             [
                 'email' => 'john.smith@vitalcare.com',
@@ -75,6 +83,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Harvard Medical School',
                 'numero_licencia' => 'GN-5001',
                 'descripcion' => 'Ginecólogo con experiencia internacional en salud reproductiva y obstetricia.',
+                'experiencia' => 18,
             ],
             [
                 'email' => 'natalia.gomez@vitalcare.com',
@@ -82,6 +91,7 @@ class DoctorsTableSeeder extends Seeder
                 'universidad' => 'Universidad de los Andes',
                 'numero_licencia' => 'GN-5002',
                 'descripcion' => 'Ginecóloga enfocada en acompañamiento prenatal y salud integral de la mujer.',
+                'experiencia' => 10,
             ],
         ];
 
@@ -101,6 +111,7 @@ class DoctorsTableSeeder extends Seeder
                     'universidad' => $doctor['universidad'],
                     'numero_licencia' => $doctor['numero_licencia'],
                     'descripcion' => $doctor['descripcion'],
+                    'experiencia' => $doctor['experiencia'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
