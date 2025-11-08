@@ -58,7 +58,7 @@ class DoctorController extends Controller
                 'descripcion' => optional($doctorData)->descripcion,
                 'universidad' => optional($doctorData)->universidad,
                 'experiencia' => optional($doctorData)->experiencia,
-                'slug' => Str::slug("{$user->nombres}-{$user->apellidos}-{$user->id_usuario}"),
+                'slug' => Str::slug("{$user->nombres}-{$user->apellidos}"),
             ];
         });
 
