@@ -34,7 +34,7 @@
 
           <div>
             <h2 class="text-lg font-semibold text-neutral-900">Experiencia</h2>
-            <p class="text-sm text-neutral-600">{{ $medico['experiencia'] }}</p>
+            <p class="text-sm text-neutral-600">{{ $medico['experiencia'] . ' años' }}</p>
           </div>
 
 
