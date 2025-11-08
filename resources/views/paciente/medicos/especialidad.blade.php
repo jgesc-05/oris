@@ -25,7 +25,7 @@
                 <strong>Universidad:</strong> {{ $doctor['universidad'] }}
               </div>
               <div class="text-xs text-neutral-500">
-                <strong>Experiencia:</strong> {{ $doctor['experiencia'] }}
+                <strong>Experiencia:</strong> {{ $doctor['experiencia'] . ' años' }}
               </div>
               <div class="mt-3 flex gap-3">
                 <x-ui.button variant="primary" size="sm" class="rounded-full px-4 py-1 text-xs"
