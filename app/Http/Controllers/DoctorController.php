@@ -65,4 +65,42 @@ class DoctorController extends Controller
         // 4. Retornar vista correcta (nota: era 'paciente', no 'pacientes')
         return view('paciente.medicos.especialidad', compact('doctors', 'especialidadSlug'));
     }
+
+    //Detalle del médico
+    public function doctorDetail(string $especialidadSlug, string $medicoSlug)
+    {
+        // 1. Buscar la especialidad por el slug de la URL (pero usando el nombre real en BD)
+        $specialty = Specialty::whereRaw('LOWER(REPLACE(nombre, " ", "-")) = ?', [$especialidadSlug])
+            ->firstOrFail();
+
+        // 2. Buscar el médico según el slug de la URL
+        $user = User::with('doctor')
+            ->where('id_tipo_usuario', 2)
+            ->where('estado', 'activo')
+            ->get()
+            ->first(function ($u) use ($medicoSlug) {
+                $slug = Str::slug("{$u->nombres}-{$u->apellidos}");
+                return $slug === $medicoSlug;
+            });
+
+        if (!$user) {
+            abort(404, 'Médico no encontrado');
+        }
+
+        $doctorData = $user->doctor;
+
+        // 3. Preparar los datos con tildes originales desde la BD
+        $medico = [
+            'nombre' => "{$user->nombres} {$user->apellidos}",
+            'descripcion' => optional($doctorData)->descripcion,
+            'formacion' => optional($doctorData)->universidad,
+            'experiencia' => optional($doctorData)->experiencia,
+            'especialidad' => $specialty->nombre, // nombre con tildes
+            'especialidad_slug' => $especialidadSlug,
+        ];
+
+        // 4. Retornar la vista del perfil médico
+        return view('paciente.medicos.detalle', compact('medico'));
+    }
+
 }

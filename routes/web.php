@@ -65,8 +65,8 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 
         //Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
         Route::get('medicos', [DoctorController::class, 'indexDoctors'])->name('medicos');
-        Route::get('medicos/{especialidad}', [DoctorController::class, 'doctorsBySpecialty'])->name('medicos.especialidad');
-        Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
+        Route::get('medicos/{especialidad}', [DoctorController::class, 'doctorsBySpecialty'])->name('medicos.especialidad');    
+        Route::get('medicos/{especialidad}/{medico}', [DoctorController::class, 'doctorDetail'])->name('medicos.detalle');
         Route::prefix('citas')->name('citas.')->group(function () {
             Route::get('disponibilidad', [PatientPortalController::class, 'citasDisponibilidad'])->name('disponibilidad');
             Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');
