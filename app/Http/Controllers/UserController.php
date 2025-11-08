@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserType;
 use App\Models\DocumentType;
+use App\Models\Specialty;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,8 +19,9 @@ class UserController extends Controller
     {
         $tiposDocumento = DocumentType::all();
         $tiposUsuario = UserType::all();
+        $especialidades = Specialty::all();
 
-        return view('admin.usuarios.create', compact('tiposDocumento', 'tiposUsuario'));
+        return view('admin.usuarios.create', compact('tiposDocumento', 'tiposUsuario', 'especialidades'));
     }
     public function store(Request $request)
     {
@@ -39,9 +42,17 @@ class UserController extends Controller
             'id_tipo_documento' => 'required|exists:document_type,id_tipo_documento',
             'numero_documento' => 'required|string|max:30|unique:users,numero_documento',
             'telefono' => 'nullable|string|max:20',
-            'fecha_nacimiento' => 'nullable|date',
+            'fecha_nacimiento' => 'required|date',
             'fecha_ingreso_ips' => 'nullable|date',
             'observaciones' => 'nullable|string|max:255',
+
+
+            // Campos de doctor
+            'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
+            'universidad' => 'required|string|max:100',
+            'numero_licencia' => 'required|string|max:50',
+            'descripcion' => 'required|string',
+            'experiencia' => 'nullable|integer',
         ]);
 
         // Creación
@@ -50,6 +61,17 @@ class UserController extends Controller
             'password' => $validated['password'],
             'fecha_creacion_sistema' => now(),
         ]);
+
+        if ($user->id_tipo_usuario == 2) { // ID del tipo Doctor
+            Doctor::create([
+                'id_usuario' => $user->id_usuario,
+                'id_tipos_especialidad' => $validated['id_tipos_especialidad'],
+                'universidad' => $validated['universidad'],
+                'numero_licencia' => $validated['numero_licencia'],
+                'descripcion' => $validated['descripcion'],
+                'experiencia' => $validated['experiencia'],
+            ]);
+        }
 
 
         return redirect()
@@ -192,12 +214,14 @@ class UserController extends Controller
     //Editar usuario existente (por parte del admin)
     public function edit(int $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::with('doctor')->findOrFail($id);
         $tiposDocumento = DocumentType::all();
         $tiposUsuario = UserType::all();
 
+        $especialidades = Specialty::all();
 
-        return view('admin.usuarios.edit', compact('user', 'tiposDocumento', 'tiposUsuario'));
+
+        return view('admin.usuarios.edit', compact('user', 'tiposDocumento', 'tiposUsuario', 'especialidades'));
     }
 
     //Actualizar usuario existente(admin)
@@ -229,8 +253,32 @@ class UserController extends Controller
             unset($validated['password']);
         }
 
-        // Actualizar el usuario
+        // Actualizar el usuario (con lo de médico)
         $user->update($validated);
+
+        $doctorRoleId = 2; 
+
+        if ($request->id_tipo_usuario == $doctorRoleId) {
+            // Validar datos específicos del doctor
+            $doctorData = $request->validate([
+                'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
+                'universidad' => 'required|string|max:100',
+                'numero_licencia' => 'required|string|max:50',
+                'descripcion' => 'required|string',
+                'experiencia' => 'nullable|integer',
+            ]);
+    
+            // Crear o actualizar el registro del doctor
+            $user->doctor()->updateOrCreate(
+                ['id_usuario' => $user->id_usuario],
+                $doctorData
+            );
+        } else {
+            // Si el usuario ya no es doctor, eliminar su registro en la tabla doctors (si existe)
+            if ($user->doctor) {
+                $user->doctor()->delete();
+            }
+        }
 
         return redirect()
             ->route('admin.usuarios.index')

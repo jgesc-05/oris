@@ -5,7 +5,7 @@
 @section('admin-content')
   <x-ui.card
     title="Crear especialidad"
-    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Medicina general, Ortodoncia…)."
+    subtitle="Define una especialidad para clasificar tus prestaciones (ej. Medicina general, Neurología…)."
     class="max-w-4xl"
   >
     @php

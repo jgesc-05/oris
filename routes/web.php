@@ -3,6 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
@@ -55,12 +56,17 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     // Sección privada del paciente
     Route::middleware('auth:paciente')->group(function () {
         Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
-        Route::get('servicios', [PatientPortalController::class, 'servicios'])->name('servicios');
-        Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
-        Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
-        Route::get('medicos', [PatientPortalController::class, 'medicos'])->name('medicos');
-        Route::get('medicos/{especialidad}', [PatientPortalController::class, 'medicosEspecialidad'])->name('medicos.especialidad');
-        Route::get('medicos/{especialidad}/{medico}', [PatientPortalController::class, 'medicosDetalle'])->name('medicos.detalle');
+        Route::get('servicios', [SpecialtyController::class, 'patientIndex'])->name('servicios');
+        //Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
+        Route::get('servicios/{slug}', [ServiceController::class, 'showBySpecialty'])
+        ->name('servicios.especialidad');
+        Route::get('servicios/{especialidad}/{servicio}', [ServiceController::class, 'showService'])
+        ->name('servicios.detalle');
+
+        //Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
+        Route::get('medicos', [DoctorController::class, 'indexDoctors'])->name('medicos');
+        Route::get('medicos/{especialidad}', [DoctorController::class, 'doctorsBySpecialty'])->name('medicos.especialidad');    
+        Route::get('medicos/{especialidad}/{medico}', [DoctorController::class, 'doctorDetail'])->name('medicos.detalle');
         Route::prefix('citas')->name('citas.')->group(function () {
             Route::get('disponibilidad', [PatientPortalController::class, 'citasDisponibilidad'])->name('disponibilidad');
             Route::get('crear', [PatientPortalController::class, 'citasCreate'])->name('create');

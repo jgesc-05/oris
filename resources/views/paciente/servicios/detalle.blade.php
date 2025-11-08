@@ -19,7 +19,7 @@
           <strong>Especialidad:</strong> {{ $servicio['especialidad'] }}
         </div>
         <div class="mt-1 text-sm text-neutral-600">
-          <strong>Duración aproximada:</strong> {{ $servicio['duracion'] ?? '30 minutos' }}
+        <strong>Duración aproximada:</strong> {{ ($servicio['duracion'] ?? '30') . ' minutos' }}
         </div>
       </div>
 
@@ -36,14 +36,15 @@
     </div>
 
     <div class="border-t border-neutral-200 bg-neutral-50 p-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <x-ui.button
-        variant="secondary"
-        size="md"
-        class="rounded-full px-6"
-        href="{{ route('paciente.servicios.especialidad', ['especialidad' => $servicio['especialidad_slug']]) }}"
-      >
-        ← Volver a {{ $servicio['especialidad'] }}
-      </x-ui.button>
+    <x-ui.button
+    variant="secondary"
+    size="md"
+    class="rounded-full px-6"
+    href="{{ route('paciente.servicios.especialidad', ['slug' => $especialidad['slug']]) }}"
+>
+    ← Volver a {{ $servicio['especialidad'] }}
+</x-ui.button>
+
 
       <x-ui.button
         variant="primary"

@@ -80,8 +80,4 @@ class User extends Authenticatable
         return $this->hasOne(Doctor::class, 'id_usuario', 'id_usuario');
     }
 
-    public function tokens()
-    {
-        return $this->hasMany(AccessToken::class, 'id_usuario', 'id_usuario');
-    }
 }

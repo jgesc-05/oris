@@ -67,23 +67,69 @@
         />
 
         {{-- Rol (tipo de usuario) --}}
-        <x-form.select name="id_tipo_usuario" label="Rol del usuario" required>
-  <option value="">-- Seleccionar --</option>
-  @foreach ($tiposUsuario as $tipo)
-    @if ($tipo->id_tipo_usuario != 4)
-      <option value="{{ $tipo->id_tipo_usuario }}" @selected(old('id_tipo_usuario') == $tipo->id_tipo_usuario)>
-        {{ $tipo->nombre }}
-      </option>
-    @endif
-  @endforeach
-</x-form.select>
+        <x-form.select id="tipo_usuario" name="id_tipo_usuario" label="Rol del usuario" required onchange="toggleDoctorFields(this.value)">
+          <option value="">-- Seleccionar --</option>
+          @foreach ($tiposUsuario as $tipo)
+            @if ($tipo->id_tipo_usuario != 4)
+              <option value="{{ $tipo->id_tipo_usuario }}" @selected(old('id_tipo_usuario') == $tipo->id_tipo_usuario)>
+                {{ $tipo->nombre }}
+              </option>
+            @endif
+          @endforeach
+        </x-form.select>
 
+
+{{-- Campos específicos para DOCTOR --}}
+<div id="doctor-fields" class="hidden md:col-span-2 border-t pt-4 mt-2">
+  <h2 class="text-lg font-semibold text-neutral-800 mb-4">Información del médico</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <x-form.select name="id_tipos_especialidad" label="Especialidad médica">
+      <option value="">-- Seleccionar especialidad --</option>
+      @foreach ($especialidades as $esp)
+        <option value="{{ $esp->id_tipos_especialidad }}">{{ $esp->nombre }}</option>
+      @endforeach
+    </x-form.select>
+
+    <x-form.input
+      name="universidad"
+      required
+      label="Universidad"
+      value="{{ old('universidad') }}"
+    />
+
+    <x-form.input
+      name="numero_licencia"
+      required
+      label="Número de licencia"
+      value="{{ old('numero_licencia') }}"
+    />
+
+    <x-form.input
+      name="experiencia"
+      required
+      label="Experiencia (en años)"
+      value="{{ old('experiencia') }}"
+    />
+
+    <div class="md:col-span-2">
+      <x-form.textarea
+        name="descripcion"
+        required
+        label="Descripción profesional"
+        value="{{ old('descripcion') }}"
+      />
+
+    </div>
+  </div>
+</div>
 
         {{-- Fecha de nacimiento --}}
         <x-form.input
           name="fecha_nacimiento"
           label="Fecha de nacimiento"
           type="date"
+          required
           max="{{ now()->format('Y-m-d') }}"
           value="{{ old('fecha_nacimiento') }}"
           :error="$errors->first('fecha_nacimiento')"
@@ -146,11 +192,23 @@
       </div>
 
       <div class="pt-4 text-center">
-        {{-- Ya modificado --}}
         <x-ui.button type="submit" variant="primary" class="px-8 py-3">
           Crear usuario
         </x-ui.button>
       </div>
     </form>
   </x-ui.card>
+  <script>
+  function toggleDoctorFields(value) {
+    const doctorFields = document.getElementById('doctor-fields');
+    doctorFields.classList.toggle('hidden', value != 2);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const tipoUsuarioSelect = document.getElementById('tipo_usuario');
+    if (tipoUsuarioSelect) {
+      toggleDoctorFields(tipoUsuarioSelect.value);
+    }
+  });
+</script>
 @endsection
