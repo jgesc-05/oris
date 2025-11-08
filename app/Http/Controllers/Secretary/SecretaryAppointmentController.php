@@ -242,6 +242,12 @@ class SecretaryAppointmentController extends Controller
         ])->values()->all();
 
         $availabilityUrl = route('secretaria.citas.disponibilidad');
+        $initialSlots = $this->availability->slotsForDoctorBetween(
+            $appointment->id_usuario_medico,
+            now()->startOfDay(),
+            now()->copy()->addMonth()->endOfDay(),
+            $appointment->id_cita
+        );
 
         return view('secretaria.citas.reprogramar.edit', compact(
             'patient',
@@ -251,7 +257,8 @@ class SecretaryAppointmentController extends Controller
             'servicesPayload',
             'doctors',
             'doctorsPayload',
-            'availabilityUrl'
+            'availabilityUrl',
+            'initialSlots'
         ));
     }
 
