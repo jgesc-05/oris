@@ -107,6 +107,7 @@
               <th class="px-4 py-2 text-left uppercase text-xs font-medium">Desde</th>
               <th class="px-4 py-2 text-left uppercase text-xs font-medium">Hasta</th>
               <th class="px-4 py-2 text-left uppercase text-xs font-medium">Motivo</th>
+              <th class="px-4 py-2 text-left uppercase text-xs font-medium">Acciones</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-neutral-200 bg-white">
@@ -117,10 +118,46 @@
                 <td class="px-4 py-3">{{ optional($block->hora_desde)->format('h:i A') }}</td>
                 <td class="px-4 py-3">{{ optional($block->hora_hasta)->format('h:i A') }}</td>
                 <td class="px-4 py-3">{{ $block->motivo ?? '—' }}</td>
+                <td class="px-4 py-3">
+                  <x-ui.button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    class="text-red-600 hover:text-red-700"
+                    data-delete-block
+                    data-action="{{ route('secretaria.horarios.bloquear.destroy', $block) }}"
+                    data-details="{{ $block->fecha->translatedFormat('d \\d\\e F Y') }} · {{ optional($block->hora_desde)->format('h:i A') }} - {{ optional($block->hora_hasta)->format('h:i A') }}"
+                  >
+                    Eliminar
+                  </x-ui.button>
+                </td>
               </tr>
             @endforeach
           </tbody>
         </table>
+      </div>
+      <form id="deleteBlockForm" method="POST" class="hidden">
+        @csrf
+        @method('DELETE')
+      </form>
+      <div id="deleteBlockModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div class="bg-white rounded-[var(--radius)] shadow-lg w-full max-w-md p-6 space-y-4">
+          <header class="space-y-1">
+            <h2 class="text-lg font-semibold text-neutral-900">¿Eliminar este bloqueo?</h2>
+            <p class="text-sm text-neutral-600">
+              Esta acción liberará el horario y volverá a aparecer como disponible en la agenda.
+            </p>
+            <p id="deleteBlockDetails" class="text-sm font-medium text-neutral-900"></p>
+          </header>
+          <div class="flex justify-end gap-3">
+            <x-ui.button type="button" variant="secondary" size="sm" id="cancelDeleteBlock">
+              Mantener
+            </x-ui.button>
+            <x-ui.button type="button" variant="warning" size="sm" id="confirmDeleteBlock">
+              Sí, eliminar
+            </x-ui.button>
+          </div>
+        </div>
       </div>
     </x-ui.card>
   @endif
@@ -352,6 +389,43 @@
         });
         initialDoctor = '';
       }
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const modal = document.getElementById('deleteBlockModal');
+      const form = document.getElementById('deleteBlockForm');
+      const detail = document.getElementById('deleteBlockDetails');
+      const cancelBtn = document.getElementById('cancelDeleteBlock');
+      const confirmBtn = document.getElementById('confirmDeleteBlock');
+      const triggers = document.querySelectorAll('[data-delete-block]');
+      let pendingAction = null;
+
+      if (!modal || !form || !detail || !cancelBtn || !confirmBtn) {
+        return;
+      }
+
+      triggers.forEach((button) => {
+        button.addEventListener('click', () => {
+          pendingAction = button.dataset.action;
+          detail.textContent = button.dataset.details || '';
+          modal.classList.remove('hidden');
+        });
+      });
+
+      const closeModal = () => {
+        modal.classList.add('hidden');
+        pendingAction = null;
+      };
+
+      cancelBtn.addEventListener('click', closeModal);
+
+      confirmBtn.addEventListener('click', () => {
+        if (!pendingAction) return;
+        form.action = pendingAction;
+        form.submit();
+      });
     });
   </script>
 @endpush

@@ -89,6 +89,15 @@ class SecretaryScheduleController extends Controller
             ->with('status', 'Horario bloqueado correctamente.');
     }
 
+    public function destroyBlock(ScheduleBlock $block)
+    {
+        $block->delete();
+
+        return redirect()
+            ->route('secretaria.horarios.bloquear')
+            ->with('status', 'Bloqueo eliminado y disponibilidad actualizada.');
+    }
+
     protected function buildEndSlots(array $startSlots): array
     {
         return collect($startSlots)

@@ -148,6 +148,9 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->g
             ->name('bloquear');
         Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
             ->name('bloquear.store');
+        Route::delete('bloquear/{block}', [SecretaryScheduleController::class, 'destroyBlock'])
+            ->name('bloquear.destroy')
+            ->whereNumber('block');
     });
 
 
