@@ -98,7 +98,7 @@ class AppointmentsTableSeeder extends Seeder
             $selectedSlots = array_merge($selectedSlots, array_slice($remaining, 0, 50 - count($selectedSlots)));
         }
 
-        $statusPast = ['Cumplida', 'Cancelada'];
+        $statusPast = ['Confirmada', 'Cancelada'];
         $statusFuture = ['Confirmada', 'Cancelada'];
         $cancelReasons = [
             'Paciente solicitó cancelación',

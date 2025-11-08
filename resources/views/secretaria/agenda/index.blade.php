@@ -16,15 +16,17 @@
     </header>
 
     <x-ui.card class="p-5 space-y-4">
-      <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <x-form.input type="date" name="fecha" label="Fecha" :value="now()->toDateString()" />
+      <form class="grid grid-cols-1 md:grid-cols-4 gap-4" method="GET">
+        <x-form.input type="date" name="fecha" label="Fecha" :value="$filters['fecha']" />
+
         <x-form.select name="estado" label="Estado">
           <option value="">Todos</option>
-          <option value="confirmada">Confirmada</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="reprogramada">Reprogramada</option>
+          <option value="Programada" @selected($filters['estado'] === 'Programada')>Programada</option>
+          <option value="Cancelada" @selected($filters['estado'] === 'Cancelada')>Cancelada</option>
         </x-form.select>
-        <x-form.input name="paciente" label="Paciente" placeholder="Nombre o documento" />
+
+        <x-form.input name="paciente" label="Paciente" placeholder="Nombre o documento" :value="$filters['paciente']" />
+
         <div class="flex items-end">
           <x-ui.button variant="primary" size="md" class="rounded-full px-6">Filtrar</x-ui.button>
         </div>
@@ -45,22 +47,17 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-neutral-200 bg-white">
-          @foreach ($entries as $entry)
+          @forelse ($appointments as $entry)
             <tr class="hover:bg-neutral-50 transition">
-              <td class="px-4 py-3">{{ \Carbon\Carbon::parse($entry['fecha'])->translatedFormat('d \\d\\e F') }}</td>
-              <td class="px-4 py-3">{{ $entry['hora'] }}</td>
-              <td class="px-4 py-3">{{ $entry['paciente'] }}</td>
-              <td class="px-4 py-3">{{ $entry['servicio'] }}</td>
-              <td class="px-4 py-3">{{ $entry['medico'] }}</td>
+              <td class="px-4 py-3">{{ $entry->fecha_hora_inicio->locale('es')->translatedFormat('d \\d\\e F') }}</td>
+              <td class="px-4 py-3">{{ $entry->fecha_hora_inicio->format('h:i A') }}</td>
+              <td class="px-4 py-3">{{ $entry->paciente?->nombres }} {{ $entry->paciente?->apellidos }}</td>
+              <td class="px-4 py-3">{{ $entry->servicio?->nombre }}</td>
+              <td class="px-4 py-3">{{ $entry->medico?->nombres }} {{ $entry->medico?->apellidos }}</td>
               <td class="px-4 py-3">
-                @php $estado = strtolower($entry['estado']); @endphp
-                @if ($estado === 'confirmada')
-                  <x-ui.badge variant="success">Confirmada</x-ui.badge>
-                @elseif ($estado === 'pendiente')
-                  <x-ui.badge variant="warning">Pendiente</x-ui.badge>
-                @else
-                  <x-ui.badge variant="info">Reprogramada</x-ui.badge>
-                @endif
+                <x-ui.badge variant="{{ $entry->estado === 'Programada' ? 'success' : 'warning' }}">
+                  {{ $entry->estado }}
+                </x-ui.badge>
               </td>
               <td class="px-4 py-3">
                 <div class="flex gap-2">
@@ -69,7 +66,13 @@
                 </div>
               </td>
             </tr>
-          @endforeach
+          @empty
+            <tr>
+              <td colspan="7" class="px-4 py-6 text-center text-neutral-500">
+                No hay citas para los filtros seleccionados.
+              </td>
+            </tr>
+          @endforelse
         </tbody>
       </table>
     </x-ui.card>

@@ -105,29 +105,58 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->g
     });
 
     Route::prefix('citas')->name('citas.')->group(function () {
+        Route::get('disponibilidad', [SecretaryAppointmentController::class, 'disponibilidad'])->name('disponibilidad');
+
         Route::get('agendar', [SecretaryAppointmentController::class, 'showAgendarLookup'])->name('agendar.lookup');
         Route::post('agendar', [SecretaryAppointmentController::class, 'submitAgendarLookup'])->name('agendar.lookup.submit');
-        Route::get('agendar/{patient}', [SecretaryAppointmentController::class, 'showCreateForm'])->name('create.form');
-        Route::post('agendar/{patient}', [SecretaryAppointmentController::class, 'storeAppointment'])->name('create.store');
+        Route::get('agendar/{patient}', [SecretaryAppointmentController::class, 'showCreateForm'])
+            ->name('create.form')
+            ->whereNumber('patient');
+        Route::post('agendar/{patient}', [SecretaryAppointmentController::class, 'storeAppointment'])
+            ->name('create.store')
+            ->whereNumber('patient');
+        Route::get('confirmada/{appointment}', [SecretaryAppointmentController::class, 'showAppointmentConfirmation'])
+            ->name('confirmada')
+            ->whereNumber('appointment');
 
         Route::get('reprogramar', [SecretaryAppointmentController::class, 'showReprogramarLookup'])->name('reprogramar.lookup');
         Route::post('reprogramar', [SecretaryAppointmentController::class, 'submitReprogramarLookup'])->name('reprogramar.lookup.submit');
-        Route::get('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'showReprogramSelection'])->name('reprogramar.seleccion');
-        Route::post('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'submitReprogramSelection'])->name('reprogramar.seleccion.submit');
-        Route::get('reprogramar/{patient}/{appointment}/editar', [SecretaryAppointmentController::class, 'editReprogram'])->name('reprogramar.edit');
-        Route::put('reprogramar/{patient}/{appointment}', [SecretaryAppointmentController::class, 'updateReprogram'])->name('reprogramar.update');
+        Route::get('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'showReprogramSelection'])
+            ->name('reprogramar.seleccion')
+            ->whereNumber('patient');
+        Route::post('reprogramar/{patient}/seleccion', [SecretaryAppointmentController::class, 'submitReprogramSelection'])
+            ->name('reprogramar.seleccion.submit')
+            ->whereNumber('patient');
+        Route::get('reprogramar/{patient}/{appointment}/editar', [SecretaryAppointmentController::class, 'editReprogram'])
+            ->name('reprogramar.edit')
+            ->whereNumber('patient')
+            ->whereNumber('appointment');
+        Route::put('reprogramar/{patient}/{appointment}', [SecretaryAppointmentController::class, 'updateReprogram'])
+            ->name('reprogramar.update')
+            ->whereNumber('patient')
+            ->whereNumber('appointment');
+        Route::get('reprogramar/{appointment}/confirmada', [SecretaryAppointmentController::class, 'showReprogramConfirmation'])
+            ->name('reprogramar.confirmada')
+            ->whereNumber('appointment');
 
         Route::get('cancelar', [SecretaryAppointmentController::class, 'showCancelarLookup'])->name('cancelar.lookup');
         Route::post('cancelar', [SecretaryAppointmentController::class, 'submitCancelarLookup'])->name('cancelar.lookup.submit');
-        Route::get('cancelar/{patient}', [SecretaryAppointmentController::class, 'showCancelList'])->name('cancelar.list');
-        Route::post('cancelar/{patient}', [SecretaryAppointmentController::class, 'cancelAppointment'])->name('cancelar.confirm');
-    })->where(['patient' => '[0-9]+']);
+        Route::get('cancelar/{patient}', [SecretaryAppointmentController::class, 'showCancelList'])
+            ->name('cancelar.list')
+            ->whereNumber('patient');
+        Route::post('cancelar/{patient}', [SecretaryAppointmentController::class, 'cancelAppointment'])
+            ->name('cancelar.confirm')
+            ->whereNumber('patient');
+    });
 
     Route::prefix('horarios')->name('horarios.')->group(function () {
         Route::get('bloquear', [SecretaryScheduleController::class, 'showBlockForm'])
             ->name('bloquear');
         Route::post('bloquear', [SecretaryScheduleController::class, 'storeBlock'])
             ->name('bloquear.store');
+        Route::delete('bloquear/{block}', [SecretaryScheduleController::class, 'destroyBlock'])
+            ->name('bloquear.destroy')
+            ->whereNumber('block');
     });
 
 

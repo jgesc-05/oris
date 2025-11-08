@@ -32,6 +32,11 @@ class ScheduleBlock extends Model
         return $this->belongsTo(User::class, 'medico_id', 'id_usuario');
     }
 
+    public function getRouteKeyName(): string
+    {
+        return 'id_bloque';
+    }
+
     public function creador()
     {
         return $this->belongsTo(User::class, 'created_by', 'id_usuario');

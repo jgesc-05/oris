@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Secretary;
 
 use App\Http\Controllers\Controller;
+use App\Models\Appointment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -11,32 +13,57 @@ class SecretaryPortalController extends Controller
     public function inicio()
     {
         $secretary = Auth::user();
+        $today = now()->toDateString();
 
         $summary = [
-            'agendadas_hoy' => 12,
-            'pendientes'    => 5,
-            'pacientes_hoy' => 18,
+            'citas_programadas' => Appointment::whereDate('fecha_hora_inicio', $today)
+                ->where('estado', 'Programada')
+                ->count(),
+            'citas_canceladas' => Appointment::whereDate('fecha_hora_inicio', $today)
+                ->where('estado', 'Cancelada')
+                ->count(),
+            'pagos_pendientes' => 0,
         ];
 
-        $agenda = [
-            ['hora' => '08:00', 'paciente' => 'Laura Sánchez', 'servicio' => 'Chequeo general', 'medico' => 'Dr. Andrés Salazar'],
-            ['hora' => '09:30', 'paciente' => 'Juan Martínez', 'servicio' => 'Control ortodoncia', 'medico' => 'Dra. Catalina Díaz'],
-            ['hora' => '11:00', 'paciente' => 'Camila Torres', 'servicio' => 'Exámenes especializados', 'medico' => 'Dra. Laura Hernández'],
-        ];
+        $agenda = Appointment::with(['paciente', 'medico', 'servicio'])
+            ->whereDate('fecha_hora_inicio', $today)
+            ->orderBy('fecha_hora_inicio')
+            ->limit(5)
+            ->get();
 
         return view('secretaria.dashboard', compact('secretary', 'summary', 'agenda'));
     }
 
-    public function agenda()
+    public function agenda(Request $request)
     {
-        $entries = [
-            ['fecha' => '2025-09-21', 'hora' => '08:00', 'paciente' => 'Laura Sánchez', 'servicio' => 'Chequeo general', 'medico' => 'Dr. Andrés Salazar', 'estado' => 'Confirmada'],
-            ['fecha' => '2025-09-21', 'hora' => '09:30', 'paciente' => 'Juan Martínez', 'servicio' => 'Control ortodoncia', 'medico' => 'Dra. Catalina Díaz', 'estado' => 'Pendiente'],
-            ['fecha' => '2025-09-21', 'hora' => '10:00', 'paciente' => 'Felipe Márquez', 'servicio' => 'Valoración inicial', 'medico' => 'Dra. Laura Hernández', 'estado' => 'Confirmada'],
-            ['fecha' => '2025-09-21', 'hora' => '11:30', 'paciente' => 'Ana Restrepo', 'servicio' => 'Exámenes especializados', 'medico' => 'Dr. Mario Pineda', 'estado' => 'Reprogramada'],
+        $filters = [
+            'fecha' => $request->input('fecha', now()->toDateString()),
+            'estado' => $request->input('estado'),
+            'paciente' => $request->input('paciente'),
         ];
 
-        return view('secretaria.agenda.index', compact('entries'));
+        $query = Appointment::with(['paciente', 'medico', 'servicio'])
+            ->orderBy('fecha_hora_inicio');
+
+        if ($filters['fecha']) {
+            $query->whereDate('fecha_hora_inicio', $filters['fecha']);
+        }
+
+        if ($filters['estado']) {
+            $query->where('estado', $filters['estado']);
+        }
+
+        if ($filters['paciente']) {
+            $query->whereHas('paciente', function ($q) use ($filters) {
+                $q->where('nombres', 'like', '%'.$filters['paciente'].'%')
+                    ->orWhere('apellidos', 'like', '%'.$filters['paciente'].'%')
+                    ->orWhere('numero_documento', 'like', '%'.$filters['paciente'].'%');
+            });
+        }
+
+        $appointments = $query->get();
+
+        return view('secretaria.agenda.index', compact('appointments', 'filters'));
     }
 
     public function servicios()
