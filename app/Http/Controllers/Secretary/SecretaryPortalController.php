@@ -69,19 +69,25 @@ class SecretaryPortalController extends Controller
 
     public function servicios()
     {
-        $especialidades = collect([
-            ['nombre' => 'Medicina general',      'descripcion' => 'Seguimiento integral del estado de salud.',       'icono' => '🩺'],
-            ['nombre' => 'Pediatría',             'descripcion' => 'Atención especializada para niños y niñas.',      'icono' => '👶'],
-            ['nombre' => 'Cardiología',           'descripcion' => 'Tratamiento de enfermedades del corazón.',        'icono' => '❤️'],
-            ['nombre' => 'Dermatología',          'descripcion' => 'Cuidado de la piel, cabello y uñas.',             'icono' => '🧴'],
-            ['nombre' => 'Neurología',            'descripcion' => 'Trastornos del sistema nervioso.',               'icono' => '🧠'],
-            ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación de la movilidad y funcionalidad.',  'icono' => '🏃‍♀️'],
-        ])->map(function ($item) {
-            $item['slug'] = Str::slug($item['nombre']);
-            return $item;
-        })->toArray();
+        $especialidadesActivas = Specialty::where('estado', 'activo')->get();
 
-        return view('secretaria.servicios.index', compact('especialidades'));
+        // 2. Formatear los datos para la vista: solo nombre, descripción y slug.
+        $especialidades = $especialidadesActivas->map(function ($specialty) {
+            
+            // Generar el slug para la URL
+            $slug = Str::slug($specialty->nombre);
+
+            return [
+                // Solo incluimos lo que la vista necesita:
+                'nombre' => $specialty->nombre,
+                'descripcion' => $specialty->descripcion,
+                'slug' => $slug, 
+                'icono' => '👨‍⚕️',
+            ];
+        });
+
+        // 3. Devolver la vista 
+        return view('secretaria.servicios.index', compact('especialidades')); 
     }
 
     public function serviciosEspecialidad(string $especialidad)
@@ -143,7 +149,7 @@ class SecretaryPortalController extends Controller
             ];
         });
 
-        // 3. Devolver la vista del paciente
+        // 3. Devolver la vista 
         return view('secretaria.medicos.index', compact('especialidades')); 
     
     }
