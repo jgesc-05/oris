@@ -8,13 +8,14 @@
 
   {{-- Filtros (barra horizontal) --}}
   <x-ui.card class="mb-6">
-    <form class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
+    <form method="GET" action="{{ route('admin.reportes.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4">
       {{-- Desde --}}
       <div class="lg:col-span-3">
         <x-form.input
           name="desde"
           type="date"
           label="Desde"
+          value="{{ request('desde') }}"
         />
       </div>
 
@@ -24,105 +25,124 @@
           name="hasta"
           type="date"
           label="Hasta"
+          value="{{ request('hasta') }}"
         />
       </div>
 
       {{-- Médico --}}
       <div class="lg:col-span-3">
         <x-form.select name="medico" label="Médico">
-          <option value="">-- Todos --</option>
-          <option>Juan Pérez</option>
-          <option>Andrés Martínez</option>
-          <option>Ana Morales</option>
-          <option>Camila Ortega</option>
+        <option value="" {{ empty($filtros['medico']) ? 'selected' : '' }}>-- Todos --</option>
+          @foreach ($usuariosMedicos as $m)
+            <option value="{{ $m->id_usuario }}" {{ $filtros['medico'] == $m->id_usuario ? 'selected' : '' }}>
+              {{ "$m->nombres $m->apellidos" }}
+            </option>
+          @endforeach
         </x-form.select>
       </div>
 
       {{-- Servicio --}}
       <div class="lg:col-span-3">
-        <x-form.select name="servicio" label="Servicio">
-          <option value="">-- Todos --</option>
-          <option>Cirugía Oral</option>
-          <option>Endodoncia</option>
-          <option>Ortodoncia</option>
-          <option>Medicina General</option>
-        </x-form.select>
+      <x-form.select name="servicio" label="Servicio">
+        <option value="" {{ empty($filtros['servicio']) ? 'selected' : '' }}>-- Todos --</option>
+        @foreach ($servicios as $s)
+          <option value="{{ $s->id_servicio }}" {{ $filtros['servicio'] == $s->id_servicio ? 'selected' : '' }}>
+            {{ $s->nombre }}
+          </option>
+        @endforeach
+      </x-form.select>
       </div>
 
-      {{-- Tipo de servicio --}}
-      <div class="lg:col-span-6">
-        <x-form.select name="tipo_servicio" label="Tipo de servicio">
-          <option value="">-- Todos --</option>
-          <option value="presencial">Presencial</option>
-          <option value="teleconsulta">Teleconsulta</option>
-          <option value="domicilio">Domicilio</option>
-        </x-form.select>
+      {{-- Botones --}}
+      <div class="lg:col-span-6 flex items-end pb-4 gap-2">
+        <x-ui.button type="submit" variant="primary" class="w-full lg:w-auto">
+          Filtrar
+        </x-ui.button>
+        <x-ui.button variant="secondary" :href="route('admin.reportes.index')">Limpiar</x-ui.button>
       </div>
-
-    {{-- Botón Filtrar --}}
-    <div class="lg:col-span-6 flex items-end pb-4">
-    <x-ui.button type="submit" variant="primary" class="w-full lg:w-auto">
-        Filtrar
-    </x-ui.button>
-    </div>
     </form>
   </x-ui.card>
 
   {{-- Título de métricas --}}
-  <h2 class="text-lg font-semibold text-neutral-900 mb-3">Métricas generales por mes</h2>
+  <h2 class="text-lg font-semibold text-neutral-900 mb-3">Métricas generales</h2>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    {{-- Distribución de citas por servicio (gráfico tipo pastel mock) --}}
+    {{-- Distribución de citas por servicio --}}
     <x-ui.card>
       <div class="text-center font-semibold mb-3">Distribución de citas por servicio</div>
-      <div class="flex items-center justify-center">
-        <svg viewBox="0 0 42 42" width="260" height="260" aria-label="Distribución por servicio" role="img">
-          <circle cx="21" cy="21" r="15.915" fill="#fff"/>
-          <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#6B7280"
-                  stroke-width="6" stroke-dasharray="48 52" stroke-dashoffset="25"/>
-          <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#9CA3AF"
-                  stroke-width="6" stroke-dasharray="23 77" stroke-dashoffset="-23"/>
-          <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#D1D5DB"
-                  stroke-width="6" stroke-dasharray="17 83" stroke-dashoffset="-46"/>
-          <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#E5E7EB"
-                  stroke-width="6" stroke-dasharray="12 88" stroke-dashoffset="-63"/>
-        </svg>
-      </div>
-
-      <div class="mt-4 grid grid-cols-2 gap-2 text-sm text-neutral-700">
-        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-700 inline-block rounded"></span> Cirugía Oral (48%)</div>
-        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-500 inline-block rounded"></span> Endodoncia (23%)</div>
-        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-400 inline-block rounded"></span> Ortodoncia (17%)</div>
-        <div class="flex items-center gap-2"><span class="w-3 h-3 bg-neutral-300 inline-block rounded"></span> Medicina General (12%)</div>
-      </div>
+      <canvas id="serviciosChart" height="220"></canvas>
     </x-ui.card>
 
-    {{-- Ocupación por médico (barras mock) --}}
+    {{-- Ocupación por médico --}}
     <x-ui.card>
       <div class="text-center font-semibold mb-3">Ocupación por médico</div>
-      <div class="grid grid-cols-7 gap-3 items-end h-56">
-        @php
-          $barras = [
-            ['label'=>'Juan','v'=>80],
-            ['label'=>'Andrés','v'=>100],
-            ['label'=>'María','v'=>40],
-            ['label'=>'Ana','v'=>60],
-            ['label'=>'Leonardo','v'=>75],
-            ['label'=>'Camila','v'=>120],
-            ['label'=>'Otros','v'=>55],
-          ];
-          $max = 120;
-        @endphp
-        @foreach($barras as $b)
-          <div class="flex flex-col items-center gap-2">
-            <div class="w-8 bg-neutral-400 rounded"
-                 style="height: {{ max(6, round(($b['v'] / $max) * 200)) }}px"></div>
-            <span class="text-xs text-neutral-700">{{ $b['label'] }}</span>
-          </div>
-        @endforeach
-      </div>
-      <p class="mt-3 text-xs text-neutral-500">Datos simulados — se integrarán con el backend.</p>
+      <canvas id="medicosChart" height="220"></canvas>
     </x-ui.card>
   </div>
 
 @endsection
+
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Datos desde el backend
+  const serviciosData = @json($serviciosChart);
+  const medicosData = @json($medicosChart);
+
+  // ============================
+  //  Gráfico de servicios (pie)
+  // ============================
+  if (serviciosData.length > 0) {
+    const totalServicios = serviciosData.reduce((sum, s) => sum + s.total, 0);
+    const porcentajes = serviciosData.map(s => ((s.total / totalServicios) * 100).toFixed(1));
+
+    new Chart(document.getElementById('serviciosChart'), {
+      type: 'pie',
+      data: {
+        labels: serviciosData.map(s => `${s.servicio} (${((s.total / totalServicios) * 100).toFixed(1)}%)`),
+        datasets: [{
+          data: serviciosData.map(s => s.total),
+          backgroundColor: ['#60a5fa','#f87171','#34d399','#fbbf24','#a78bfa','#facc15','#4ade80']
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+  } else {
+    document.getElementById('serviciosChart').outerHTML = '<p class="text-center text-sm text-neutral-500 mt-10">No hay datos para mostrar.</p>';
+  }
+
+  // ============================
+  //  Gráfico de médicos (bar)
+  // ============================
+  if (medicosData.length > 0) {
+    new Chart(document.getElementById('medicosChart'), {
+      type: 'bar',
+      data: {
+        labels: medicosData.map(m => m.medico),
+        datasets: [{
+          label: 'Número de citas',
+          data: medicosData.map(m => m.total),
+          backgroundColor: '#93c5fd'
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
+        },
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  } else {
+    document.getElementById('medicosChart').outerHTML = '<p class="text-center text-sm text-neutral-500 mt-10">No hay datos para mostrar.</p>';
+  }
+</script>
+@endpush

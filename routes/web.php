@@ -8,6 +8,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
 use App\Http\Controllers\Paciente\PatientPortalController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Secretary\SecretaryAppointmentController;
 use App\Http\Controllers\Secretary\SecretaryPatientController;
 use App\Http\Controllers\Secretary\SecretaryPortalController;
@@ -204,8 +205,8 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(funct
         return view('admin.pacientes.show', ['id' => $paciente]);
     })->whereNumber('paciente')->name('pacientes.show');
 
-    // ===== Reportes =====
-    Route::view('/reportes', 'admin.reportes.index')->name('reportes.index');
+    // Visualización de reportes empresariales
+    Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
 
     // ===== Configuración =====
     // Apunta a resources/views/admin/config/index.blade.php
