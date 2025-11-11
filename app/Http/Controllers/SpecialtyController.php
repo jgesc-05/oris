@@ -43,7 +43,7 @@ class SpecialtyController extends Controller
     //Mostrar las especialidades reales
     public function index()
     {
-        $specialties = Specialty::all();
+        $specialties = Specialty::paginate(10);
 
         return view('admin.config.especialidad.index', compact('specialties'));
     }
