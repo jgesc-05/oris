@@ -107,6 +107,10 @@ class PatientAuthController extends Controller
             return back()->withErrors(['error' => 'Datos no encontrados. Verifique e intente nuevamente.']);
         }
 
+        if ($patient->estado === 'inactivo') {
+            return back()->withErrors(['error' => 'Tu cuenta está inactiva. Contacta al administrador para activarla.']);
+        }
+
         // Crear token temporal
         $token = Str::random(60);
         Cache::put('paciente_login_'.$token, $patient->id_usuario, now()->addMinutes(15));

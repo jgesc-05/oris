@@ -100,6 +100,7 @@ class UserController extends Controller
         // 3. Verificación de existencia y contraseña
         if (
             $user
+            && $user->estado === 'activo'
             && in_array($user->id_tipo_usuario, [1, 2, 3], true)
             && Hash::check($credentials['password'], $user->password)
         ) {
