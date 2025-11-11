@@ -121,8 +121,37 @@ class SecretaryPortalController extends Controller
                  'slug' => Str::slug($specialty->nombre),
              ];
      
-             // Retornar la vista del paciente
+             // Retornar la vista
              return view('secretaria.servicios.especialidad', compact('especialidad', 'servicios'));
+    }
+
+
+    public function serviciosDetalle(string $especialidadSlug, string $servicioSlug)
+    {
+        $especialidad = Specialty::whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$especialidadSlug])
+        ->firstOrFail();
+
+        $service = Service::where('id_tipos_especialidad', $especialidad->id_tipos_especialidad)
+            ->whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$servicioSlug])
+            ->firstOrFail();
+
+        // Arreglo que se usará en la vista
+        $servicio = [
+            'nombre' => $service->nombre,
+            'especialidad' => $especialidad->nombre,
+            'descripcion_corta' => Str::limit($service->descripcion ?? 'Sin descripción', 120),
+            'descripcion_larga' => $service->descripcion ?? '',
+            'duracion' => $service->duracion ?? '30 minutos',
+            'icono' => '🩺',
+        ];
+
+        $especialidad = [
+            'nombre' => $especialidad->nombre,
+            'slug' => Str::slug($especialidad->nombre),
+        ];
+
+        return view('secretaria.servicios.detalle', compact('servicio', 'especialidad'));
+
     }
 
     public function medicos()
