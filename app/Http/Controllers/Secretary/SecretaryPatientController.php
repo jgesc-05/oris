@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Secretary;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserType;
+use App\Models\DocumentType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -30,7 +31,9 @@ class SecretaryPatientController extends Controller
 
     public function create()
     {
-        return view('secretaria.pacientes.create');
+        $documentTypes = DocumentType::orderBy('name')->get();
+
+        return view('secretaria.pacientes.create', compact('documentTypes'));
     }
 
     public function store(Request $request)
