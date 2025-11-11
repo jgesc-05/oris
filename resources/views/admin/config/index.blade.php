@@ -38,19 +38,6 @@
         </x-ui.card>
       </a>
 
-      {{-- Médicos --}}
-      <a href="{{ route('admin.config.medico.index') }}" class="group block focus:outline-none focus:ring-2 focus:ring-primary-600 rounded-xl">
-        <x-ui.card class="h-full bg-white border-neutral-200 hover:border-neutral-300 hover:shadow-[var(--shadow-sm)] transition">
-          <div class="flex items-start gap-3">
-            <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center">🩺</div>
-            <div>
-              <div class="text-sm font-semibold text-neutral-900">Médicos</div>
-              <p class="text-xs text-neutral-600 mt-0.5">Publica y gestiona médicos, especialidades y agenda.</p>
-              <span class="inline-block mt-2 text-sm font-medium text-primary-700 group-hover:underline">Ver listado</span>
-            </div>
-          </div>
-        </x-ui.card>
-      </a>
     </div>
   </x-ui.card>
 @endsection
