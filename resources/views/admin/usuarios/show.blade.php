@@ -89,6 +89,7 @@
                             type="submit">
                             {{ $user->estado === 'activo' ? 'Suspender' : 'Activar' }}
                         </x-ui.button>
+                    </form>
                 </div>
             @endslot
         </x-ui.card>

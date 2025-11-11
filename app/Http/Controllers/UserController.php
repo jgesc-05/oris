@@ -10,6 +10,7 @@ use App\Models\DocumentType;
 use App\Models\Specialty;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -64,6 +65,7 @@ class UserController extends Controller
         // Creación
         $user = User::create([
             ...$validated,
+            'estado' => 'activo',
             'password' => $validated['password'],
             'fecha_creacion_sistema' => now(),
         ]);
@@ -293,10 +295,7 @@ class UserController extends Controller
     public function toggleState(int $id)
     {
         $user = User::findOrFail($id);
-
-        // Cambiar entre activo/inactivo
-        $user->estado = ($user->estado === 'activo') ? 'inactivo' : 'activo';
-        $user->save();
+        $this->toggleUserState($user);
 
         return redirect()->route('admin.usuarios.index')
             ->with('success', 'Estado del usuario actualizado correctamente.');
@@ -331,14 +330,16 @@ class UserController extends Controller
     public function toggleStateShow(int $id)
     {
         $user = User::findOrFail($id);
+        $this->toggleUserState($user);
 
-        // Cambiar entre activo/inactivo
-        $user->estado = ($user->estado === 'activo') ? 'inactivo' : 'activo';
-        $user->save();
-
-        // CORRECCIÓN: Pasar el ID del usuario como parámetro a la ruta 'show'
         return redirect()->route('admin.usuarios.show', $user)
             ->with('success', 'Estado del usuario actualizado correctamente.');
     }
 
+    private function toggleUserState(User $user): void
+    {
+        $currentState = Str::lower($user->estado ?? '');
+        $user->estado = $currentState === 'inactivo' ? 'activo' : 'inactivo';
+        $user->save();
+    }
 }
