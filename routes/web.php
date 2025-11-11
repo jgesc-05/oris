@@ -270,10 +270,4 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'role:admin']
         return view('admin.config.servicio.edit', ['id' => $id]);
     })->whereNumber('id')->name('config.servicio.edit');*/
 
-    /** Configuración - Médicos */
-    Route::view('/config/medicos', 'admin.config.medico.index')->name('config.medico.index');
-    Route::view('/config/medicos/crear', 'admin.config.medico.create')->name('config.medico.create');
-    Route::get('/config/medicos/{id}/editar', function ($id) {
-        return view('admin.config.medico.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.medico.edit');
 });
