@@ -1,15 +1,13 @@
 {{-- resources/views/admin/usuarios/index.blade.php --}}
 @extends('layouts.admin')
 @section('title', 'Usuarios — Admin')
-@if (session('success'))
-  <x-ui.alert variant="success" title="Operación exitosa" class="mb-4">
-    {{ session('success') }}
-  </x-ui.alert>
-@endif
-
-
 @section('admin-content')
   {{-- Mensaje de éxito - DEBE ESTAR AL PRINCIPIO --}}
+  @if (session('success'))
+    <x-ui.alert variant="success" title="Operación exitosa" class="mb-4">
+      {{ session('success') }}
+    </x-ui.alert>
+  @endif
 
 
   <div class="flex items-center justify-between mb-4">

@@ -2,14 +2,13 @@
 @extends('layouts.admin')
 @section('title','Especialidades — Configuración')
 
-
-@if (session('success'))
+@section('admin-content')
+  @if (session('success'))
     <x-ui.alert variant="success" title="{{ session('title') ?? 'Operación exitosa' }}" class="mb-4">
       {{ session('success') }}
     </x-ui.alert>
   @endif
 
-@section('admin-content')
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-xl md:text-2xl font-bold">Especialidades</h1>
     <x-ui.button variant="primary" :href="route('admin.config.especialidad.create')">+ Nueva especialidad</x-ui.button>
