@@ -18,7 +18,10 @@ class UserController extends Controller
 
     public function create()
     {
-        $tiposDocumento = DocumentType::all();
+        $tiposDocumento = DocumentType::whereNotIn('name', [
+            'Tarjeta de identidad',
+            'Registro civil',
+        ])->orderBy('name')->get();
         $tiposUsuario = UserType::all();
         $especialidades = Specialty::all();
 
