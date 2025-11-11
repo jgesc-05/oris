@@ -133,11 +133,41 @@
       </table>
     </div>
 
-    {{-- Paginación mock --}}
-    <div class="mt-4 flex items-center justify-center gap-2">
-      <x-ui.button variant="secondary" size="sm">‹</x-ui.button>
-      <x-ui.badge>1</x-ui.badge>
-      <x-ui.button variant="secondary" size="sm">›</x-ui.button>
-    </div>
+    {{--Paginación funcional --}}
+      <div class="mt-4 flex items-center justify-center gap-2">
+      {{-- Botón anterior --}}
+      @if ($users->onFirstPage())
+          <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+      @else
+          <a href="{{ $users->previousPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+          </a>
+      @endif
+
+      {{-- Números de página --}}
+      @foreach ($users->getUrlRange(1, $users->lastPage()) as $page => $url)
+          <a href="{{ $url }}">
+              <x-ui.badge
+                  @class([
+                      'bg-blue-500 text-white border border-blue-500' => $page == $users->currentPage(),
+                      'hover:bg-blue-100 transition cursor-pointer' => $page != $users->currentPage(),
+                  ])>
+                  {{ $page }}
+              </x-ui.badge>
+          </a>
+      @endforeach
+
+      {{-- Botón siguiente --}}
+      @if ($users->hasMorePages())
+          <a href="{{ $users->nextPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+          </a>
+      @else
+          <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+      @endif
+  </div>
+    <p class="text-sm text-neutral-500 text-center mt-2">
+        Mostrando {{ $users->firstItem() }}–{{ $users->lastItem() }} de {{ $users->total() }} usuarios
+    </p>
   </x-ui.card>
 @endsection
