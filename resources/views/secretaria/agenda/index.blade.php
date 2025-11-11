@@ -71,9 +71,32 @@
                 <x-appointment.status-badge :estado="$entry->estado" />
               </td>
               <td class="px-4 py-3">
+                @php
+                  $canManageAppointment = $entry->isProgramada();
+                  $disabledClasses = $canManageAppointment ? '' : 'opacity-50 cursor-not-allowed';
+                  $disabledTitle = $canManageAppointment ? null : 'Disponible solo para citas programadas';
+                @endphp
                 <div class="flex flex-wrap items-center gap-2">
-                  <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.reprogramar.lookup')">Reprogramar</x-ui.button>
-                  <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.cancelar.lookup')">Cancelar</x-ui.button>
+                  <x-ui.button
+                    variant="ghost"
+                    size="sm"
+                    class="{{ $disabledClasses }}"
+                    :href="$canManageAppointment ? route('secretaria.citas.reprogramar.lookup') : null"
+                    :disabled="!$canManageAppointment"
+                    :title="$disabledTitle"
+                  >
+                    Reprogramar
+                  </x-ui.button>
+                  <x-ui.button
+                    variant="ghost"
+                    size="sm"
+                    class="{{ $disabledClasses }}"
+                    :href="$canManageAppointment ? route('secretaria.citas.cancelar.lookup') : null"
+                    :disabled="!$canManageAppointment"
+                    :title="$disabledTitle"
+                  >
+                    Cancelar
+                  </x-ui.button>
                   @if ($entry->isProgramada())
                     <form method="POST" action="{{ route('secretaria.agenda.mark-attended', $entry->id_cita) }}">
                       @csrf
