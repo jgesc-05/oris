@@ -50,9 +50,9 @@ class UserController extends Controller
             // Campos de doctor
         ]);
 
-        if ($request->id_tipo_usuario == 2)
-        {
-            $request->validate([
+        $doctorData = [];
+        if ((int) $request->id_tipo_usuario === 2) {
+            $doctorData = $request->validate([
                 'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
                 'universidad' => 'required|string|max:100',
                 'numero_licencia' => 'required|string|max:50',
@@ -71,11 +71,11 @@ class UserController extends Controller
         if ($user->id_tipo_usuario == 2) { // ID del tipo Doctor
             Doctor::create([
                 'id_usuario' => $user->id_usuario,
-                'id_tipos_especialidad' => $validated['id_tipos_especialidad'],
-                'universidad' => $validated['universidad'],
-                'numero_licencia' => $validated['numero_licencia'],
-                'descripcion' => $validated['descripcion'],
-                'experiencia' => $validated['experiencia'],
+                'id_tipos_especialidad' => $doctorData['id_tipos_especialidad'],
+                'universidad' => $doctorData['universidad'],
+                'numero_licencia' => $doctorData['numero_licencia'],
+                'descripcion' => $doctorData['descripcion'],
+                'experiencia' => $doctorData['experiencia'],
             ]);
         }
 
