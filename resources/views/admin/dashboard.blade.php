@@ -23,28 +23,32 @@ $currentDate = \Carbon\Carbon::now()->translatedFormat('l, j \d\e F');
     {{-- Gestión de usuarios y roles --}}
     <x-ui.card title="Gestión de usuarios y roles">
       <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <x-ui.card class="text-center bg-neutral-50 hover:bg-neutral-100 cursor-pointer">
-          <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">👤</div>
-            <div class="text-sm font-medium text-neutral-900">
-              <a href="{{ route('admin.usuarios.create') }}">Crear<br>usuario</a>
+        <a href="{{ route('admin.usuarios.create') }}" class="block">
+          <x-ui.card class="text-center bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">👤</div>
+              <div class="text-sm font-medium text-neutral-900">Crear<br>usuario</div>
             </div>
-          </div>
-        </x-ui.card>
+          </x-ui.card>
+        </a>
 
-        <x-ui.card class="text-center bg-neutral-50 hover:bg-neutral-100 cursor-pointer">
-          <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">✏️</div>
-            <div class="text-sm font-medium text-neutral-900">Editar<br>usuario</div>
-          </div>
-        </x-ui.card>
+        <a href="{{ route('admin.usuarios.index') }}" class="block">
+          <x-ui.card class="text-center bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">✏️</div>
+              <div class="text-sm font-medium text-neutral-900">Editar<br>usuario</div>
+            </div>
+          </x-ui.card>
+        </a>
 
-        <x-ui.card class="text-center bg-neutral-50 hover:bg-neutral-100 cursor-pointer">
-          <div class="flex flex-col items-center gap-2">
-            <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">🚫</div>
-            <div class="text-sm font-medium text-neutral-900">Suspender<br>usuario</div>
-          </div>
-        </x-ui.card>
+        <a href="{{ route('admin.usuarios.index') }}" class="block">
+          <x-ui.card class="text-center bg-neutral-50 hover:bg-rose-50 border border-neutral-200 hover:border-rose-300 transition cursor-pointer">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">🚫</div>
+              <div class="text-sm font-medium text-neutral-900">Suspender<br>usuario</div>
+            </div>
+          </x-ui.card>
+        </a>
       </div>
     </x-ui.card>
 
