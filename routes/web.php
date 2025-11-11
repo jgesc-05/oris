@@ -90,6 +90,9 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
 Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth', 'role:secretaria'])->group(function () {
     Route::get('inicio', [SecretaryPortalController::class, 'inicio'])->name('inicio');
     Route::get('agenda', [SecretaryPortalController::class, 'agenda'])->name('agenda');
+    Route::patch('agenda/citas/{appointment}/atendida', [SecretaryPortalController::class, 'markAsAttended'])
+        ->name('agenda.mark-attended')
+        ->whereNumber('appointment');
 
     Route::get('servicios', [SecretaryPortalController::class, 'servicios'])->name('servicios.index');
     Route::get('servicios/{especialidad}', [SecretaryPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');

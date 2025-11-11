@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Appointment;
+use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class AppointmentsTableSeeder extends Seeder
 {
@@ -98,8 +99,8 @@ class AppointmentsTableSeeder extends Seeder
             $selectedSlots = array_merge($selectedSlots, array_slice($remaining, 0, 50 - count($selectedSlots)));
         }
 
-        $statusPast = ['Confirmada', 'Cancelada'];
-        $statusFuture = ['Confirmada', 'Cancelada'];
+        $statusPast = [Appointment::STATUS_ATENDIDA, Appointment::STATUS_CANCELADA];
+        $statusFuture = [Appointment::STATUS_PROGRAMADA, Appointment::STATUS_CANCELADA];
         $cancelReasons = [
             'Paciente solicitó cancelación',
             'Médico indispuesto',
@@ -112,8 +113,8 @@ class AppointmentsTableSeeder extends Seeder
         foreach (array_slice($selectedSlots, 0, 50) as $slot) {
             $isPast = $slot['start']->lt($cutoff);
             $estado = $isPast ? Arr::random($statusPast) : Arr::random($statusFuture);
-            $motivoCancelacion = $estado === 'Cancelada' ? Arr::random($cancelReasons) : null;
-            $cancelUserId = $estado === 'Cancelada' ? $secretaryId : null;
+            $motivoCancelacion = $estado === Appointment::STATUS_CANCELADA ? Arr::random($cancelReasons) : null;
+            $cancelUserId = $estado === Appointment::STATUS_CANCELADA ? $secretaryId : null;
 
             $appointments[] = [
                 'id_usuario_paciente' => Arr::random($patientIds),

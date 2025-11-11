@@ -56,9 +56,7 @@
                   <td class="px-4 py-3">{{ $appointment->servicio?->nombre }}</td>
                   <td class="px-4 py-3">{{ $appointment->medico?->nombres }} {{ $appointment->medico?->apellidos }}</td>
                   <td class="px-4 py-3">
-                    <x-ui.badge variant="{{ $appointment->estado === 'Programada' ? 'success' : 'info' }}">
-                      {{ $appointment->estado }}
-                    </x-ui.badge>
+                    <x-appointment.status-badge :estado="$appointment->estado" />
                   </td>
                 </tr>
               @endforeach

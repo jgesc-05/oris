@@ -20,10 +20,13 @@ class SecretaryPortalController extends Controller
 
         $summary = [
             'citas_programadas' => Appointment::whereDate('fecha_hora_inicio', $today)
-                ->where('estado', 'Programada')
+                ->where('estado', Appointment::STATUS_PROGRAMADA)
+                ->count(),
+            'citas_atendidas' => Appointment::whereDate('fecha_hora_inicio', $today)
+                ->where('estado', Appointment::STATUS_ATENDIDA)
                 ->count(),
             'citas_canceladas' => Appointment::whereDate('fecha_hora_inicio', $today)
-                ->where('estado', 'Cancelada')
+                ->where('estado', Appointment::STATUS_CANCELADA)
                 ->count(),
             'pagos_pendientes' => 0,
         ];
@@ -39,9 +42,14 @@ class SecretaryPortalController extends Controller
 
     public function agenda(Request $request)
     {
+        $estado = $request->input('estado');
+        if (!in_array($estado, Appointment::allowedStatuses(), true)) {
+            $estado = null;
+        }
+
         $filters = [
             'fecha' => $request->input('fecha', now()->toDateString()),
-            'estado' => $request->input('estado'),
+            'estado' => $estado,
             'paciente' => $request->input('paciente'),
         ];
 
@@ -67,6 +75,23 @@ class SecretaryPortalController extends Controller
         $appointments = $query->get();
 
         return view('secretaria.agenda.index', compact('appointments', 'filters'));
+    }
+
+    public function markAsAttended(Appointment $appointment)
+    {
+        if (!$appointment->isProgramada()) {
+            return back()->withErrors([
+                'estado' => 'Solo las citas programadas pueden marcarse como atendidas.',
+            ]);
+        }
+
+        $appointment->update([
+            'estado' => Appointment::STATUS_ATENDIDA,
+            'id_usuario_cancela' => null,
+            'motivo_cancelacion' => null,
+        ]);
+
+        return back()->with('status', 'La cita se marcó como atendida.');
     }
 
     public function servicios()
@@ -245,4 +270,3 @@ class SecretaryPortalController extends Controller
         return view('secretaria.medicos.detalle', compact('medico'));
         }
     }
-

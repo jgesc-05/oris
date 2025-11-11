@@ -78,6 +78,7 @@
         <h2 class="text-base font-semibold text-neutral-900 mb-3">Bandeja de trabajo de hoy</h2>
         <ul class="text-sm text-neutral-700 space-y-1 list-disc pl-5">
           <li>{{ $summary['citas_programadas'] ?? 12 }} citas programadas</li>
+          <li>{{ $summary['citas_atendidas'] ?? 5 }} citas atendidas</li>
           <li>{{ $summary['citas_canceladas'] ?? 3 }} citas canceladas</li>
           <li>{{ $summary['pagos_pendientes'] ?? 2 }} pagos pendientes</li>
         </ul>

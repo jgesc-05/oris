@@ -160,7 +160,7 @@ class SecretaryAppointmentController extends Controller
             'id_usuario_agenda' => Auth::user()?->id_usuario,
             'fecha_hora_inicio' => $start,
             'fecha_hora_fin' => $end,
-            'estado' => 'Programada',
+            'estado' => Appointment::STATUS_PROGRAMADA,
             'notas' => $validated['notas'] ?? null,
         ]);
 
@@ -179,7 +179,7 @@ class SecretaryAppointmentController extends Controller
         $this->ensurePatient($patient);
 
         $appointments = $this->appointmentsFor($patient)
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>=', now())
             ->orderBy('fecha_hora_inicio')
             ->get();
@@ -211,7 +211,7 @@ class SecretaryAppointmentController extends Controller
         $this->ensurePatient($patient);
         $this->ensureAppointmentBelongsTo($appointment, $patient);
 
-        if ($appointment->estado === 'Cancelada' || $appointment->fecha_hora_inicio->lt(now())) {
+        if ($appointment->estado === Appointment::STATUS_CANCELADA || $appointment->fecha_hora_inicio->lt(now())) {
             return redirect()
                 ->route('secretaria.citas.reprogramar.seleccion', $patient->id_usuario)
                 ->withErrors('La cita seleccionada no puede reprogramarse.');
@@ -267,7 +267,7 @@ class SecretaryAppointmentController extends Controller
         $this->ensurePatient($patient);
         $this->ensureAppointmentBelongsTo($appointment, $patient);
 
-        if ($appointment->estado === 'Cancelada') {
+        if ($appointment->estado === Appointment::STATUS_CANCELADA) {
             return back()->withErrors(['error' => 'La cita ya fue cancelada.']);
         }
 
@@ -299,7 +299,7 @@ class SecretaryAppointmentController extends Controller
             'id_servicio' => $service->id_servicio,
             'fecha_hora_inicio' => $start,
             'fecha_hora_fin' => $end,
-            'estado' => 'Programada',
+            'estado' => Appointment::STATUS_PROGRAMADA,
             'notas' => $validated['notas'] ?? $appointment->notas,
             'id_usuario_agenda' => Auth::user()?->id_usuario,
             'id_usuario_cancela' => null,
@@ -321,7 +321,7 @@ class SecretaryAppointmentController extends Controller
         $this->ensurePatient($patient);
 
         $appointments = $this->appointmentsFor($patient)
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>=', now())
             ->orderBy('fecha_hora_inicio')
             ->get();
@@ -339,12 +339,12 @@ class SecretaryAppointmentController extends Controller
         ]);
 
         $appointment = $this->appointmentsFor($patient)
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>', now())
             ->findOrFail($data['cita_id']);
 
         $appointment->update([
-            'estado' => 'Cancelada',
+            'estado' => Appointment::STATUS_CANCELADA,
             'id_usuario_cancela' => Auth::user()?->id_usuario,
             'motivo_cancelacion' => $data['motivo'] ?? 'Cancelada por secretaría',
         ]);
