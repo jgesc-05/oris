@@ -76,5 +76,41 @@
         </tbody>
       </table>
     </div>
+    {{--Paginación funcional --}}
+      <div class="mt-4 flex items-center justify-center gap-2">
+      {{-- Botón anterior --}}
+      @if ($services->onFirstPage())
+          <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+      @else
+          <a href="{{ $services->previousPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+          </a>
+      @endif
+
+      {{-- Números de página --}}
+      @foreach ($services->getUrlRange(1, $services->lastPage()) as $page => $url)
+          <a href="{{ $url }}">
+              <x-ui.badge
+                  @class([
+                      'bg-blue-500 text-white border border-blue-500' => $page == $services->currentPage(),
+                      'hover:bg-blue-100 transition cursor-pointer' => $page != $services->currentPage(),
+                  ])>
+                  {{ $page }}
+              </x-ui.badge>
+          </a>
+      @endforeach
+
+      {{-- Botón siguiente --}}
+      @if ($services->hasMorePages())
+          <a href="{{ $users->nextPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+          </a>
+      @else
+          <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+      @endif
+  </div>
+    <p class="text-sm text-neutral-500 text-center mt-2">
+        Mostrando {{ $services->firstItem() }}–{{ $services->lastItem() }} de {{ $services->total() }} servicios
+    </p>
   </x-ui.card>
 @endsection
