@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Secretary;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
+use App\Models\Service;
+use App\Models\Specialty;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -68,134 +71,178 @@ class SecretaryPortalController extends Controller
 
     public function servicios()
     {
-        $especialidades = collect([
-            ['nombre' => 'Medicina general',      'descripcion' => 'Seguimiento integral del estado de salud.',       'icono' => '🩺'],
-            ['nombre' => 'Pediatría',             'descripcion' => 'Atención especializada para niños y niñas.',      'icono' => '👶'],
-            ['nombre' => 'Cardiología',           'descripcion' => 'Tratamiento de enfermedades del corazón.',        'icono' => '❤️'],
-            ['nombre' => 'Dermatología',          'descripcion' => 'Cuidado de la piel, cabello y uñas.',             'icono' => '🧴'],
-            ['nombre' => 'Neurología',            'descripcion' => 'Trastornos del sistema nervioso.',               'icono' => '🧠'],
-            ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación de la movilidad y funcionalidad.',  'icono' => '🏃‍♀️'],
-        ])->map(function ($item) {
-            $item['slug'] = Str::slug($item['nombre']);
-            return $item;
-        })->toArray();
+        $especialidadesActivas = Specialty::where('estado', 'activo')->get();
 
-        return view('secretaria.servicios.index', compact('especialidades'));
+        // 2. Formatear los datos para la vista: solo nombre, descripción y slug.
+        $especialidades = $especialidadesActivas->map(function ($specialty) {
+            
+            // Generar el slug para la URL
+            $slug = Str::slug($specialty->nombre);
+
+            return [
+                // Solo incluimos lo que la vista necesita:
+                'nombre' => $specialty->nombre,
+                'descripcion' => $specialty->descripcion,
+                'slug' => $slug, 
+                'icono' => '👨‍⚕️',
+            ];
+        });
+
+        // 3. Devolver la vista 
+        return view('secretaria.servicios.index', compact('especialidades')); 
     }
 
-    public function serviciosEspecialidad(string $especialidad)
+    public function serviciosEspecialidad(string $slug)
     {
-        $especialidadData = [
-            'nombre' => Str::title(str_replace('-', ' ', $especialidad)),
-            'slug'   => $especialidad,
-        ];
+             // Buscar la especialidad por slug del nombre (convertido a formato URL)
+             $specialty = Specialty::whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$slug])->first();
 
-        $servicios = collect([
-            ['nombre' => 'Consulta general', 'descripcion' => 'Evaluación médica completa y diagnóstico inicial.', 'icono' => '🩺'],
-            ['nombre' => 'Chequeo preventivo', 'descripcion' => 'Revisión periódica para detectar factores de riesgo.', 'icono' => '📋'],
-            ['nombre' => 'Atención de urgencias leves', 'descripcion' => 'Atención rápida a emergencias menores.', 'icono' => '🚑'],
-            ['nombre' => 'Exámenes especializados', 'descripcion' => 'Pruebas médicas según indicaciones clínicas.', 'icono' => '🧪'],
-        ])->map(function ($item) use ($especialidad) {
-            $item['slug'] = Str::slug($item['nombre']);
-            $item['especialidad_slug'] = $especialidad;
-            return $item;
-        })->toArray();
-
-        return view('secretaria.servicios.especialidad', [
-            'especialidad' => $especialidadData,
-            'servicios'    => $servicios,
-        ]);
+             if (!$specialty) {
+                 abort(404, 'Especialidad no encontrada');
+             }
+     
+             // Obtener los servicios activos asociados a esa especialidad
+             $servicios = Service::where('id_tipos_especialidad', $specialty->id_tipos_especialidad)
+                 ->where('estado', 'activo')
+                 ->get()
+                 ->map(function ($serv) {
+                     return [
+                         'nombre' => $serv->nombre,
+                         'descripcion' => $serv->descripcion ?? 'Sin descripción',
+                         'slug' => Str::slug($serv->nombre),
+                         'icono' => '🩺',
+                     ];
+                 });
+     
+             // Armar los datos de la especialidad para la vista
+             $especialidad = [
+                 'nombre' => $specialty->nombre,
+                 'descripcion' => $specialty->descripcion ?? '',
+                 'slug' => Str::slug($specialty->nombre),
+             ];
+     
+             // Retornar la vista
+             return view('secretaria.servicios.especialidad', compact('especialidad', 'servicios'));
     }
 
-    public function serviciosDetalle(string $especialidad, string $servicio)
+
+    public function serviciosDetalle(string $especialidadSlug, string $servicioSlug)
     {
-        $detalle = [
-            'nombre'            => Str::title(str_replace('-', ' ', $servicio)),
-            'especialidad'      => Str::title(str_replace('-', ' ', $especialidad)),
-            'especialidad_slug' => $especialidad,
-            'descripcion_corta' => 'Evaluación médica integral y orientación diagnóstica.',
-            'descripcion_larga' => 'Este servicio incluye una valoración clínica completa realizada por un profesional de la salud, con enfoque preventivo y diagnóstico. Ideal para chequeos, control de síntomas o derivación a especialistas.',
-            'duracion'          => '30 minutos',
-            'doctor'            => 'Equipo médico especializado',
-            'icono'             => '🩺',
+        $especialidad = Specialty::whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$especialidadSlug])
+        ->firstOrFail();
+
+        $service = Service::where('id_tipos_especialidad', $especialidad->id_tipos_especialidad)
+            ->whereRaw("LOWER(REPLACE(nombre, ' ', '-')) = ?", [$servicioSlug])
+            ->firstOrFail();
+
+        // Arreglo que se usará en la vista
+        $servicio = [
+            'nombre' => $service->nombre,
+            'especialidad' => $especialidad->nombre,
+            'descripcion_corta' => Str::limit($service->descripcion ?? 'Sin descripción', 120),
+            'descripcion_larga' => $service->descripcion ?? '',
+            'duracion' => $service->duracion ?? '30 minutos',
+            'icono' => '🩺',
         ];
 
-        return view('secretaria.servicios.detalle', ['servicio' => $detalle]);
+        $especialidad = [
+            'nombre' => $especialidad->nombre,
+            'slug' => Str::slug($especialidad->nombre),
+        ];
+
+        return view('secretaria.servicios.detalle', compact('servicio', 'especialidad'));
+
     }
 
     public function medicos()
     {
-        $especialidades = collect([
-            ['nombre' => 'Medicina general',      'descripcion' => 'Seguimiento integral del estado de salud.',       'icono' => '🩺'],
-            ['nombre' => 'Pediatría',             'descripcion' => 'Atención especializada para niños y niñas.',      'icono' => '👶'],
-            ['nombre' => 'Cardiología',           'descripcion' => 'Tratamiento de enfermedades del corazón.',        'icono' => '❤️'],
-            ['nombre' => 'Dermatología',          'descripcion' => 'Cuidado de la piel, cabello y uñas.',             'icono' => '🧴'],
-            ['nombre' => 'Neurología',            'descripcion' => 'Trastornos del sistema nervioso.',               'icono' => '🧠'],
-            ['nombre' => 'Rehabilitación física', 'descripcion' => 'Recuperación de la movilidad y funcionalidad.',  'icono' => '🏃‍♀️'],
-        ])->map(function ($item) {
-            $item['slug'] = Str::slug($item['nombre']);
-            return $item;
-        })->toArray();
+        $especialidadesActivas = Specialty::where('estado', 'activo')->get();
 
-        return view('secretaria.medicos.index', compact('especialidades'));
+        // 2. Formatear los datos para la vista: solo nombre, descripción y slug.
+        $especialidades = $especialidadesActivas->map(function ($specialty) {
+            
+            // Generar el slug para la URL
+            $slug = Str::slug($specialty->nombre);
+
+            return [
+                // Solo incluimos lo que la vista necesita:
+                'nombre' => $specialty->nombre,
+                'descripcion' => $specialty->descripcion,
+                'slug' => $slug, 
+                'icono' => '👨‍⚕️',
+            ];
+        });
+
+        // 3. Devolver la vista 
+        return view('secretaria.medicos.index', compact('especialidades')); 
+    
     }
 
-    public function medicosEspecialidad(string $especialidad)
+    public function medicosEspecialidad(string $especialidadSlug)
     {
-        $especialidadData = [
-            'nombre' => Str::title(str_replace('-', ' ', $especialidad)),
-            'slug'   => $especialidad,
+        // 1. Buscar la especialidad (cambiar en el futuro)
+        $specialty = Specialty::whereRaw('LOWER(REPLACE(nombre, " ", "-")) = ?', [$especialidadSlug])->firstOrFail();
+
+        // 2. Obtener médicos activos que pertenezcan a esa especialidad
+        $activeDoctors = User::with('doctor')
+            ->where('id_tipo_usuario', 2)
+            ->where('estado', 'activo')
+            ->whereHas('doctor', function ($q) use ($specialty) {
+                $q->where('id_tipos_especialidad', $specialty->id_tipos_especialidad);
+            })
+            ->get();
+
+        // 3. Preparar los datos para la vista
+        $doctors = $activeDoctors->map(function ($user) {
+            $doctorData = $user->doctor;
+
+            return [
+                'nombre' => "{$user->nombres} {$user->apellidos}",
+                'descripcion' => optional($doctorData)->descripcion,
+                'universidad' => optional($doctorData)->universidad,
+                'experiencia' => optional($doctorData)->experiencia,
+                'slug' => Str::slug("{$user->nombres}-{$user->apellidos}"),
+            ];
+        });
+
+        // 4. Retornar vista correcta (nota: era 'paciente', no 'pacientes')
+        return view('secretaria.medicos.especialidad', compact('doctors', 'especialidadSlug', 'specialty'));
+    }
+
+    public function medicosDetalle(string $especialidadSlug, string $medicoSlug)
+    {
+        // 1. Buscar la especialidad por el slug de la URL (pero usando el nombre real en BD)
+        $specialty = Specialty::whereRaw('LOWER(REPLACE(nombre, " ", "-")) = ?', [$especialidadSlug])
+        ->firstOrFail();
+
+        // 2. Buscar el médico según el slug de la URL
+        $user = User::with('doctor')
+        ->where('id_tipo_usuario', 2)
+        ->where('estado', 'activo')
+        ->get()
+        ->first(function ($u) use ($medicoSlug) {
+            $slug = Str::slug("{$u->nombres}-{$u->apellidos}");
+            return $slug === $medicoSlug;
+        });
+
+        if (!$user) {
+        abort(404, 'Médico no encontrado');
+        }
+
+        $doctorData = $user->doctor;
+
+        // 3. Preparar los datos con tildes originales desde la BD
+        $medico = [
+            'nombre' => "{$user->nombres} {$user->apellidos}",
+            'descripcion' => optional($doctorData)->descripcion,
+            'formacion' => optional($doctorData)->universidad,
+            'experiencia' => optional($doctorData)->experiencia,
+            'especialidad' => $specialty->nombre, // nombre con tildes
+            'especialidad_slug' => $especialidadSlug,
         ];
 
-        $medicos = collect([
-            [
-                'nombre'         => 'Dra. Laura Hernández',
-                'descripcion'    => 'Especialista en atención preventiva y control de enfermedades crónicas.',
-                'formacion'      => 'Médico cirujano — Universidad Nacional',
-                'experiencia'    => '10 años',
-                'disponibilidad' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
-            ],
-            [
-                'nombre'         => 'Dr. Andrés Salazar',
-                'descripcion'    => 'Enfoque en diagnóstico temprano y medicina familiar.',
-                'formacion'      => 'Especialista en Medicina Familiar — Universidad Javeriana',
-                'experiencia'    => '8 años',
-                'disponibilidad' => 'Martes y jueves — 10:00 a.m. - 6:00 p.m.',
-            ],
-            [
-                'nombre'         => 'Dra. Catalina Díaz',
-                'descripcion'    => 'Atención integral a pacientes con condiciones crónicas.',
-                'formacion'      => 'Medicina interna — Universidad de los Andes',
-                'experiencia'    => '12 años',
-                'disponibilidad' => 'Miércoles y sábado — 9:00 a.m. - 2:00 p.m.',
-            ],
-        ])->map(function ($item) use ($especialidad) {
-            $item['slug'] = Str::slug($item['nombre']);
-            $item['especialidad_slug'] = $especialidad;
-            return $item;
-        })->toArray();
-
-        return view('secretaria.medicos.especialidad', [
-            'especialidad' => $especialidadData,
-            'medicos'      => $medicos,
-        ]);
+        // 4. Retornar la vista del perfil médico
+        return view('secretaria.medicos.detalle', compact('medico'));
+        }
     }
 
-    public function medicosDetalle(string $especialidad, string $medico)
-    {
-        $detalle = [
-            'nombre'              => Str::title(str_replace('-', ' ', $medico)),
-            'especialidad'        => Str::title(str_replace('-', ' ', $especialidad)),
-            'especialidad_slug'   => $especialidad,
-            'descripcion'         => 'Profesional con enfoque humano y preventivo, acompañando procesos de diagnóstico y tratamiento integral.',
-            'formacion'           => 'Médico cirujano — Universidad Nacional, especialización en Medicina interna.',
-            'experiencia'         => 'Más de 10 años en consulta externa y hospitalaria.',
-            'disponibilidad'      => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
-            'icono'               => '👩‍⚕️',
-        ];
-
-        return view('secretaria.medicos.detalle', [
-            'medico' => $detalle,
-        ]);
-    }
-}

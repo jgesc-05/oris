@@ -3,8 +3,12 @@
 @section('title', 'Paciente — Secretaría')
 
 @php
+
+  use Carbon\Carbon;
+
+  Carbon::setLocale('es');
   $fechaNacimiento = $patient->fecha_nacimiento
-    ? \Carbon\Carbon::parse($patient->fecha_nacimiento)->translatedFormat('d \\d\\e F Y')
+    ? \Carbon\Carbon::parse($patient->fecha_nacimiento)->translatedFormat('d \\d\\e F \d\\e Y')
     : '—';
 
   // URLs de navegación (no cambian tu lógica)

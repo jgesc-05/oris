@@ -34,12 +34,12 @@
 
           <div>
             <h2 class="text-lg font-semibold text-neutral-900">Experiencia</h2>
-            <p class="text-sm text-neutral-600">{{ $medico['experiencia'] }}</p>
+            <p class="text-sm text-neutral-600">{{ $medico['experiencia']. ' años' }}</p>
           </div>
 
           <div>
             <h2 class="text-lg font-semibold text-neutral-900">Disponibilidad</h2>
-            <p class="text-sm text-neutral-600">{{ $medico['disponibilidad'] }}</p>
+            <p class="text-sm text-neutral-600">{{ $medico['disponibilidad'] ?? 'Consultar agenda'}}</p>
           </div>
         </div>
 
