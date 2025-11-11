@@ -186,21 +186,40 @@ class SecretaryPortalController extends Controller
         return view('secretaria.medicos.especialidad', compact('doctors', 'especialidadSlug', 'specialty'));
     }
 
-    public function medicosDetalle(string $especialidad, string $medico)
+    public function medicosDetalle(string $especialidadSlug, string $medicoSlug)
     {
-        $detalle = [
-            'nombre'              => Str::title(str_replace('-', ' ', $medico)),
-            'especialidad'        => Str::title(str_replace('-', ' ', $especialidad)),
-            'especialidad_slug'   => $especialidad,
-            'descripcion'         => 'Profesional con enfoque humano y preventivo, acompañando procesos de diagnóstico y tratamiento integral.',
-            'formacion'           => 'Médico cirujano — Universidad Nacional, especialización en Medicina interna.',
-            'experiencia'         => 'Más de 10 años en consulta externa y hospitalaria.',
-            'disponibilidad'      => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
-            'icono'               => '👩‍⚕️',
+        // 1. Buscar la especialidad por el slug de la URL (pero usando el nombre real en BD)
+        $specialty = Specialty::whereRaw('LOWER(REPLACE(nombre, " ", "-")) = ?', [$especialidadSlug])
+        ->firstOrFail();
+
+        // 2. Buscar el médico según el slug de la URL
+        $user = User::with('doctor')
+        ->where('id_tipo_usuario', 2)
+        ->where('estado', 'activo')
+        ->get()
+        ->first(function ($u) use ($medicoSlug) {
+            $slug = Str::slug("{$u->nombres}-{$u->apellidos}");
+            return $slug === $medicoSlug;
+        });
+
+        if (!$user) {
+        abort(404, 'Médico no encontrado');
+        }
+
+        $doctorData = $user->doctor;
+
+        // 3. Preparar los datos con tildes originales desde la BD
+        $medico = [
+            'nombre' => "{$user->nombres} {$user->apellidos}",
+            'descripcion' => optional($doctorData)->descripcion,
+            'formacion' => optional($doctorData)->universidad,
+            'experiencia' => optional($doctorData)->experiencia,
+            'especialidad' => $specialty->nombre, // nombre con tildes
+            'especialidad_slug' => $especialidadSlug,
         ];
 
-        return view('secretaria.medicos.detalle', [
-            'medico' => $detalle,
-        ]);
+        // 4. Retornar la vista del perfil médico
+        return view('secretaria.medicos.detalle', compact('medico'));
+        }
     }
-}
+

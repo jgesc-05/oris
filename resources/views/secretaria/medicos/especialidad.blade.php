@@ -25,7 +25,7 @@
                 <strong>Formación:</strong> {{ $medico['universidad'] }}
               </div>
               <div class="text-xs text-neutral-500">
-                <strong>Experiencia:</strong> {{ $medico['experiencia'] }}
+                <strong>Experiencia:</strong> {{ $medico['experiencia'] .' años' }}
               </div>
               <div class="text-xs text-neutral-500">
                 <strong>Disponibilidad:</strong> {{ $medico['disponibilidad'] ?? 'Consultar agenda' }}
