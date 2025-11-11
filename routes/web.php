@@ -4,6 +4,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\PatientAuthController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\Doctor\DoctorPortalController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SpecialtyController;
 use App\Models\Specialty;
@@ -86,7 +87,7 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     });
 });
 
-Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->group(function () {
+Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth', 'role:secretaria'])->group(function () {
     Route::get('inicio', [SecretaryPortalController::class, 'inicio'])->name('inicio');
     Route::get('agenda', [SecretaryPortalController::class, 'agenda'])->name('agenda');
 
@@ -163,13 +164,22 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth'])->g
 
 });
 
-Route::prefix('medico')->name('medico.')->middleware(['web', 'auth'])->group(function () {
-    Route::view('dashboard', 'medico.dashboard')->name('dashboard');
+Route::prefix('medico')->name('medico.')->middleware(['web', 'auth', 'role:medico'])->group(function () {
+    Route::get('inicio', [DoctorPortalController::class, 'dashboard'])->name('dashboard');
+    Route::get('dashboard', fn () => redirect()->route('medico.dashboard'));
+    Route::get('agenda', [DoctorPortalController::class, 'agenda'])->name('agenda');
+
+    Route::prefix('pacientes')->name('pacientes.')->group(function () {
+        Route::get('/', [DoctorPortalController::class, 'patientsIndex'])->name('index');
+        Route::get('{patient}', [DoctorPortalController::class, 'patientsShow'])
+            ->whereNumber('patient')
+            ->name('show');
+    });
 });
 
 // routes/web.php
 
-Route::prefix('admin')->name('admin.')->middleware(['web', 'auth'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'role:admin'])->group(function () {
     // Dashboard
     Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 

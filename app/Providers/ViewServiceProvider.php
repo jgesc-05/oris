@@ -40,6 +40,16 @@ class ViewServiceProvider extends ServiceProvider
 
             $view->with('secretaryNavItems', $items);
         });
+
+        \Illuminate\Support\Facades\View::composer(['layouts.medico', 'medico.*'], function ($view) {
+            $items = [
+                ['label' => 'Inicio',    'href' => route('medico.dashboard'),        'active' => request()->routeIs('medico.dashboard')],
+                ['label' => 'Agenda',    'href' => route('medico.agenda'),           'active' => request()->routeIs('medico.agenda')],
+                ['label' => 'Pacientes', 'href' => route('medico.pacientes.index'),  'active' => request()->routeIs('medico.pacientes.*')],
+            ];
+
+            $view->with('doctorNavItems', $items);
+        });
     }
 
 }
