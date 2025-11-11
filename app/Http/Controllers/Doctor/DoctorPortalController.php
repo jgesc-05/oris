@@ -77,7 +77,8 @@ class DoctorPortalController extends Controller
                     $query->where(function ($inner) use ($search) {
                         $inner->where('nombres', 'like', "%{$search}%")
                             ->orWhere('apellidos', 'like', "%{$search}%")
-                            ->orWhere('numero_documento', 'like', "%{$search}%");
+                            ->orWhere('numero_documento', 'like', "%{$search}%")
+                            ->orWhere('correo_electronico', 'like', "%{$search}%");
                     });
                 })
                 ->orderBy('nombres')
