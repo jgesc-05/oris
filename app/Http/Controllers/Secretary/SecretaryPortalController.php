@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Secretary;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Specialty;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -154,45 +155,35 @@ class SecretaryPortalController extends Controller
     
     }
 
-    public function medicosEspecialidad(string $especialidad)
+    public function medicosEspecialidad(string $especialidadSlug)
     {
-        $especialidadData = [
-            'nombre' => Str::title(str_replace('-', ' ', $especialidad)),
-            'slug'   => $especialidad,
-        ];
+        // 1. Buscar la especialidad (cambiar en el futuro)
+        $specialty = Specialty::whereRaw('LOWER(REPLACE(nombre, " ", "-")) = ?', [$especialidadSlug])->firstOrFail();
 
-        $medicos = collect([
-            [
-                'nombre'         => 'Dra. Laura Hernández',
-                'descripcion'    => 'Especialista en atención preventiva y control de enfermedades crónicas.',
-                'formacion'      => 'Médico cirujano — Universidad Nacional',
-                'experiencia'    => '10 años',
-                'disponibilidad' => 'Lunes a viernes — 8:00 a.m. - 4:00 p.m.',
-            ],
-            [
-                'nombre'         => 'Dr. Andrés Salazar',
-                'descripcion'    => 'Enfoque en diagnóstico temprano y medicina familiar.',
-                'formacion'      => 'Especialista en Medicina Familiar — Universidad Javeriana',
-                'experiencia'    => '8 años',
-                'disponibilidad' => 'Martes y jueves — 10:00 a.m. - 6:00 p.m.',
-            ],
-            [
-                'nombre'         => 'Dra. Catalina Díaz',
-                'descripcion'    => 'Atención integral a pacientes con condiciones crónicas.',
-                'formacion'      => 'Medicina interna — Universidad de los Andes',
-                'experiencia'    => '12 años',
-                'disponibilidad' => 'Miércoles y sábado — 9:00 a.m. - 2:00 p.m.',
-            ],
-        ])->map(function ($item) use ($especialidad) {
-            $item['slug'] = Str::slug($item['nombre']);
-            $item['especialidad_slug'] = $especialidad;
-            return $item;
-        })->toArray();
+        // 2. Obtener médicos activos que pertenezcan a esa especialidad
+        $activeDoctors = User::with('doctor')
+            ->where('id_tipo_usuario', 2)
+            ->where('estado', 'activo')
+            ->whereHas('doctor', function ($q) use ($specialty) {
+                $q->where('id_tipos_especialidad', $specialty->id_tipos_especialidad);
+            })
+            ->get();
 
-        return view('secretaria.medicos.especialidad', [
-            'especialidad' => $especialidadData,
-            'medicos'      => $medicos,
-        ]);
+        // 3. Preparar los datos para la vista
+        $doctors = $activeDoctors->map(function ($user) {
+            $doctorData = $user->doctor;
+
+            return [
+                'nombre' => "{$user->nombres} {$user->apellidos}",
+                'descripcion' => optional($doctorData)->descripcion,
+                'universidad' => optional($doctorData)->universidad,
+                'experiencia' => optional($doctorData)->experiencia,
+                'slug' => Str::slug("{$user->nombres}-{$user->apellidos}"),
+            ];
+        });
+
+        // 4. Retornar vista correcta (nota: era 'paciente', no 'pacientes')
+        return view('secretaria.medicos.especialidad', compact('doctors', 'especialidadSlug', 'specialty'));
     }
 
     public function medicosDetalle(string $especialidad, string $medico)

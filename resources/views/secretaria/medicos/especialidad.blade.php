@@ -1,13 +1,13 @@
 @extends('layouts.secretaria')
 
-@section('title', $especialidad['nombre'].' — Médicos')
+@section('title', $specialty['nombre'].' — Médicos')
 
 @section('secretary-content')
   <div class="space-y-6">
     <header class="space-y-2">
-      <x-ui.badge variant="info" class="uppercase tracking-wide">médicos — {{ strtolower($especialidad['nombre']) }}</x-ui.badge>
+      <x-ui.badge variant="info" class="uppercase tracking-wide">médicos — {{ strtolower($specialty['nombre']) }}</x-ui.badge>
       <h1 class="text-2xl md:text-3xl font-semibold text-neutral-900">
-        Especialistas en {{ $especialidad['nombre'] }}
+        Especialistas en {{ $specialty['nombre'] }}
       </h1>
       <p class="text-sm md:text-base text-neutral-600">
         Personal médico disponible para atender a los pacientes en esta especialidad.
@@ -16,13 +16,13 @@
 
     <x-ui.card class="space-y-6 p-6">
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach ($medicos as $medico)
+        @foreach ($doctors as $medico)
           <div class="group rounded-xl border border-neutral-200 bg-white hover:border-primary-200 shadow-sm hover:shadow-md transition-all duración-200 ease-out p-5">
             <div class="space-y-2">
               <h2 class="text-lg font-semibold text-neutral-900">{{ $medico['nombre'] }}</h2>
               <p class="text-sm text-neutral-600 leading-snug">{{ $medico['descripcion'] }}</p>
               <div class="text-xs text-neutral-500">
-                <strong>Formación:</strong> {{ $medico['formacion'] }}
+                <strong>Formación:</strong> {{ $medico['universidad'] }}
               </div>
               <div class="text-xs text-neutral-500">
                 <strong>Experiencia:</strong> {{ $medico['experiencia'] }}
@@ -36,7 +36,7 @@
                   Agendar
                 </x-ui.button>
                 <x-ui.button variant="ghost" size="sm" class="rounded-full px-4 py-1 text-xs"
-                  :href="route('secretaria.medicos.detalle', ['especialidad' => $medico['especialidad_slug'], 'medico' => $medico['slug']])">
+                  :href="route('secretaria.medicos.detalle', ['especialidad' => $especialidadSlug, 'medico' => $medico['slug']])">
                   Ver perfil
                 </x-ui.button>
               </div>
