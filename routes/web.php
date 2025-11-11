@@ -212,12 +212,6 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'role:admin']
     //Eliminar usuario
     Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
 
-    // ===== Pacientes =====
-    Route::view('/pacientes', 'admin.pacientes.index')->name('pacientes.index');
-    Route::get('/pacientes/{paciente}', function ($paciente) {
-        return view('admin.pacientes.show', ['id' => $paciente]);
-    })->whereNumber('paciente')->name('pacientes.show');
-
     // Visualización de reportes empresariales
     Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
 
