@@ -41,7 +41,7 @@ class ServiceController extends Controller
 
     //ver índice de servicios
     public function index(){
-        $services = Service::with('tipoEspecialidad')->get();
+        $services = Service::with('tipoEspecialidad')->paginate(10);
 
         return view('admin.config.servicio.index', compact('services'));
     }

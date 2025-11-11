@@ -30,7 +30,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de documento --}}
-        <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
+        <x-form.select name="id_tipo_documento" label="Tipo de documento">
           <option value="">-- Seleccionar --</option>
           @foreach ($tiposDocumento as $tipo)
           <option value="{{ $tipo->id_tipo_documento }}" @selected(old('id_tipo_documento') == $tipo->id_tipo_documento)>
@@ -43,7 +43,6 @@
         <x-form.input
           name="numero_documento"
           label="Número de documento"
-          required
           value="{{ old('numero_documento') }}"
           :error="$errors->first('numero_documento')"
         />
@@ -52,7 +51,6 @@
         <x-form.input
           name="nombres"
           label="Nombres"
-          required
           value="{{ old('nombres') }}"
           :error="$errors->first('nombres')"
         />
@@ -61,13 +59,12 @@
         <x-form.input
           name="apellidos"
           label="Apellidos"
-          required
           value="{{ old('apellidos') }}"
           :error="$errors->first('apellidos')"
         />
 
         {{-- Rol (tipo de usuario) --}}
-        <x-form.select id="tipo_usuario" name="id_tipo_usuario" label="Rol del usuario" required onchange="toggleDoctorFields(this.value)">
+        <x-form.select id="tipo_usuario" name="id_tipo_usuario" label="Rol del usuario"  onchange="toggleDoctorFields(this.value)">
           <option value="">-- Seleccionar --</option>
           @foreach ($tiposUsuario as $tipo)
             @if ($tipo->id_tipo_usuario != 4)
@@ -93,21 +90,19 @@
 
     <x-form.input
       name="universidad"
-      required
+      
       label="Universidad"
       value="{{ old('universidad') }}"
     />
 
     <x-form.input
       name="numero_licencia"
-      required
       label="Número de licencia"
       value="{{ old('numero_licencia') }}"
     />
 
     <x-form.input
       name="experiencia"
-      required
       label="Experiencia (en años)"
       value="{{ old('experiencia') }}"
     />
@@ -115,7 +110,6 @@
     <div class="md:col-span-2">
       <x-form.textarea
         name="descripcion"
-        required
         label="Descripción profesional"
         value="{{ old('descripcion') }}"
       />
@@ -129,7 +123,6 @@
           name="fecha_nacimiento"
           label="Fecha de nacimiento"
           type="date"
-          required
           max="{{ now()->format('Y-m-d') }}"
           value="{{ old('fecha_nacimiento') }}"
           :error="$errors->first('fecha_nacimiento')"
@@ -157,7 +150,6 @@
           name="correo_electronico"
           type="email"
           label="Correo electrónico"
-          required
           value="{{ old('correo_electronico') }}"
           :error="$errors->first('correo_electronico')"
         />
@@ -167,7 +159,6 @@
           name="password"
           type="password"
           label="Contraseña"
-          required
           :error="$errors->first('password')"
         />
 
@@ -176,7 +167,6 @@
           name="password_confirmation"
           type="password"
           label="Confirmar contraseña"
-          required
           :error="$errors->first('password_confirmation')"
         />
 

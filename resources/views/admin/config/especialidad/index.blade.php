@@ -69,5 +69,41 @@
 
       </table>
     </div>
+    {{--Paginación funcional --}}
+      <div class="mt-4 flex items-center justify-center gap-2">
+      {{-- Botón anterior --}}
+      @if ($specialties->onFirstPage())
+          <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+      @else
+          <a href="{{ $users->previousPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+          </a>
+      @endif
+
+      {{-- Números de página --}}
+      @foreach ($specialties->getUrlRange(1, $specialties->lastPage()) as $page => $url)
+          <a href="{{ $url }}">
+              <x-ui.badge
+                  @class([
+                      'bg-blue-500 text-white border border-blue-500' => $page == $specialties->currentPage(),
+                      'hover:bg-blue-100 transition cursor-pointer' => $page != $specialties->currentPage(),
+                  ])>
+                  {{ $page }}
+              </x-ui.badge>
+          </a>
+      @endforeach
+
+      {{-- Botón siguiente --}}
+      @if ($specialties->hasMorePages())
+          <a href="{{ $users->nextPageUrl() }}">
+              <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+          </a>
+      @else
+          <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+      @endif
+  </div>
+    <p class="text-sm text-neutral-500 text-center mt-2">
+        Mostrando {{ $specialties->firstItem() }}–{{ $specialties->lastItem() }} de {{ $specialties->total() }} especialidades
+    </p>
   </x-ui.card>
 @endsection

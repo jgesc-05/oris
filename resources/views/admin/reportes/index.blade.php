@@ -45,7 +45,7 @@
       <div class="lg:col-span-3">
       <x-form.select name="servicio" label="Servicio">
         <option value="" {{ empty($filtros['servicio']) ? 'selected' : '' }}>-- Todos --</option>
-        @foreach ($servicios as $s)
+        @foreach ($serviciosSelect as $s)
           <option value="{{ $s->id_servicio }}" {{ $filtros['servicio'] == $s->id_servicio ? 'selected' : '' }}>
             {{ $s->nombre }}
           </option>
@@ -87,6 +87,49 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   // Datos desde el backend
+  const serviciosPorMedico = @json($serviciosPorMedico);
+  const serviciosList = @json($serviciosList);
+  let selectedServicio = @json($filtros['servicio']);
+
+  function renderServiciosOptions(medicoId) {
+    const servicioSelect = document.querySelector('select[name="servicio"]');
+    if (!servicioSelect) return;
+
+    const servicios = medicoId && serviciosPorMedico[medicoId]
+      ? serviciosPorMedico[medicoId]
+      : serviciosList;
+
+    const currentValue = servicioSelect.value || selectedServicio || '';
+    servicioSelect.innerHTML = '';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '-- Todos --';
+    servicioSelect.appendChild(defaultOption);
+
+    servicios.forEach(({ id, nombre }) => {
+      const option = document.createElement('option');
+      option.value = id;
+      option.textContent = nombre;
+      if (String(id) === String(currentValue)) {
+        option.selected = true;
+      }
+      servicioSelect.appendChild(option);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const medicoSelect = document.querySelector('select[name="medico"]');
+    if (!medicoSelect) return;
+
+    renderServiciosOptions(medicoSelect.value);
+
+    medicoSelect.addEventListener('change', (event) => {
+      selectedServicio = '';
+      renderServiciosOptions(event.target.value);
+    });
+  });
+
   const serviciosData = @json($serviciosChart);
   const medicosData = @json($medicosChart);
 
