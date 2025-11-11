@@ -27,9 +27,9 @@
                 <p class="text-xs text-neutral-500 mt-1">Programadas</p>
             </x-ui.card>
             <x-ui.card class="bg-white border border-neutral-200">
-                <p class="text-sm text-neutral-500">Completadas</p>
-                <p class="text-3xl font-semibold text-emerald-600">{{ $indicators['completadas'] }}</p>
-                <p class="text-xs text-neutral-500 mt-1">Atendidas hoy</p>
+                <p class="text-sm text-neutral-500">Atendidas</p>
+                <p class="text-3xl font-semibold text-emerald-600">{{ $indicators['atendidas'] }}</p>
+                <p class="text-xs text-neutral-500 mt-1">Hoy</p>
             </x-ui.card>
             <x-ui.card class="bg-white border border-neutral-200">
                 <p class="text-sm text-neutral-500">Canceladas</p>
@@ -44,7 +44,7 @@
         </div>
 
         <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <x-ui.card class="xl:col-span-2" title="Agenda del día" subtitle="Citas confirmadas para hoy">
+            <x-ui.card class="xl:col-span-2" title="Agenda del día" subtitle="Citas programadas para hoy">
                 <div class="space-y-4">
                     @forelse ($todayAppointments as $appointment)
                         <div
@@ -69,15 +69,9 @@
                             <div class="flex items-center gap-3">
                                 @php
                                     $estado = $appointment->estado;
-                                    $badgeVariant = match ($estado) {
-                                        'Completada' => 'success',
-                                        'Cancelada' => 'warning',
-                                        'Reprogramada' => 'info',
-                                        default => 'neutral',
-                                    };
                                     $patientId = optional($appointment->paciente)->id_usuario;
                                 @endphp
-                                <x-ui.badge :variant="$badgeVariant">{{ $estado }}</x-ui.badge>
+                                <x-appointment.status-badge :estado="$estado" />
                                 <x-ui.button variant="ghost" size="sm" :href="$patientId ? route('medico.pacientes.show', $patientId) : null">
                                     Ver ficha
                                 </x-ui.button>
@@ -104,20 +98,20 @@
                         </div>
                         <div class="grid grid-cols-3 gap-3 text-center text-sm">
                             <div>
-                                <p class="text-neutral-500 text-xs">Totales</p>
-                                <p class="text-xl font-semibold">{{ $monthStats['total'] }}</p>
+                                <p class="text-neutral-500 text-xs">Programadas</p>
+                                <p class="text-xl font-semibold text-amber-600">{{ $monthStats['programadas'] }}</p>
                             </div>
                             <div>
-                                <p class="text-neutral-500 text-xs">Completadas</p>
-                                <p class="text-xl font-semibold text-emerald-600">{{ $monthStats['completadas'] }}</p>
+                                <p class="text-neutral-500 text-xs">Atendidas</p>
+                                <p class="text-xl font-semibold text-emerald-600">{{ $monthStats['atendidas'] }}</p>
                             </div>
                             <div>
-                                <p class="text-neutral-500 text-xs">Reprogramadas</p>
-                                <p class="text-xl font-semibold text-amber-600">{{ $monthStats['reprogramadas'] }}</p>
+                                <p class="text-neutral-500 text-xs">Canceladas</p>
+                                <p class="text-xl font-semibold text-rose-600">{{ $monthStats['canceladas'] }}</p>
                             </div>
                         </div>
                         <p class="text-xs text-neutral-500 text-center">
-                            Canceladas este mes: {{ $monthStats['canceladas'] }}
+                            Total del mes: {{ $monthStats['total'] }}
                         </p>
                     </div>
                 </x-ui.card>

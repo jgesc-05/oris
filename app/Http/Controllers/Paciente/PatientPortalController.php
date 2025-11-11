@@ -43,7 +43,7 @@ class PatientPortalController extends Controller
         $patient = $this->patient();
 
         $nextAppointment = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>=', now())
             ->orderBy('fecha_hora_inicio')
             ->first();
@@ -282,7 +282,7 @@ class PatientPortalController extends Controller
             'id_usuario_agenda' => $patient->id_usuario,
             'fecha_hora_inicio' => $start,
             'fecha_hora_fin' => $end,
-            'estado' => 'Programada',
+            'estado' => Appointment::STATUS_PROGRAMADA,
             'notas' => $validated['notas'] ?? null,
         ]);
 
@@ -301,7 +301,7 @@ class PatientPortalController extends Controller
     {
         $patient = $this->patient();
         $appointments = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>=', now())
             ->orderBy('fecha_hora_inicio')
             ->get();
@@ -322,7 +322,7 @@ class PatientPortalController extends Controller
     {
         $patient = $this->patient();
         $appointment = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->findOrFail($id);
 
         if ($appointment->fecha_hora_inicio->lt(now())) {
@@ -377,7 +377,7 @@ class PatientPortalController extends Controller
     {
         $patient = $this->patient();
         $appointment = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->findOrFail($id);
 
         $validated = $request->validate([
@@ -407,7 +407,7 @@ class PatientPortalController extends Controller
             'id_servicio' => $service->id_servicio,
             'fecha_hora_inicio' => $start,
             'fecha_hora_fin' => $end,
-            'estado' => 'Programada',
+            'estado' => Appointment::STATUS_PROGRAMADA,
             'notas' => $validated['notas'] ?? $appointment->notas,
             'id_usuario_agenda' => $patient->id_usuario,
             'id_usuario_cancela' => null,
@@ -430,7 +430,7 @@ class PatientPortalController extends Controller
         $patient = $this->patient();
 
         $appointments = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>', now())
             ->orderBy('fecha_hora_inicio')
             ->get();
@@ -448,12 +448,12 @@ class PatientPortalController extends Controller
         ]);
 
         $appointment = $this->patientAppointmentsQuery()
-            ->where('estado', '<>', 'Cancelada')
+            ->where('estado', '<>', Appointment::STATUS_CANCELADA)
             ->where('fecha_hora_inicio', '>', now())
             ->findOrFail($validated['cita_id']);
 
         $appointment->update([
-            'estado' => 'Cancelada',
+            'estado' => Appointment::STATUS_CANCELADA,
             'id_usuario_cancela' => $patient->id_usuario,
             'motivo_cancelacion' => $validated['motivo'] ?? 'Cancelada por el paciente',
         ]);

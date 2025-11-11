@@ -9,6 +9,16 @@ class Appointment extends Model
 {
     use HasFactory;
 
+    public const STATUS_PROGRAMADA = 'Programada';
+    public const STATUS_CANCELADA = 'Cancelada';
+    public const STATUS_ATENDIDA = 'Atendida';
+
+    private const STATUS_VARIANTS = [
+        self::STATUS_PROGRAMADA => 'warning',
+        self::STATUS_CANCELADA => 'primary',
+        self::STATUS_ATENDIDA => 'success',
+    ];
+
     protected $table = 'appointments';
     protected $primaryKey = 'id_cita';
 
@@ -43,5 +53,38 @@ class Appointment extends Model
     public function servicio()
     {
         return $this->belongsTo(Service::class, 'id_servicio', 'id_servicio');
+    }
+
+    public static function allowedStatuses(): array
+    {
+        return [
+            self::STATUS_PROGRAMADA,
+            self::STATUS_CANCELADA,
+            self::STATUS_ATENDIDA,
+        ];
+    }
+
+    public static function badgeVariant(?string $estado): string
+    {
+        if (!$estado) {
+            return 'neutral';
+        }
+
+        return self::STATUS_VARIANTS[$estado] ?? 'neutral';
+    }
+
+    public function isProgramada(): bool
+    {
+        return $this->estado === self::STATUS_PROGRAMADA;
+    }
+
+    public function isCancelada(): bool
+    {
+        return $this->estado === self::STATUS_CANCELADA;
+    }
+
+    public function isAtendida(): bool
+    {
+        return $this->estado === self::STATUS_ATENDIDA;
     }
 }

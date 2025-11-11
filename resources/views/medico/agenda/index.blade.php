@@ -28,9 +28,8 @@
                 <x-form.select name="estado" label="Estado">
                     <option value="">Todos</option>
                     <option value="Programada" @selected($filters['estado'] === 'Programada')>Programada</option>
-                    <option value="Completada" @selected($filters['estado'] === 'Completada')>Completada</option>
+                    <option value="Atendida" @selected($filters['estado'] === 'Atendida')>Atendida</option>
                     <option value="Cancelada" @selected($filters['estado'] === 'Cancelada')>Cancelada</option>
-                    <option value="Reprogramada" @selected($filters['estado'] === 'Reprogramada')>Reprogramada</option>
                 </x-form.select>
 
                 <x-form.input name="paciente" label="Paciente" placeholder="Nombre o documento" :value="$filters['paciente']" />
@@ -69,15 +68,7 @@
                             </td>
                             <td class="px-4 py-3">{{ optional($entry->servicio)->nombre ?? 'Sin servicio' }}</td>
                             <td class="px-4 py-3">
-                                @php
-                                    $variant = match ($entry->estado) {
-                                        'Completada' => 'success',
-                                        'Cancelada' => 'warning',
-                                        'Reprogramada' => 'info',
-                                        default => 'primary',
-                                    };
-                                @endphp
-                                <x-ui.badge :variant="$variant">{{ $entry->estado }}</x-ui.badge>
+                                <x-appointment.status-badge :estado="$entry->estado" />
                             </td>
                             <td class="px-4 py-3">
                                 @if ($entry->paciente)

@@ -22,9 +22,9 @@ class DoctorPortalController extends Controller
             ->get();
 
         $indicators = [
-            'programadas' => $todayAppointments->count(),
-            'completadas' => $todayAppointments->where('estado', 'Completada')->count(),
-            'canceladas' => $todayAppointments->where('estado', 'Cancelada')->count(),
+            'programadas' => $todayAppointments->where('estado', Appointment::STATUS_PROGRAMADA)->count(),
+            'atendidas' => $todayAppointments->where('estado', Appointment::STATUS_ATENDIDA)->count(),
+            'canceladas' => $todayAppointments->where('estado', Appointment::STATUS_CANCELADA)->count(),
             'pacientes'   => $todayAppointments->pluck('id_usuario_paciente')->filter()->unique()->count(),
         ];
 
@@ -34,13 +34,13 @@ class DoctorPortalController extends Controller
 
         $monthStats = [
             'total'        => $monthAppointments->count(),
-            'completadas'  => $monthAppointments->where('estado', 'Completada')->count(),
-            'canceladas'   => $monthAppointments->where('estado', 'Cancelada')->count(),
-            'reprogramadas'=> $monthAppointments->where('estado', 'Reprogramada')->count(),
+            'programadas'  => $monthAppointments->where('estado', Appointment::STATUS_PROGRAMADA)->count(),
+            'atendidas'    => $monthAppointments->where('estado', Appointment::STATUS_ATENDIDA)->count(),
+            'canceladas'   => $monthAppointments->where('estado', Appointment::STATUS_CANCELADA)->count(),
         ];
 
         $productivity = $monthStats['total'] > 0
-            ? round(($monthStats['completadas'] / $monthStats['total']) * 100)
+            ? round(($monthStats['atendidas'] / $monthStats['total']) * 100)
             : 0;
 
         $upcomingAppointments = Appointment::with(['paciente', 'servicio'])
@@ -127,8 +127,8 @@ class DoctorPortalController extends Controller
 
         $stats = [
             'total'       => $appointments->count(),
-            'completadas' => $appointments->where('estado', 'Completada')->count(),
-            'canceladas'  => $appointments->where('estado', 'Cancelada')->count(),
+            'atendidas' => $appointments->where('estado', Appointment::STATUS_ATENDIDA)->count(),
+            'canceladas'  => $appointments->where('estado', Appointment::STATUS_CANCELADA)->count(),
             'proximas'    => $appointments->filter(fn ($appointment) => $appointment->fecha_hora_inicio && $appointment->fecha_hora_inicio->isFuture())->count(),
         ];
 
@@ -157,9 +157,14 @@ class DoctorPortalController extends Controller
     {
         $doctor = Auth::user();
 
+        $estado = $request->input('estado');
+        if (!in_array($estado, Appointment::allowedStatuses(), true)) {
+            $estado = null;
+        }
+
         $filters = [
             'fecha' => $request->input('fecha', now()->toDateString()),
-            'estado' => $request->input('estado'),
+            'estado' => $estado,
             'paciente' => $request->input('paciente'),
         ];
 

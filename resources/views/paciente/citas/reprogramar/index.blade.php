@@ -37,7 +37,7 @@
                 </td>
                 <td class="px-3 py-2">{{ $appointment->servicio?->nombre }}</td>
                 <td class="px-3 py-2">
-                  <x-ui.badge variant="success">{{ $appointment->estado }}</x-ui.badge>
+                  <x-appointment.status-badge :estado="$appointment->estado" />
                 </td>
               </tr>
             @empty

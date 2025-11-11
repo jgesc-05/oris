@@ -39,8 +39,8 @@
                 <p class="text-3xl font-semibold text-neutral-900">{{ $stats['total'] }}</p>
             </x-ui.card>
             <x-ui.card class="text-center">
-                <p class="text-xs uppercase tracking-widest text-neutral-500">Completadas</p>
-                <p class="text-3xl font-semibold text-emerald-600">{{ $stats['completadas'] }}</p>
+                <p class="text-xs uppercase tracking-widest text-neutral-500">Atendidas</p>
+                <p class="text-3xl font-semibold text-emerald-600">{{ $stats['atendidas'] }}</p>
             </x-ui.card>
             <x-ui.card class="text-center">
                 <p class="text-xs uppercase tracking-widest text-neutral-500">Canceladas</p>
@@ -66,15 +66,7 @@
                                     {{ optional($entry->servicio)->nombre ?? 'Servicio no especificado' }}
                                 </p>
                             </div>
-                            @php
-                                $variant = match ($entry->estado) {
-                                    'Completada' => 'success',
-                                    'Cancelada' => 'warning',
-                                    'Reprogramada' => 'info',
-                                    default => 'neutral',
-                                };
-                            @endphp
-                            <x-ui.badge :variant="$variant">{{ $entry->estado }}</x-ui.badge>
+                            <x-appointment.status-badge :estado="$entry->estado" />
                         </div>
                     @empty
                         <p class="text-sm text-neutral-500 text-center py-8">Sin citas registradas todavía.</p>

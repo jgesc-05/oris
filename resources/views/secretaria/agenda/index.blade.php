@@ -15,6 +15,18 @@
 
     </header>
 
+    @if (session('status'))
+      <x-ui.alert variant="success">
+        {{ session('status') }}
+      </x-ui.alert>
+    @endif
+
+    @if ($errors->has('estado'))
+      <x-ui.alert variant="warning">
+        {{ $errors->first('estado') }}
+      </x-ui.alert>
+    @endif
+
     <x-ui.card class="p-5 space-y-4">
       <form class="grid grid-cols-1 md:grid-cols-4 gap-4" method="GET">
         <x-form.input type="date" name="fecha" label="Fecha" :value="$filters['fecha']" />
@@ -22,6 +34,7 @@
         <x-form.select name="estado" label="Estado">
           <option value="">Todos</option>
           <option value="Programada" @selected($filters['estado'] === 'Programada')>Programada</option>
+          <option value="Atendida" @selected($filters['estado'] === 'Atendida')>Atendida</option>
           <option value="Cancelada" @selected($filters['estado'] === 'Cancelada')>Cancelada</option>
         </x-form.select>
 
@@ -55,14 +68,21 @@
               <td class="px-4 py-3">{{ $entry->servicio?->nombre }}</td>
               <td class="px-4 py-3">{{ $entry->medico?->nombres }} {{ $entry->medico?->apellidos }}</td>
               <td class="px-4 py-3">
-                <x-ui.badge variant="{{ $entry->estado === 'Programada' ? 'success' : 'warning' }}">
-                  {{ $entry->estado }}
-                </x-ui.badge>
+                <x-appointment.status-badge :estado="$entry->estado" />
               </td>
               <td class="px-4 py-3">
-                <div class="flex gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                   <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.reprogramar.lookup')">Reprogramar</x-ui.button>
                   <x-ui.button variant="ghost" size="sm" :href="route('secretaria.citas.cancelar.lookup')">Cancelar</x-ui.button>
+                  @if ($entry->isProgramada())
+                    <form method="POST" action="{{ route('secretaria.agenda.mark-attended', $entry->id_cita) }}">
+                      @csrf
+                      @method('PATCH')
+                      <x-ui.button type="submit" variant="success" size="sm">
+                        Marcar atendida
+                      </x-ui.button>
+                    </form>
+                  @endif
                 </div>
               </td>
             </tr>
