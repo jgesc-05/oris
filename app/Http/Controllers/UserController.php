@@ -121,14 +121,11 @@ class UserController extends Controller
     {
         switch ($roleId) {
             case 1:
-                //Administrador
-                return redirect()->intended(route('admin.dashboard'));
+                return to_route('admin.dashboard');
             case 2:
-                //Médico
-                return redirect()->intended(route('medico.dashboard'));
+                return to_route('medico.dashboard');
             case 3:
-                //Secretaria
-                return redirect()->intended(route('secretaria.inicio'));
+                return to_route('secretaria.inicio');
             default:
                 Auth::logout();
                 return redirect('/login')->withErrors(['error' => 'Rol de usuario inválido.']);
