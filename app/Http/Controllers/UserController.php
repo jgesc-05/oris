@@ -233,7 +233,7 @@ class UserController extends Controller
             'nombres' => 'required|string|max:50',
             'apellidos' => 'required|string|max:50',
             'correo_electronico' => 'required|email|unique:users,correo_electronico,' . $user->id_usuario . ',id_usuario',
-            'id_tipo_usuario' => 'required|in:1,2,3',
+            'id_tipo_usuario' => 'required|exists:user_types,id_tipo_usuario',
             'id_tipo_documento' => 'required|exists:document_type,id_tipo_documento',
             'numero_documento' => 'required|string|max:30|unique:users,numero_documento,' . $user->id_usuario . ',id_usuario',
             'telefono' => 'nullable|string|max:20',

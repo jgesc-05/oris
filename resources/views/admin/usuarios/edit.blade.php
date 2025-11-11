@@ -35,7 +35,7 @@
         <h2 class="text-lg font-semibold text-neutral-700 border-b pb-2">Documento de identidad</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {{-- Tipo de documento --}}
-          <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
+          <x-form.select name="id_tipo_documento" label="Tipo de documento">
             <option value="">-- Seleccionar --</option>
             @foreach($tiposDocumento as $tipo)
               <option value="{{ $tipo->id_tipo_documento }}" 
@@ -47,7 +47,7 @@
 
           {{-- Número de documento --}}
           <x-form.input name="numero_documento" label="Número de documento" 
-            value="{{ old('numero_documento', $user->numero_documento) }}" required />
+            value="{{ old('numero_documento', $user->numero_documento) }}"  />
         </div>
       </div>
 
@@ -59,11 +59,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {{-- Nombres --}}
           <x-form.input name="nombres" label="Nombres" 
-            value="{{ old('nombres', $user->nombres) }}" required />
+            value="{{ old('nombres', $user->nombres) }}" />
 
           {{-- Apellidos --}}
           <x-form.input name="apellidos" label="Apellidos" 
-            value="{{ old('apellidos', $user->apellidos) }}" required />
+            value="{{ old('apellidos', $user->apellidos) }}"  />
         </div>
       </div>
 
@@ -77,7 +77,6 @@
           <x-form.select 
             name="id_tipo_usuario" 
             label="Rol del usuario" 
-            required 
             id="tipo_usuario" 
             onchange="toggleDynamicFields(this.value)"
           >
@@ -92,7 +91,7 @@
 
           {{-- Fecha de nacimiento --}}
           <x-form.input type="date" name="fecha_nacimiento" label="Fecha de nacimiento" 
-            value="{{ old('fecha_nacimiento', $user->fecha_nacimiento ? \Carbon\Carbon::parse($user->fecha_nacimiento)->format('Y-m-d') : '') }}" required/>
+            value="{{ old('fecha_nacimiento', $user->fecha_nacimiento ? \Carbon\Carbon::parse($user->fecha_nacimiento)->format('Y-m-d') : '') }}" />
         </div>
       </div>
       
@@ -104,7 +103,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {{-- Especialidad MÉDICA (Dinámico desde BD) --}}
-          <x-form.select name="id_especialidad" label="Especialidad médica" required>
+          <x-form.select name="id_especialidad" label="Especialidad médica" >
             @foreach($especialidades as $esp)
               <option value="{{ $esp->id_especialidad }}"
                 {{ old('id_tipos_especialidad', optional($user->doctor)->id_tipos_especialidad) == $esp->id_tipos_especialidad ? 'selected' : '' }}>
@@ -115,19 +114,19 @@
 
           {{-- Tarjeta profesional / Licencia (Datos del médico) --}}
           <x-form.input name="numero_tarjeta_profesional" label="Tarjeta profesional / Licencia"
-            value="{{ old('numero_tarjeta_profesional', optional($user->doctor)->numero_licencia) }}" required />
+            value="{{ old('numero_tarjeta_profesional', optional($user->doctor)->numero_licencia) }}" />
             
           {{-- Universidad (Datos del médico) --}}
           <x-form.input name="universidad" label="Universidad"
-            value="{{ old('universidad', optional($user->doctor)->universidad) }}" required />
+            value="{{ old('universidad', optional($user->doctor)->universidad) }}" />
             
           {{-- Experiencia () --}}
           <x-form.input name="experiencia" label="Experiencia"
-            value="{{ old('experiencia', optional($user->doctor)->experiencia) }}" required/>
+            value="{{ old('experiencia', optional($user->doctor)->experiencia) }}" />
         </div>
         
         {{-- Descripción profesional (Datos del médico) --}}
-        <x-form.textarea name="descripcion" label="Descripción profesional" rows="3" required>
+        <x-form.textarea name="descripcion" label="Descripción profesional" rows="3" >
           {{ old('descripcion', optional($user->doctor)->descripcion) }}
         </x-form.textarea>
       </div>
@@ -157,7 +156,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {{-- Correo electrónico --}}
           <x-form.input type="email" name="correo_electronico" label="Correo electrónico" 
-            value="{{ old('correo_electronico', $user->correo_electronico) }}" required />
+            value="{{ old('correo_electronico', $user->correo_electronico) }}"  />
 
           {{-- Contraseña --}}
           <x-form.input type="password" name="password" label="Contraseña" 
@@ -194,23 +193,34 @@
 
   {{-- Script de JavaScript para la lógica dinámica --}}
   <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const tipoUsuarioSelect = document.getElementById('tipo_usuario');
+    const medicaSection = document.getElementById('medica-section');
+    const credencialesSection = document.getElementById('credenciales-section');
+    const medicaRequiredFields = medicaSection.querySelectorAll('input[required], select[required], textarea[required]');
+
     function toggleDynamicFields(value) {
-      const medicaSection = document.getElementById('medica-section');
-      const credencialesSection = document.getElementById('credenciales-section');
+      if (value == 2) {
+        // Mostrar sección médica y activar required
+        medicaSection.style.display = 'block';
+        medicaRequiredFields.forEach(f => f.setAttribute('required', true));
+      } else {
+        // Ocultar y desactivar required
+        medicaSection.style.display = 'none';
+        medicaRequiredFields.forEach(f => f.removeAttribute('required'));
+      }
 
-      // 1. Mostrar/Ocultar Información Médica (Rol 2: Médico)
-      medicaSection.style.display = (value == 2) ? 'block' : 'none';
-
-      // 2. Mostrar/Ocultar Credenciales de Acceso (Rol 4: Paciente)
+      // Sección credenciales (solo visible si no es paciente)
       credencialesSection.style.display = (value == 4) ? 'none' : 'block';
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const tipoUsuarioSelect = document.getElementById('tipo_usuario');
-      // Aseguramos que el estado inicial se refleje al cargar la página (útil tras errores de validación)
-      if (tipoUsuarioSelect) {
-        toggleDynamicFields(tipoUsuarioSelect.value);
-      }
+    // Inicializar al cargar la página
+    toggleDynamicFields(tipoUsuarioSelect.value);
+
+    // Escuchar cambios en el select
+    tipoUsuarioSelect.addEventListener('change', function () {
+      toggleDynamicFields(this.value);
     });
-  </script>
+  });
+</script>
 @endsection

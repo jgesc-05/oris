@@ -26,7 +26,9 @@ $currentDate = \Carbon\Carbon::now()->translatedFormat('l, j \d\e F');
         <x-ui.card class="text-center bg-neutral-50 hover:bg-neutral-100 cursor-pointer">
           <div class="flex flex-col items-center gap-2">
             <div class="w-12 h-12 rounded-xl border border-neutral-300 flex items-center justify-center text-neutral-700">👤</div>
-            <div class="text-sm font-medium text-neutral-900">Crear<br>usuario</div>
+            <div class="text-sm font-medium text-neutral-900">
+              <a href="{{ route('admin.usuarios.create') }}">Crear<br>usuario</a>
+            </div>
           </div>
         </x-ui.card>
 
