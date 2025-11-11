@@ -48,12 +48,18 @@ class UserController extends Controller
 
 
             // Campos de doctor
-            'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
-            'universidad' => 'required|string|max:100',
-            'numero_licencia' => 'required|string|max:50',
-            'descripcion' => 'required|string',
-            'experiencia' => 'nullable|integer',
         ]);
+
+        if ($request->id_tipo_usuario == 2)
+        {
+            $request->validate([
+                'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
+                'universidad' => 'required|string|max:100',
+                'numero_licencia' => 'required|string|max:50',
+                'descripcion' => 'required|string',
+                'experiencia' => 'required|integer',
+            ]);
+        }
 
         // Creación
         $user = User::create([
@@ -262,7 +268,7 @@ class UserController extends Controller
                 'universidad' => 'required|string|max:100',
                 'numero_licencia' => 'required|string|max:50',
                 'descripcion' => 'required|string',
-                'experiencia' => 'nullable|integer',
+                'experiencia' => 'required|integer',
             ]);
     
             // Crear o actualizar el registro del doctor
