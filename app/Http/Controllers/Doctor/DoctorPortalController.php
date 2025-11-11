@@ -151,4 +151,39 @@ class DoctorPortalController extends Controller
             'timeline'
         ));
     }
+
+    public function agenda(Request $request)
+    {
+        $doctor = Auth::user();
+
+        $filters = [
+            'fecha' => $request->input('fecha', now()->toDateString()),
+            'estado' => $request->input('estado'),
+            'paciente' => $request->input('paciente'),
+        ];
+
+        $query = Appointment::with(['paciente', 'servicio'])
+            ->where('id_usuario_medico', $doctor->id_usuario)
+            ->orderBy('fecha_hora_inicio');
+
+        if (!empty($filters['fecha'])) {
+            $query->whereDate('fecha_hora_inicio', $filters['fecha']);
+        }
+
+        if (!empty($filters['estado'])) {
+            $query->where('estado', $filters['estado']);
+        }
+
+        if (!empty($filters['paciente'])) {
+            $query->whereHas('paciente', function ($q) use ($filters) {
+                $q->where('nombres', 'like', '%'.$filters['paciente'].'%')
+                    ->orWhere('apellidos', 'like', '%'.$filters['paciente'].'%')
+                    ->orWhere('numero_documento', 'like', '%'.$filters['paciente'].'%');
+            });
+        }
+
+        $appointments = $query->get();
+
+        return view('medico.agenda.index', compact('appointments', 'filters'));
+    }
 }

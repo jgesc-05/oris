@@ -167,6 +167,7 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth', 'ro
 Route::prefix('medico')->name('medico.')->middleware(['web', 'auth', 'role:medico'])->group(function () {
     Route::get('inicio', [DoctorPortalController::class, 'dashboard'])->name('dashboard');
     Route::get('dashboard', fn () => redirect()->route('medico.dashboard'));
+    Route::get('agenda', [DoctorPortalController::class, 'agenda'])->name('agenda');
 
     Route::prefix('pacientes')->name('pacientes.')->group(function () {
         Route::get('/', [DoctorPortalController::class, 'patientsIndex'])->name('index');
