@@ -11,13 +11,53 @@ use Illuminate\Support\Str;
 
 class SecretaryPatientController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $patients = User::whereHas('userType', function ($query) {
-            $query->where('nombre', 'Paciente');
-        })->latest('created_at')->paginate(10);
+        $filters = [
+            'q' => $request->input('q'),
+            'estado' => $request->input('estado'),
+            'fecha' => $request->input('fecha'),
+        ];
 
-        return view('secretaria.pacientes.index', compact('patients'));
+        $patientsQuery = User::whereHas('userType', function ($query) {
+            $query->where('nombre', 'Paciente');
+        });
+
+        if (!empty($filters['q'])) {
+            $patientsQuery->where(function ($query) use ($filters) {
+                $query->where('nombres', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('apellidos', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('correo_electronico', 'like', '%' . $filters['q'] . '%')
+                    ->orWhere('numero_documento', 'like', '%' . $filters['q'] . '%');
+            });
+        }
+
+        if (!empty($filters['estado'])) {
+            $patientsQuery->where('estado', $filters['estado']);
+        }
+
+        if (!empty($filters['fecha'])) {
+            $now = now();
+
+            switch ($filters['fecha']) {
+                case 'hoy':
+                    $patientsQuery->whereDate('created_at', $now->toDateString());
+                    break;
+                case '7d':
+                    $patientsQuery->whereBetween('created_at', [$now->copy()->subDays(7), $now]);
+                    break;
+                case '30d':
+                    $patientsQuery->whereBetween('created_at', [$now->copy()->subDays(30), $now]);
+                    break;
+            }
+        }
+
+        $patients = $patientsQuery
+            ->latest('created_at')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('secretaria.pacientes.index', compact('patients', 'filters'));
     }
 
     public function show(User $patient)
@@ -46,27 +86,27 @@ class SecretaryPatientController extends Controller
 
         $data = $request->validate([
             'id_tipo_documento' => ['required', 'string', 'max:3'],
-            'numero_documento'  => ['required', 'string', 'max:20', 'unique:users,numero_documento'],
-            'nombres'           => ['required', 'string', 'max:100'],
-            'apellidos'         => ['required', 'string', 'max:100'],
-            'fecha_nacimiento'  => ['required', 'date'],
-            'correo_electronico'=> ['required', 'email', 'unique:users,correo_electronico'],
-            'telefono'          => ['nullable', 'string', 'max:20'],
-            'observaciones'     => ['nullable', 'string', 'max:255'],
+            'numero_documento' => ['required', 'string', 'max:20', 'unique:users,numero_documento'],
+            'nombres' => ['required', 'string', 'max:100'],
+            'apellidos' => ['required', 'string', 'max:100'],
+            'fecha_nacimiento' => ['required', 'date'],
+            'correo_electronico' => ['required', 'email', 'unique:users,correo_electronico'],
+            'telefono' => ['nullable', 'string', 'max:20'],
+            'observaciones' => ['nullable', 'string', 'max:255'],
         ]);
 
         $patient = User::create([
-            'id_tipo_usuario'   => $patientTypeId,
+            'id_tipo_usuario' => $patientTypeId,
             'id_tipo_documento' => $data['id_tipo_documento'],
-            'numero_documento'  => $data['numero_documento'],
-            'nombres'           => $data['nombres'],
-            'apellidos'         => $data['apellidos'],
-            'fecha_nacimiento'  => $data['fecha_nacimiento'],
-            'correo_electronico'=> $data['correo_electronico'],
-            'telefono'          => $data['telefono'] ?? null,
-            'observaciones'     => $data['observaciones'] ?? null,
-            'estado'            => 'activo',
-            'password'          => Str::random(12),
+            'numero_documento' => $data['numero_documento'],
+            'nombres' => $data['nombres'],
+            'apellidos' => $data['apellidos'],
+            'fecha_nacimiento' => $data['fecha_nacimiento'],
+            'correo_electronico' => $data['correo_electronico'],
+            'telefono' => $data['telefono'] ?? null,
+            'observaciones' => $data['observaciones'] ?? null,
+            'estado' => 'activo',
+            'password' => Str::random(12),
         ]);
 
         return redirect()

@@ -17,27 +17,36 @@
         </header>
 
         <x-ui.card class="mb-4">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">
+            <form method="GET" class="grid grid-cols-1 lg:grid-cols-4 gap-3">
                 <div class="lg:col-span-2">
                     <label class="form-label" for="q">Buscar</label>
                     <div class="relative">
-                        <input id="q" type="text" placeholder="Nombre, documento o correo"
-                            class="form-control pl-10" />
+                        <input id="q" name="q" type="text" placeholder="Nombre, documento o correo"
+                            class="form-control pl-10" value="{{ $filters['q'] ?? '' }}" />
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">🔎</span>
                     </div>
                 </div>
                 <x-form.select name="estado" label="Estado">
                     <option value="">Todos</option>
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
+                    <option value="activo" @selected(($filters['estado'] ?? '') === 'activo')>Activo</option>
+                    <option value="inactivo" @selected(($filters['estado'] ?? '') === 'inactivo')>Inactivo</option>
                 </x-form.select>
                 <x-form.select name="fecha" label="Fecha de registro">
                     <option value="">Todos</option>
-                    <option value="hoy">Hoy</option>
-                    <option value="7d">Últimos 7 días</option>
-                    <option value="30d">Últimos 30 días</option>
+                    <option value="hoy" @selected(($filters['fecha'] ?? '') === 'hoy')>Hoy</option>
+                    <option value="7d" @selected(($filters['fecha'] ?? '') === '7d')>Últimos 7 días</option>
+                    <option value="30d" @selected(($filters['fecha'] ?? '') === '30d')>Últimos 30 días</option>
                 </x-form.select>
-            </div>
+                <div class="flex flex-wrap items-end gap-2">
+                    <x-ui.button type="submit" variant="primary" size="md" class="rounded-full px-6">
+                        Filtrar
+                    </x-ui.button>
+                    <x-ui.button variant="ghost" size="md" class="rounded-full px-6"
+                        :href="route('secretaria.pacientes.index')">
+                        Limpiar
+                    </x-ui.button>
+                </div>
+            </form>
         </x-ui.card>
 
         <x-ui.card class="p-0 overflow-x-auto">
