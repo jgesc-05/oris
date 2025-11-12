@@ -84,7 +84,7 @@
           <a href="{{ $url }}">
               <x-ui.badge
                   @class([
-                      'bg-blue-500 text-white border border-blue-500' => $page == $specialties->currentPage(),
+                      'bg-blue-500 text-black border border-blue-500' => $page == $specialties->currentPage(),
                       'hover:bg-blue-100 transition cursor-pointer' => $page != $specialties->currentPage(),
                   ])>
                   {{ $page }}

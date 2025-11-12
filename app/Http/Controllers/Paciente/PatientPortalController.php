@@ -468,7 +468,7 @@ class PatientPortalController extends Controller
 
         $appointments = $this->patientAppointmentsQuery()
             ->orderByDesc('fecha_hora_inicio')
-            ->get();
+            ->paginate(10);
 
         return view('paciente.citas.index', compact('patient', 'appointments'));
     }
