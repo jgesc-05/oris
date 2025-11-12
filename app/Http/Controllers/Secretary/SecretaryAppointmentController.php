@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\Service;
 use App\Models\Specialty;
 use App\Models\User;
+use App\Models\DocumentType;
 use App\Services\AppointmentAvailabilityService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -52,8 +53,11 @@ class SecretaryAppointmentController extends Controller
 
     protected function showLookupForm(string $action)
     {
+        $documentTypes = DocumentType::orderBy('name')->get();
+
         return view('secretaria.citas.index', [
             'action' => $action,
+            'documentTypes' => $documentTypes,
         ]);
     }
 
