@@ -112,7 +112,7 @@
                         <span class="form-required">*</span>
                     </label>
                     <input type="password" id="password" name="password" class="form-control pe-5"
-                        autocomplete="new-password" required>
+                        autocomplete="new-password" >
 
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)"
                         style="position: absolute; right: 10px; top: 36px; background: none; border: none; cursor: pointer;">
@@ -144,7 +144,7 @@
                         <span class="form-required">*</span>
                     </label>
                     <input type="password" id="password_confirmation" name="password_confirmation"
-                        class="form-control pe-5" autocomplete="new-password" required>
+                        class="form-control pe-5" autocomplete="new-password" >
 
                     <button type="button" class="toggle-password"
                         onclick="togglePassword('password_confirmation', this)"

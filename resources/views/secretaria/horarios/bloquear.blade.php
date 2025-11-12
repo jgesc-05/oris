@@ -39,7 +39,7 @@
                 data-initial-doctor="{{ old('medico_id') }}" data-initial-date="{{ $oldFecha }}"
                 data-initial-start="{{ $oldHoraDesde }}" data-initial-end="{{ $oldHoraHasta }}">
                 @csrf
-                <x-form.select name="medico_id" label="Médico" required>
+                <x-form.select name="medico_id" label="Médico">
                     <option value="">-- Seleccionar --</option>
                     @foreach ($medicos as $medico)
                         <option value="{{ $medico->id_usuario }}" @selected(old('medico_id') == $medico->id_usuario)>
@@ -48,7 +48,7 @@
                     @endforeach
                 </x-form.select>
 
-                <x-form.select name="fecha" label="Fecha" required :disabled="!old('medico_id')">
+                <x-form.select name="fecha" label="Fecha"  :disabled="!old('medico_id')">
                     <option value="">{{ old('medico_id') ? 'Selecciona un médico' : 'Selecciona un médico' }}
                     </option>
                     @if ($oldFecha)
@@ -58,7 +58,7 @@
                     @endif
                 </x-form.select>
 
-                <x-form.select name="hora_desde" label="Desde" required :disabled="!$oldFecha">
+                <x-form.select name="hora_desde" label="Desde"  :disabled="!$oldFecha">
                     <option value="">
                         {{ $oldFecha ? 'Selecciona una hora de inicio' : 'Selecciona una hora de inicio' }}
                     </option>
@@ -69,7 +69,7 @@
                     @endif
                 </x-form.select>
 
-                <x-form.select name="hora_hasta" label="Hasta" required :disabled="!$oldHoraDesde">
+                <x-form.select name="hora_hasta" label="Hasta" :disabled="!$oldHoraDesde">
                     <option value="">
                         {{ $oldHoraDesde ? 'Selecciona una hora de fin' : 'Selecciona una hora de fin ?>' }}
                     </option>

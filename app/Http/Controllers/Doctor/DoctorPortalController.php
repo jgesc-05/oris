@@ -142,7 +142,7 @@ class DoctorPortalController extends Controller
             ->sortBy('fecha_hora_inicio')
             ->first();
 
-        $timeline = $appointments->paginate(6);
+        $timeline = $appointments->take(6);
 
         return view('medico.pacientes.show', compact(
             'patient',

@@ -34,7 +34,6 @@
             name="nombre"
             label="Nombre"
             placeholder="Medicina general"
-            required
             autocomplete="off"
             :error="$errors->first('nombre')"
           />

@@ -33,7 +33,7 @@
             @csrf
 
             {{-- Tipo de documento --}}
-            <x-form.select name="id_tipo_documento" label="Tipo de documento" required :placeholder="null">
+            <x-form.select name="id_tipo_documento" label="Tipo de documento"  :placeholder="null">
                 @foreach ($documentTypes ?? [] as $documentType)
                     <option value="{{ $documentType->id_tipo_documento }}" @selected(old('id_tipo_documento') == $documentType->id_tipo_documento)>
                         {{ $documentType->name }}
@@ -42,11 +42,11 @@
             </x-form.select>
 
             {{-- Número de documento --}}
-            <x-form.input name="numero_documento" label="Número de documento" required inputmode="numeric"
+            <x-form.input name="numero_documento" label="Número de documento"  inputmode="numeric"
                 autocomplete="username" />
 
             {{-- Fecha de nacimiento --}}
-            <x-form.input name="fecha_nacimiento" label="Fecha de nacimiento" type="date" required autocomplete="bday"
+            <x-form.input name="fecha_nacimiento" label="Fecha de nacimiento" type="date" autocomplete="bday"
                 min="1900-01-01" max="{{ now()->format('Y-m-d') }}" />
 
             <p class="text-sm text-neutral-600">

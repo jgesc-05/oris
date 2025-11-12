@@ -11,6 +11,22 @@
       : url('/login');
   @endphp
 
+            @if (session('status'))
+                <x-ui.alert variant="success" class="mb-4">
+                    {{ session('status') }}
+                </x-ui.alert>
+            @endif
+
+            @if ($errors->any())
+                <x-ui.alert variant="warning" class="mb-4">
+                    <ul class="space-y-1 list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-ui.alert>
+            @endif
+
   <div class="max-w-xl mx-auto">
     <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Iniciar sesión</h1>
 
@@ -23,7 +39,6 @@
         type="email"
         label="Correo electrónico"
         placeholder=""
-        required
         autocomplete="username"
         value="{{ old('correo_electronico') }}"
         :error="$errors->first('correo_electronico')"
@@ -35,7 +50,6 @@
         type="password"
         label="Contraseña"
         placeholder=""
-        required
         autocomplete="current-password"
         :error="$errors->first('password')"
       />

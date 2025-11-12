@@ -20,9 +20,9 @@ class ServiceController extends Controller
         $request->validate([
             'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
             'nombre' => 'required|string|max:255',
-            'duracion' => 'nullable|string|max:255',
-            'precio_base' => 'nullable|numeric',
-            'descripcion' => 'nullable|string',
+            'duracion' => 'required|string|max:255',
+            'precio_base' => 'required|numeric',
+            'descripcion' => 'required|string',
         ]);
         
         Service::create([
@@ -94,9 +94,9 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'id_tipos_especialidad' => 'required|exists:specialty_type,id_tipos_especialidad',
             'nombre' => 'required|string|max:255',
-            'duracion' => 'nullable|string|max:255',
-            'precio_base' => 'nullable|numeric',
-            'descripcion' => 'nullable|string',
+            'duracion' => 'required|string|max:255',
+            'precio_base' => 'required|numeric',
+            'descripcion' => 'required|string',
             'estado' => 'required|in:activo,inactivo',
         ]);
 
