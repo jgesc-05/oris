@@ -15,7 +15,7 @@ class SecretaryPatientController extends Controller
     {
         $patients = User::whereHas('userType', function ($query) {
             $query->where('nombre', 'Paciente');
-        })->latest('created_at')->take(10)->get();
+        })->latest('created_at')->paginate(10);
 
         return view('secretaria.pacientes.index', compact('patients'));
     }
