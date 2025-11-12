@@ -15,6 +15,22 @@
       : url('/paciente/login');
   @endphp
 
+            @if (session('status'))
+                <x-ui.alert variant="success" class="mb-4">
+                    {{ session('status') }}
+                </x-ui.alert>
+            @endif
+
+            @if ($errors->any())
+                <x-ui.alert variant="warning" class="mb-4">
+                    <ul class="space-y-1 list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </x-ui.alert>
+            @endif
+
   <div class="max-w-4xl mx-auto">
     <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 mb-6">Registro</h1>
 
@@ -23,7 +39,7 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de documento --}}
-        <x-form.select name="id_tipo_documento" label="Tipo de documento" required :placeholder="null">
+        <x-form.select name="id_tipo_documento" label="Tipo de documento"  :placeholder="null">
           @foreach (($documentTypes ?? []) as $documentType)
             <option value="{{ $documentType->id_tipo_documento }}"
               @selected(old('id_tipo_documento') == $documentType->id_tipo_documento)>
@@ -38,7 +54,6 @@
           name="numero_documento"
           label="Número de documento"
           placeholder=""
-          required
           inputmode="numeric"
           autocomplete="username"
           value="{{ old('numero_documento') }}"
@@ -49,7 +64,6 @@
           name="nombres"
           label="Nombres"
           placeholder=""
-          required
           autocomplete="given-name"
           value="{{ old('nombres') }}"
         />
@@ -59,7 +73,6 @@
           name="apellidos"
           label="Apellidos"
           placeholder=""
-          required
           autocomplete="family-name"
           value="{{ old('apellidos') }}"
         />
@@ -69,7 +82,6 @@
           name="fecha_nacimiento"
           label="Fecha de nacimiento"
           type="date"
-          required
           autocomplete="bday"
           min="1900-01-01"
           max="{{ now()->format('Y-m-d') }}"
@@ -84,7 +96,6 @@
         placeholder=""
         autocomplete="email"
         value="{{ old('correo_electronico') }}"
-        required
         />
 
         {{-- Teléfono --}}
@@ -106,15 +117,7 @@
         />
       </div>
 
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+
 
 @error('title')
     <div class="alert alert-danger">{{ $message }}</div>

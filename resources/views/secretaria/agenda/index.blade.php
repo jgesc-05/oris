@@ -11,8 +11,6 @@
                     Consulta y gestiona las citas programadas. Puedes filtrar por fecha o estado.
                 </p>
             </div>
-
-
         </header>
 
         @if (session('status'))
@@ -39,7 +37,7 @@
                 </x-form.select>
 
                 <x-form.input name="paciente" label="Paciente" placeholder="Nombre o documento" :value="$filters['paciente']" />
-                <br>
+                
                 <div class="flex items-end gap-2">
                     <x-ui.button variant="primary" size="md" class="rounded-full px-6">Filtrar</x-ui.button>
                     <x-ui.button variant="ghost" size="md" class="rounded-full px-6" :href="route('secretaria.agenda')">
@@ -66,7 +64,8 @@
                     @forelse ($appointments as $entry)
                         <tr class="hover:bg-neutral-50 transition">
                             <td class="px-4 py-3">
-                                {{ $entry->fecha_hora_inicio->locale('es')->translatedFormat('d \\d\\e F') }}</td>
+                                {{ $entry->fecha_hora_inicio->locale('es')->translatedFormat('d \\d\\e F') }}
+                            </td>
                             <td class="px-4 py-3">{{ $entry->fecha_hora_inicio->format('h:i A') }}</td>
                             <td class="px-4 py-3">{{ $entry->paciente?->nombres }} {{ $entry->paciente?->apellidos }}</td>
                             <td class="px-4 py-3">{{ $entry->servicio?->nombre }}</td>
@@ -120,6 +119,44 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{-- Paginación IDÉNTICA a la de Pacientes --}}
+    <div class="mt-4 flex items-center justify-center gap-2">
+        {{-- Botón anterior --}}
+        @if ($appointments->onFirstPage())
+            <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+        @else
+            <a href="{{ $appointments->previousPageUrl() }}">
+                <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+            </a>
+        @endif
+
+        {{-- Números de página --}}
+        @foreach ($appointments->getUrlRange(1, $appointments->lastPage()) as $page => $url)
+            <a href="{{ $url }}">
+                <x-ui.badge
+                    @class([
+                        'bg-blue-500 text-black border border-blue-500' => $page == $appointments->currentPage(),
+                        'hover:bg-blue-100 transition cursor-pointer' => $page != $appointments->currentPage(),
+                    ])>
+                    {{ $page }}
+                </x-ui.badge>
+            </a>
+        @endforeach
+
+        {{-- Botón siguiente --}}
+        @if ($appointments->hasMorePages())
+            <a href="{{ $appointments->nextPageUrl() }}">
+                <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+            </a>
+        @else
+            <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+        @endif
+    </div>
+
+    <p class="text-sm text-neutral-500 text-center mt-2">
+        Mostrando {{ $appointments->firstItem() }}–{{ $appointments->lastItem() }} de {{ $appointments->total() }} citas
+    </p>
         </x-ui.card>
     </div>
 @endsection

@@ -27,7 +27,7 @@
                 class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @csrf
 
-                <x-form.select name="id_tipo_documento" label="Tipo de documento" required :placeholder="null">
+                <x-form.select name="id_tipo_documento" label="Tipo de documento"  :placeholder="null">
                     @foreach ($documentTypes ?? [] as $documentType)
                         <option value="{{ $documentType->id_tipo_documento }}" @selected(old('id_tipo_documento') == $documentType->id_tipo_documento)>
                             {{ $documentType->name }}
@@ -35,17 +35,17 @@
                     @endforeach
                 </x-form.select>
 
-                <x-form.input name="numero_documento" label="Número de documento" required
+                <x-form.input name="numero_documento" label="Número de documento" 
                     value="{{ old('numero_documento') }}" />
 
-                <x-form.input name="nombres" label="Nombres" required value="{{ old('nombres') }}" />
+                <x-form.input name="nombres" label="Nombres" value="{{ old('nombres') }}" />
 
-                <x-form.input name="apellidos" label="Apellidos" required value="{{ old('apellidos') }}" />
+                <x-form.input name="apellidos" label="Apellidos"  value="{{ old('apellidos') }}" />
 
-                <x-form.input type="date" name="fecha_nacimiento" label="Fecha de nacimiento" required
+                <x-form.input type="date" name="fecha_nacimiento" label="Fecha de nacimiento" 
                     value="{{ old('fecha_nacimiento') }}" max="{{ now()->toDateString() }}" />
 
-                <x-form.input type="email" name="correo_electronico" label="Correo electrónico" required
+                <x-form.input type="email" name="correo_electronico" label="Correo electrónico" 
                     value="{{ old('correo_electronico') }}" />
 
                 <x-form.input name="telefono" label="Teléfono" value="{{ old('telefono') }}" />

@@ -33,7 +33,7 @@
             @csrf
 
             {{-- Especialidad --}}
-            <x-form.select name="id_tipos_especialidad" label="Especialidad" required id="select-especialidad">
+            <x-form.select name="id_tipos_especialidad" label="Especialidad"  id="select-especialidad">
                 @foreach ($specialties as $specialty)
                     <option value="{{ $specialty->id_tipos_especialidad }}" @selected($selectedSpecialty == $specialty->id_tipos_especialidad)>
                         {{ $specialty->nombre }}
@@ -42,7 +42,7 @@
             </x-form.select>
 
             {{-- Servicio --}}
-            <x-form.select name="id_servicio" label="Servicio" required id="select-servicio" disabled>
+            <x-form.select name="id_servicio" label="Servicio"  id="select-servicio" disabled>
                 <option value="">-- Seleccionar --</option>
                 @foreach ($serviceOptions as $service)
                     <option value="{{ $service->id_servicio }}" @selected(old('id_servicio') == $service->id_servicio)>
@@ -52,7 +52,7 @@
             </x-form.select>
 
             {{-- Médico --}}
-            <x-form.select name="id_usuario_medico" label="Médico" required class="md:col-span-2" id="select-medico"
+            <x-form.select name="id_usuario_medico" label="Médico"  class="md:col-span-2" id="select-medico"
                 disabled>
                 <option value="">-- Seleccionar --</option>
                 @foreach ($doctors as $doctor)
@@ -63,12 +63,12 @@
             </x-form.select>
 
             {{-- Fecha --}}
-            <x-form.select name="fecha" label="Fecha" required id="select-fecha" disabled>
+            <x-form.select name="fecha" label="Fecha" id="select-fecha" disabled>
                 <option value="">Selecciona un médico</option>
             </x-form.select>
 
             {{-- Hora --}}
-            <x-form.select name="hora" label="Hora" required id="select-hora" disabled>
+            <x-form.select name="hora" label="Hora"  id="select-hora" disabled>
                 <option value="">Selecciona una fecha</option>
             </x-form.select>
 

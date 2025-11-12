@@ -42,7 +42,7 @@
             @method('PUT')
 
             {{-- Especialidad --}}
-            <x-form.select name="id_tipos_especialidad" label="Especialidad" required>
+            <x-form.select name="id_tipos_especialidad" label="Especialidad" >
                 @foreach ($specialties as $specialty)
                     <option value="{{ $specialty->id_tipos_especialidad }}" @selected($selectedSpecialty == $specialty->id_tipos_especialidad)>
                         {{ $specialty->nombre }}
@@ -51,7 +51,7 @@
             </x-form.select>
 
             {{-- Servicio --}}
-            <x-form.select name="id_servicio" label="Servicio" required :disabled="!$selectedSpecialty">
+            <x-form.select name="id_servicio" label="Servicio"  :disabled="!$selectedSpecialty">
                 <option value="">-- Seleccionar --</option>
                 @foreach ($serviceOptions as $service)
                     <option value="{{ $service->id_servicio }}" @selected($selectedService == $service->id_servicio)>
@@ -61,7 +61,7 @@
             </x-form.select>
 
             {{-- Médico --}}
-            <x-form.select name="id_usuario_medico" label="Médico" required class="md:col-span-2" :disabled="!$selectedSpecialty">
+            <x-form.select name="id_usuario_medico" label="Médico" class="md:col-span-2" :disabled="!$selectedSpecialty">
                 <option value="">-- Seleccionar --</option>
                 @foreach ($doctors as $doctor)
                     <option value="{{ $doctor->id_usuario }}" @selected($selectedDoctor == $doctor->id_usuario)>
@@ -71,12 +71,12 @@
             </x-form.select>
 
             {{-- Fecha --}}
-            <x-form.select name="fecha" label="Fecha" required :disabled="!$selectedDoctor">
+            <x-form.select name="fecha" label="Fecha" :disabled="!$selectedDoctor">
                 <option value="">{{ $selectedDoctor ? 'Cargando…' : 'Selecciona un médico' }}</option>
             </x-form.select>
 
             {{-- Hora --}}
-            <x-form.select name="hora" label="Hora" required :disabled="!$selectedDate">
+            <x-form.select name="hora" label="Hora"  :disabled="!$selectedDate">
                 <option value="">{{ $selectedDate ? 'Cargando…' : 'Selecciona una fecha' }}</option>
             </x-form.select>
 

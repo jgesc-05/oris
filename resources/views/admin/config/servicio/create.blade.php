@@ -7,6 +7,16 @@
     subtitle="Registra un nuevo servicio dentro de una especialidad existente. Define su duración y precio base."
     class="max-w-4xl"
   >
+
+  @if ($errors->any())
+  <x-ui.alert variant="warning" title="Ocurrieron algunos errores:">
+    <ul class="list-disc list-inside space-y-1">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </x-ui.alert>
+@endif
     <form method="POST" action="{{ route('admin.config.servicio.store') }}" class="mt-2">
       @csrf
 
@@ -14,7 +24,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Tipo de especialidad --}}
         <div>
-          <x-form.select name="id_tipos_especialidad" label="Tipo de especialidad" required>
+          <x-form.select name="id_tipos_especialidad" label="Tipo de especialidad" >
             <option value="">-- Seleccionar --</option>
             @foreach ($specialties as $esp)
               <option value="{{ $esp->id_tipos_especialidad }}">
@@ -33,7 +43,6 @@
             name="nombre"
             label="Nombre"
             placeholder=""
-            required
           />
           <p class="text-xs text-neutral-500 mt-1">
             Nombre con el que aparecerá en el sistema.

@@ -36,7 +36,7 @@
       <form method="POST" action="{{ $submitRoute }}" class="space-y-4">
         @csrf
 
-        <x-form.select name="id_tipo_documento" label="Tipo de documento" required>
+        <x-form.select name="id_tipo_documento" label="Tipo de documento">
           <option value="1" @selected(old('id_tipo_documento')==='1')>Cédula de ciudadanía</option>
           <option value="TI" @selected(old('id_tipo_documento')==='TI')>Tarjeta de identidad</option>
           <option value="CE" @selected(old('id_tipo_documento')==='CE')>Cédula de extranjería</option>
@@ -46,7 +46,6 @@
         <x-form.input
           name="numero_documento"
           label="Número de documento"
-          required
           inputmode="numeric"
           value="{{ old('numero_documento') }}"
         />
@@ -55,7 +54,6 @@
           name="fecha_nacimiento"
           label="Fecha de nacimiento"
           type="date"
-          required
           value="{{ old('fecha_nacimiento') }}"
           max="{{ now()->toDateString() }}"
         />

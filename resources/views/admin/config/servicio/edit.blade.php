@@ -3,13 +3,23 @@
 
 @section('admin-content')
   <x-ui.card title="Editar servicio" subtitle="Modifica los datos del servicio." class="max-w-5xl">
+
+  @if ($errors->any())
+  <x-ui.alert variant="warning" title="Ocurrieron algunos errores:">
+    <ul class="list-disc list-inside space-y-1">
+      @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+      @endforeach
+    </ul>
+  </x-ui.alert>
+@endif
     <form method="POST" action="{{ route('admin.config.servicio.update', $service->id_servicio) }}" class="mt-2 space-y-4">
       @csrf
       @method('PUT')
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {{-- Especialidad --}}
-        <x-form.select name="id_tipos_especialidad" label="Especialidad" required>
+        <x-form.select name="id_tipos_especialidad" label="Especialidad" >
           @foreach($specialties as $specialty)
             <option value="{{ $specialty->id_tipos_especialidad }}"
                     {{ $service->id_tipos_especialidad == $specialty->id_tipos_especialidad ? 'selected' : '' }}>
@@ -18,7 +28,7 @@
           @endforeach
         </x-form.select>
 
-        <x-form.input name="nombre" label="Nombre del servicio" :value="$service->nombre" required />
+        <x-form.input name="nombre" label="Nombre del servicio" :value="$service->nombre"  />
 
         {{-- Duración y precio --}}
         <x-form.input name="duracion" label="Duración aproximada" :value="$service->duracion" />

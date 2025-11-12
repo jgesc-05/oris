@@ -72,7 +72,7 @@ class SecretaryPortalController extends Controller
             });
         }
 
-        $appointments = $query->get();
+        $appointments = $query->paginate(10);
 
         return view('secretaria.agenda.index', compact('appointments', 'filters'));
     }
