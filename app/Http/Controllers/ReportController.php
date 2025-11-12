@@ -29,7 +29,7 @@ class ReportController extends Controller
         $serviciosPorMedico = $medicos->mapWithKeys(function (Doctor $doctor) use ($servicios) {
             $serviciosFiltrados = $servicios
                 ->where('id_tipos_especialidad', $doctor->id_tipos_especialidad)
-                ->map(fn ($service) => [
+                ->map(fn($service) => [
                     'id' => $service->id_servicio,
                     'nombre' => $service->nombre,
                 ])
@@ -39,7 +39,7 @@ class ReportController extends Controller
         });
 
         // Todos los servicios (para opción "todos")
-        $serviciosList = $servicios->map(fn ($service) => [
+        $serviciosList = $servicios->map(fn($service) => [
             'id' => $service->id_servicio,
             'nombre' => $service->nombre,
         ])->values();
@@ -61,10 +61,14 @@ class ReportController extends Controller
             ->select('services.nombre as servicio', DB::raw('COUNT(*) as total'))
             ->groupBy('services.nombre');
 
-        if ($filtros['desde']) $queryServicios->whereDate('fecha_hora_inicio', '>=', $filtros['desde']);
-        if ($filtros['hasta']) $queryServicios->whereDate('fecha_hora_inicio', '<=', $filtros['hasta']);
-        if ($filtros['medico']) $queryServicios->where('id_usuario_medico', $filtros['medico']);
-        if ($filtros['servicio']) $queryServicios->where('appointments.id_servicio', $filtros['servicio']);
+        if ($filtros['desde'])
+            $queryServicios->whereDate('fecha_hora_inicio', '>=', $filtros['desde']);
+        if ($filtros['hasta'])
+            $queryServicios->whereDate('fecha_hora_inicio', '<=', $filtros['hasta']);
+        if ($filtros['medico'])
+            $queryServicios->where('id_usuario_medico', $filtros['medico']);
+        if ($filtros['servicio'])
+            $queryServicios->where('appointments.id_servicio', $filtros['servicio']);
 
         $serviciosChart = $queryServicios->get();
 
@@ -74,10 +78,14 @@ class ReportController extends Controller
             ->select(DB::raw("users.nombres as medico"), DB::raw('COUNT(*) as total'))
             ->groupBy('medico');
 
-        if ($filtros['desde']) $queryMedicos->whereDate('fecha_hora_inicio', '>=', $filtros['desde']);
-        if ($filtros['hasta']) $queryMedicos->whereDate('fecha_hora_inicio', '<=', $filtros['hasta']);
-        if ($filtros['medico']) $queryMedicos->where('id_usuario_medico', $filtros['medico']);
-        if ($filtros['servicio']) $queryMedicos->where('appointments.id_servicio', $filtros['servicio']);
+        if ($filtros['desde'])
+            $queryMedicos->whereDate('fecha_hora_inicio', '>=', $filtros['desde']);
+        if ($filtros['hasta'])
+            $queryMedicos->whereDate('fecha_hora_inicio', '<=', $filtros['hasta']);
+        if ($filtros['medico'])
+            $queryMedicos->where('id_usuario_medico', $filtros['medico']);
+        if ($filtros['servicio'])
+            $queryMedicos->where('appointments.id_servicio', $filtros['servicio']);
 
         $medicosChart = $queryMedicos->get();
 
