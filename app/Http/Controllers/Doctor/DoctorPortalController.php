@@ -83,7 +83,7 @@ class DoctorPortalController extends Controller
                 })
                 ->orderBy('nombres')
                 ->orderBy('apellidos')
-                ->get()
+                ->paginate(10)
             : collect();
 
         $latestAppointments = Appointment::where('id_usuario_medico', $doctor->id_usuario)
@@ -142,7 +142,7 @@ class DoctorPortalController extends Controller
             ->sortBy('fecha_hora_inicio')
             ->first();
 
-        $timeline = $appointments->take(6);
+        $timeline = $appointments->paginate(6);
 
         return view('medico.pacientes.show', compact(
             'patient',
@@ -188,7 +188,7 @@ class DoctorPortalController extends Controller
             });
         }
 
-        $appointments = $query->get();
+        $appointments = $query->paginate(10);
 
         return view('medico.agenda.index', compact('appointments', 'filters'));
     }

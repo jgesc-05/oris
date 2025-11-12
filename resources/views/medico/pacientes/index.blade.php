@@ -84,6 +84,46 @@
                     @endforelse
                 </tbody>
             </table>
+            {{-- Paginación funcional --}}
+@if ($patients instanceof \Illuminate\Pagination\LengthAwarePaginator && $patients->count())
+    <div class="mt-4 flex items-center justify-center gap-2">
+        {{-- Botón anterior --}}
+        @if ($patients->onFirstPage())
+            <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+        @else
+            <a href="{{ $patients->previousPageUrl() }}">
+                <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+            </a>
+        @endif
+
+        {{-- Números de página --}}
+        @foreach ($patients->getUrlRange(1, $patients->lastPage()) as $page => $url)
+            <a href="{{ $url }}">
+                <x-ui.badge
+                    @class([
+                        'bg-blue-500 text-white border border-blue-500' => $page == $patients->currentPage(),
+                        'hover:bg-blue-100 transition cursor-pointer' => $page != $patients->currentPage(),
+                    ])>
+                    {{ $page }}
+                </x-ui.badge>
+            </a>
+        @endforeach
+
+        {{-- Botón siguiente --}}
+        @if ($patients->hasMorePages())
+            <a href="{{ $patients->nextPageUrl() }}">
+                <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+            </a>
+        @else
+            <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+        @endif
+    </div>
+
+    <p class="text-sm text-neutral-500 text-center mt-2">
+        Mostrando {{ $patients->firstItem() }}–{{ $patients->lastItem() }} de {{ $patients->total() }} pacientes
+    </p>
+@endif
+
         </x-ui.card>
     </div>
 @endsection

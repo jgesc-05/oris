@@ -89,6 +89,43 @@
                     @endforelse
                 </tbody>
             </table>
-        </x-ui.card>
+            {{-- Paginación funcional --}}
+            <div class="mt-4 flex items-center justify-center gap-2">
+                {{-- Botón anterior --}}
+                @if ($appointments->onFirstPage())
+                    <x-ui.button variant="secondary" size="sm" disabled>‹</x-ui.button>
+                @else
+                    <a href="{{ $appointments->previousPageUrl() }}">
+                        <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">‹</x-ui.button>
+                    </a>
+                @endif
+
+                {{-- Números de página --}}
+                @foreach ($appointments->getUrlRange(1, $appointments->lastPage()) as $page => $url)
+                    <a href="{{ $url }}">
+                        <x-ui.badge
+                            @class([
+                                'bg-blue-500 text-white border border-blue-500' => $page == $appointments->currentPage(),
+                                'hover:bg-blue-100 transition cursor-pointer' => $page != $appointments->currentPage(),
+                            ])>
+                            {{ $page }}
+                        </x-ui.badge>
+                    </a>
+                @endforeach
+
+                {{-- Botón siguiente --}}
+                @if ($appointments->hasMorePages())
+                    <a href="{{ $appointments->nextPageUrl() }}">
+                        <x-ui.button variant="secondary" size="sm" class="hover:bg-neutral-200 transition">›</x-ui.button>
+                    </a>
+                @else
+                    <x-ui.button variant="secondary" size="sm" disabled>›</x-ui.button>
+                @endif
+            </div>
+
+            <p class="text-sm text-neutral-500 text-center mt-2">
+                Mostrando {{ $appointments->firstItem() }}–{{ $appointments->lastItem() }} de {{ $appointments->total() }} citas
+            </p>
+    </x-ui.card>
     </div>
 @endsection
