@@ -58,7 +58,7 @@
       <div>
         <x-form.select name="fecha" label="Fecha de registro">
           <option value="">Todos</option>
-          option value="hoy" {{ request('fecha') == 'hoy' ? 'selected' : '' }}>Hoy</option>
+          <option value="hoy" {{ request('fecha') == 'hoy' ? 'selected' : '' }}>Hoy</option>
           <option value="7d" {{ request('fecha') == '7d' ? 'selected' : '' }}>Últimos 7 días</option>
           <option value="30d" {{ request('fecha') == '30d' ? 'selected' : '' }}>Últimos 30 días</option>
         </x-form.select>
@@ -66,6 +66,7 @@
         <x-ui.button variant="secondary" :href="route('admin.usuarios.index')">Limpiar</x-ui.button>
       </div>
     </div>
+  </form>
   </x-ui.card>
 
   {{-- Tabla --}}
