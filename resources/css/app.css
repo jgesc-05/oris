@@ -68,11 +68,40 @@
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1;
   }
+.container-pro {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
   .container-pro {
-    max-width: var(--container);
-    margin-inline: auto;
-    padding-inline: 1rem;
+    max-width: 640px;
+    padding-inline: 1.25rem;
   }
+}
+
+@media (min-width: 768px) {
+  .container-pro {
+    max-width: 768px;
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-pro {
+    max-width: 1024px;
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-pro {
+    max-width: 1280px;
+  }
+}
+
 }
 
 /* 🎨 Componentes de formulario centralizados */
