@@ -79,7 +79,6 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <x-ui.button variant="secondary" size="sm" :href="route('admin.usuarios.index')">Volver</x-ui.button>
                     <x-ui.button variant="primary" size="sm" :href="route('admin.usuarios.create')">Crear nuevo</x-ui.button>
-                    <x-ui.button variant="ghost" size="sm">Restablecer contraseña</x-ui.button>
                     <form method="POST" action="{{ route('admin.usuarios.toggle-state', $user->id_usuario) }}" class="inline">
                         @csrf
                         @method('PATCH')
