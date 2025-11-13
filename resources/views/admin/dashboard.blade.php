@@ -11,8 +11,20 @@
     $profile = Auth::user();
     \Carbon\Carbon::setLocale('es');
     $currentDate = \Carbon\Carbon::now()->translatedFormat('l, j \d\e F');
-    $confirmedAppointments = Appointment::where('estado', 'Confirmada')->count();
-    $activePatients = User::where('estado', 'activo')->where('id_tipo_usuario', 4)->count();
+
+    
+    $now = \Carbon\Carbon::now();
+
+// Citas programadas en el mes actual
+$programmedAppointments = Appointment::where('estado', 'Programada')
+    ->whereMonth('created_at', $now->month)
+    ->whereYear('created_at', $now->year)
+    ->count();
+
+// Pacientes activos creados en el mes actual
+$activePatients = User::where('estado', 'activo')
+    ->where('id_tipo_usuario', 4)
+    ->count();
 @endphp
 
 @section('admin-content')
@@ -73,8 +85,8 @@
         <x-ui.card title="Estadísticas y reportes mensuales">
             <div class="grid grid-cols-3 gap-4">
                 <x-ui.card class="bg-neutral-50 text-center">
-                    <div class="text-3xl font-bold text-neutral-900">{{ $confirmedAppointments }}</div>
-                    <div class="text-sm text-neutral-600">Citas<br>confirmadas</div>
+                    <div class="text-3xl font-bold text-neutral-900">{{ $programmedAppointments }}</div>
+                    <div class="text-sm text-neutral-600">Citas<br>programadas</div>
                 </x-ui.card>
 
                 <x-ui.card class="bg-neutral-50 text-center">
