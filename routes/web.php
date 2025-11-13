@@ -20,14 +20,11 @@ Route::get('/', function () {
     return redirect()->route('acceder');
 });
 
-// Ruta de prueba (mantener)
+// Ruta de prueba
 Route::view('/test', 'test'); // Esto es una prueba
 
 // Página de acceso general
 Route::view('/acceder', 'access.index')->name('acceder');
-
-// Staff: login (mock si aún no lo tienes)
-//Route::view('/login', 'auth.login')->name('login'); //Quitarlo luego
 
 
 //Rutas de login empresarial
@@ -37,9 +34,7 @@ Route::post('/login', [UserController::class, 'staffLogin'])->name('staff.login'
 //Logout empresarial
 Route::post('/logout', [UserController::class, 'staffLogout'])->name('logout');
 
-// ============================================
 // Pacientes
-// ============================================
 Route::prefix('paciente')->name('paciente.')->group(function () {
     // Mostrar formulario de login
     Route::get('login', [PatientAuthController::class, 'showLoginForm'])->name('login');
@@ -59,15 +54,13 @@ Route::prefix('paciente')->name('paciente.')->group(function () {
     Route::middleware('auth:paciente')->group(function () {
         Route::get('inicio', [PatientPortalController::class, 'inicio'])->name('inicio');
         Route::get('servicios', [SpecialtyController::class, 'patientIndex'])->name('servicios');
-        //Route::get('servicios/{especialidad}', [PatientPortalController::class, 'serviciosEspecialidad'])->name('servicios.especialidad');
         Route::get('servicios/{slug}', [ServiceController::class, 'showBySpecialty'])
-        ->name('servicios.especialidad');
+            ->name('servicios.especialidad');
         Route::get('servicios/{especialidad}/{servicio}', [ServiceController::class, 'showService'])
-        ->name('servicios.detalle');
+            ->name('servicios.detalle');
 
-        //Route::get('servicios/{especialidad}/{servicio}', [PatientPortalController::class, 'servicioDetalle'])->name('servicios.detalle');
         Route::get('medicos', [DoctorController::class, 'indexDoctors'])->name('medicos');
-        Route::get('medicos/{especialidad}', [DoctorController::class, 'doctorsBySpecialty'])->name('medicos.especialidad');    
+        Route::get('medicos/{especialidad}', [DoctorController::class, 'doctorsBySpecialty'])->name('medicos.especialidad');
         Route::get('medicos/{especialidad}/{medico}', [DoctorController::class, 'doctorDetail'])->name('medicos.detalle');
         Route::prefix('citas')->name('citas.')->group(function () {
             Route::get('disponibilidad', [PatientPortalController::class, 'citasDisponibilidad'])->name('disponibilidad');
@@ -164,12 +157,11 @@ Route::prefix('secretaria')->name('secretaria.')->middleware(['web', 'auth', 'ro
             ->whereNumber('block');
     });
 
-
 });
 
 Route::prefix('medico')->name('medico.')->middleware(['web', 'auth', 'role:medico'])->group(function () {
     Route::get('inicio', [DoctorPortalController::class, 'dashboard'])->name('dashboard');
-    Route::get('dashboard', fn () => redirect()->route('medico.dashboard'));
+    Route::get('dashboard', fn() => redirect()->route('medico.dashboard'));
     Route::get('agenda', [DoctorPortalController::class, 'agenda'])->name('agenda');
 
     Route::prefix('pacientes')->name('pacientes.')->group(function () {
@@ -180,94 +172,33 @@ Route::prefix('medico')->name('medico.')->middleware(['web', 'auth', 'role:medic
     });
 });
 
-// routes/web.php
-
 Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'role:admin'])->group(function () {
-    // Dashboard
-    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // Usuarios
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
     Route::get('/usuarios', [UserController::class, 'index'])->name('usuarios.index');
-    //Route::view('/usuarios', 'admin.usuarios.index')->name('usuarios.index');
-    //Route::view('/usuarios/crear', 'admin.usuarios.create')->name('usuarios.create');
-    //Crear usuarios por admin
     Route::get('/usuarios/crear', [UserController::class, 'create'])->name('usuarios.create');
     Route::post('/usuarios', [UserController::class, 'store'])->name('usuarios.store');
-    // Detalle de usuario (mock)
-    /*Route::get('/usuarios/{usuario}', function ($usuario) {
-        return view('admin.usuarios.show', ['id' => $usuario]);
-    })->whereNumber('usuario')->name('usuarios.show');*/
-    // Route::view('/usuarios/{usuario}/editar', 'admin.usuarios.edit')->name('usuarios.edit');
-
-    //Mostrar info de usuario
     Route::get('/usuarios/{usuario}', [UserController::class, 'show'])->name('usuarios.show');
-
-    //Edición de datos de usuario
     Route::get('/usuarios/{id}/editar', [UserController::class, 'edit'])->name('usuarios.edit');
     Route::put('/usuarios/{id}', [UserController::class, 'update'])->name('usuarios.update');
-
-    //Suspender usuario
     Route::patch('/usuarios/{id}/estado', [UserController::class, 'toggleState'])->name('usuarios.toggle-state');
-
-    //Eliminar usuario
     Route::delete('/usuarios/{id}', [UserController::class, 'destroy'])->name('usuarios.destroy');
-
-    // Visualización de reportes empresariales
     Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
-
-    // ===== Configuración =====
-    // Apunta a resources/views/admin/config/index.blade.php
     Route::view('/config', 'admin.config.index')->name('config');
-
-    /** Configuración - Especialidades */
     Route::get('/config/especialidades', [SpecialtyController::class, 'index'])->name('config.especialidad.index');
-    //Route::view('/config/especialidades', 'admin.config.especialidad.index')->name('config.especialidad.index');
-    //Route::view('/config/especialidades/crear', 'admin.config.especialidad.create')->name('config.especialidad.create');
-
-    //Crear especialidad (con alertas)
     Route::get('/config/especialidades/crear', [SpecialtyController::class, 'showCreate'])->name('config.especialidad.create');
-
-    //Desactivar o activar la especialidad (inactiva o activa)
     Route::post('/config/especialidades/{id}/toggle', [SpecialtyController::class, 'toggleState'])->name('config.especialidad.toggle');
-
-    //Eliminar especialidad
     Route::delete('/config/especialidades/{id}', [SpecialtyController::class, 'destroy'])->name('config.especialidad.destroy');
-
-
     Route::post('/config/especialidades/crear', [SpecialtyController::class, 'storeSpecialty'])->name('config.especialidad.createSp');
-
-    //Vista de edición (para pasar parámetro de id real)
     Route::get('/config/especialidades/{id}/editar', [SpecialtyController::class, 'edit'])
         ->name('config.especialidad.edit');
 
-    //Actualización de la especialidad
     Route::put('/config/especialidades/{id}/actualizar', [SpecialtyController::class, 'update'])->name('config.especialidad.update');
-
-    /** Configuración - Servicios */
-
-    //Crear servicio
     Route::get('/config/servicios/crear', [ServiceController::class, 'create'])->name('config.servicio.create');
     Route::post('/config/servicios/crear', [ServiceController::class, 'store'])->name('config.servicio.store');
-
-    //Listar los servicios disponibles (tabla principal)
     Route::get('/config/servicios', [ServiceController::class, 'index'])->name('config.servicio.index');
-
-    //Route::view('/config/servicios', 'admin.config.servicio.index')->name('config.servicio.index');
-    //Route::view('/config/servicios/crear', 'admin.config.servicio.create')->name('config.servicio.create');
-
-    //Editar los servicios
     Route::get('/config/servicios/{id}/editar', [ServiceController::class, 'edit'])->name('config.servicio.edit');
-    //Actualizar servicio
     Route::put('/config/servicios/{id}/editar', [ServiceController::class, 'update'])->name('config.servicio.update');
-
-    //Cambiar estado del servicio
     Route::post('/config/servicios/{id}/toggle', [ServiceController::class, 'toggleState'])->name('config.servicio.toggle');
-
-    //Eliminar los servicios
     Route::delete('/config/servicios/{id}/eliminar', [ServiceController::class, 'destroy'])->name('config.servicio.destroy');
-
-    /*Route::get('/config/servicios/{id}/editar', function ($id) {
-        return view('admin.config.servicio.edit', ['id' => $id]);
-    })->whereNumber('id')->name('config.servicio.edit');*/
-
 });
