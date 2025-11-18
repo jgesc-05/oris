@@ -112,7 +112,7 @@ Las contribuciones son bienvenidas. Haz un fork del proyecto, crea una
 rama y envía un pull request.
 
 
-## 👨‍💻 Autor
+## 👨‍💻 Autores
 
 Desarrollado por **Leydy Macareo y Juan Escobar**.
 
