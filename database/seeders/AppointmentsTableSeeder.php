@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AppointmentsTableSeeder extends Seeder
 {
@@ -29,20 +30,17 @@ class AppointmentsTableSeeder extends Seeder
             return;
         }
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        Schema::disableForeignKeyConstraints();
         DB::table('notifications')->truncate();
         DB::table('appointments')->truncate();
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        Schema::enableForeignKeyConstraints();
 
-        $referenceYear = 2025;
-
-        $startDate = Carbon::create($referenceYear, 11, 1);
-        $endDate = Carbon::create($referenceYear, 12, 15);
-        $holidays = collect([
-            Carbon::create($referenceYear, 11, 4)->toDateString(), // Traslado Día de Todos los Santos
-            Carbon::create($referenceYear, 11, 11)->toDateString(), // Independencia de Cartagena
-            Carbon::create($referenceYear, 12, 8)->toDateString(), // Inmaculada Concepción
-        ]);
+        // Las citas de demostración se generan alrededor de la fecha actual para que
+        // las agendas y los paneles siempre muestren datos al instalar el proyecto
+        $today = Carbon::today();
+        $startDate = $today->copy()->subDays(30);
+        $endDate = $today->copy()->addDays(30);
+        $holidays = collect();
 
         $timeRanges = [
             ['08:00:00', '12:00:00'],
@@ -84,23 +82,19 @@ class AppointmentsTableSeeder extends Seeder
             }
         }
 
-        $novemberSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->month === 11));
-        $decemberSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->month === 12));
-        shuffle($novemberSlots);
-        shuffle($decemberSlots);
+        $todaySlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->isSameDay($today)));
+        $pastSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->lt($today)));
+        $futureSlots = array_values(array_filter($allSlots, fn($slot) => $slot['start']->gt($today->copy()->endOfDay())));
+        shuffle($todaySlots);
+        shuffle($pastSlots);
+        shuffle($futureSlots);
 
         $selectedSlots = array_merge(
-            array_slice($novemberSlots, 0, 35),
-            array_slice($decemberSlots, 0, 15)
+            array_slice($todaySlots, 0, 8),
+            array_slice($pastSlots, 0, 30),
+            array_slice($futureSlots, 0, 22)
         );
 
-        if (count($selectedSlots) < 50) {
-            $remaining = array_slice($novemberSlots, 35);
-            $selectedSlots = array_merge($selectedSlots, array_slice($remaining, 0, 50 - count($selectedSlots)));
-        }
-
-        $statusPast = [Appointment::STATUS_ATENDIDA, Appointment::STATUS_CANCELADA];
-        $statusFuture = [Appointment::STATUS_PROGRAMADA, Appointment::STATUS_CANCELADA];
         $cancelReasons = [
             'Paciente solicitó cancelación',
             'Médico indispuesto',
@@ -108,11 +102,13 @@ class AppointmentsTableSeeder extends Seeder
         ];
 
         $appointments = [];
-        $cutoff = Carbon::create(2024, 11, 6)->startOfDay();
+        $cutoff = Carbon::now();
 
-        foreach (array_slice($selectedSlots, 0, 50) as $slot) {
+        foreach ($selectedSlots as $slot) {
             $isPast = $slot['start']->lt($cutoff);
-            $estado = $isPast ? Arr::random($statusPast) : Arr::random($statusFuture);
+            // Proporción realista: la mayoría de citas pasadas se atendieron y la mayoría de futuras siguen programadas
+            $cancelada = rand(1, 100) <= 15;
+            $estado = $cancelada ? Appointment::STATUS_CANCELADA : ($isPast ? Appointment::STATUS_ATENDIDA : Appointment::STATUS_PROGRAMADA);
             $motivoCancelacion = $estado === Appointment::STATUS_CANCELADA ? Arr::random($cancelReasons) : null;
             $cancelUserId = $estado === Appointment::STATUS_CANCELADA ? $secretaryId : null;
 

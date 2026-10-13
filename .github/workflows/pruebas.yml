@@ -1,0 +1,39 @@
+name: Pruebas
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_sqlite, sqlite3
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Dependencias de PHP
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Recursos del frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Configuración
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Pruebas
+        run: php artisan test
